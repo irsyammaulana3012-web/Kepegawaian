@@ -591,102 +591,67 @@ export const AutoAttendanceGenerator: React.FC = () => {
             }
           >
             <div className="space-y-4">
-              {/* QUICK UNIT FILTER CHIPS */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                    <Filter className="w-3.5 h-3.5 text-emerald-700" />
-                    Filter Cepat Berdasarkan Unit:
-                  </span>
-                  <span className="text-[11px] text-slate-400">
-                    Klik chip untuk memfilter, klik tombol unit untuk memilih seluruh anggota unit
-                  </span>
+              {/* UNIT FILTER DROPDOWN & SEARCH TOOLBAR */}
+              <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+                  {/* Search Input */}
+                  <div className="w-full sm:w-64 relative">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Cari nama, NIK, tugas..."
+                      className="w-full pl-8 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:ring-emerald-600 focus:border-emerald-600"
+                    />
+                  </div>
+
+                  {/* Dropdown Filter Unit (From Database) */}
+                  <div className="w-full sm:w-64">
+                    <select
+                      value={selectedUnit}
+                      onChange={(e) => setSelectedUnit(e.target.value)}
+                      className="w-full py-2 px-3 text-xs rounded-xl border border-emerald-300 bg-white text-emerald-950 font-bold focus:ring-emerald-600 focus:border-emerald-600 shadow-sm"
+                    >
+                      <option value="all">★ Semua Unit Penugasan ({employees.length} Karyawan)</option>
+                      {hierarchySortedUnits.map((u) => {
+                        const count = unitCounts[u.name] || 0;
+                        return (
+                          <option key={u.id} value={u.id}>
+                            Unit: {u.name} ({count} Karyawan)
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+
+                  {/* Dropdown Status */}
+                  <div className="w-full sm:w-44">
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 bg-white text-slate-700 font-medium focus:ring-emerald-600"
+                    >
+                      <option value="all">Semua Status</option>
+                      <option value="Tetap">Status: Tetap</option>
+                      <option value="Kontrak">Status: Kontrak</option>
+                      <option value="Honorer">Status: Honorer</option>
+                    </select>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedUnit('all')}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
-                      selectedUnit === 'all'
-                        ? 'bg-emerald-950 text-white shadow-sm ring-2 ring-emerald-800'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
-                  >
-                    <span>Semua Unit</span>
-                    <span className="text-[10px] bg-emerald-800 text-emerald-100 px-1.5 py-0.2 rounded-full">
-                      {employees.length}
-                    </span>
-                  </button>
-
-                  {hierarchySortedUnits.map((u) => {
-                    const count = unitCounts[u.name] || 0;
-                    const isSelected = selectedUnit === u.id || selectedUnit === u.name;
-
-                    return (
-                      <div
-                        key={u.id}
-                        className={`inline-flex items-center rounded-xl border transition ${
-                          isSelected
-                            ? 'bg-emerald-900 text-white border-emerald-950 shadow-sm'
-                            : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-400'
-                        }`}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setSelectedUnit(u.id)}
-                          className="px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1.5"
-                        >
-                          <span>{u.name}</span>
-                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-                            isSelected ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-100 text-slate-600'
-                          }`}>
-                            {count}
-                          </span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleSelectOnlyUnit(u.name)}
-                          title={`Pilih hanya karyawan ${u.name}`}
-                          className={`px-2 py-1.5 border-l text-[10px] font-bold transition ${
-                            isSelected
-                              ? 'border-emerald-800 text-amber-300 hover:bg-emerald-800'
-                              : 'border-slate-100 text-emerald-700 hover:bg-emerald-50'
-                          }`}
-                        >
-                          Pilih Unit Ini
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Search & Status Filter Row */}
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <div className="w-full sm:w-80 relative">
-                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Cari nama karyawan, NIK, tugas, jabatan..."
-                    className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-emerald-600 focus:border-emerald-600"
-                  />
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="py-1.5 px-2.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-emerald-600 font-medium"
-                  >
-                    <option value="all">Semua Status Kepegawaian</option>
-                    <option value="Tetap">Tetap</option>
-                    <option value="Kontrak">Kontrak</option>
-                    <option value="Honorer">Honorer</option>
-                  </select>
+                {/* Counter & Unit Quick Actions */}
+                <div className="flex items-center gap-2 justify-between md:justify-end">
+                  {selectedUnit !== 'all' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSelectOnlyUnit(selectedUnit)}
+                      className="text-emerald-800 border-emerald-300 hover:bg-emerald-50 text-xs py-1.5"
+                    >
+                      Centang Hanya Unit Ini
+                    </Button>
+                  )}
 
                   <Badge variant="gold" size="sm">
                     Terpilih: {selectedIds.size} / {employees.length} Karyawan
