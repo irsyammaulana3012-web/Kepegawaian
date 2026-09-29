@@ -131,6 +131,51 @@ export const documentService = {
     });
   },
 
+  // Document Types Definition CRUD
+  async getDocumentTypes(): Promise<import('../types').DocumentTypeDefinition[]> {
+    const list = store.getDocumentTypes();
+    return list.filter(t => t.is_active).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  },
+
+  async getAllDocumentTypes(): Promise<import('../types').DocumentTypeDefinition[]> {
+    const list = store.getDocumentTypes();
+    return list.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  },
+
+  async saveDocumentType(type: Partial<import('../types').DocumentTypeDefinition>): Promise<import('../types').DocumentTypeDefinition> {
+    const list = store.getDocumentTypes();
+    let saved: import('../types').DocumentTypeDefinition;
+
+    if (type.id) {
+      const idx = list.findIndex(t => t.id === type.id);
+      if (idx === -1) throw new Error('Jenis dokumen tidak ditemukan.');
+      saved = { ...list[idx], ...type } as import('../types').DocumentTypeDefinition;
+      list[idx] = saved;
+      await auditService.log('UPDATE_DOC_TYPE', 'document_types', saved.id, { name: saved.name });
+    } else {
+      saved = {
+        id: `dt-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        name: type.name || 'Dokumen Baru',
+        code: type.code || (type.name || 'DOC').toUpperCase().replace(/\s+/g, '_'),
+        description: type.description || '',
+        is_mandatory: type.is_mandatory ?? true,
+        is_active: type.is_active ?? true,
+        sort_order: type.sort_order || (list.length + 1)
+      };
+      list.push(saved);
+      await auditService.log('CREATE_DOC_TYPE', 'document_types', saved.id, { name: saved.name });
+    }
+
+    store.setDocumentTypes(list);
+    return saved;
+  },
+
+  async deleteDocumentType(id: string): Promise<void> {
+    const list = store.getDocumentTypes().filter(t => t.id !== id);
+    store.setDocumentTypes(list);
+    await auditService.log('DELETE_DOC_TYPE', 'document_types', id);
+  },
+
   formatBytes(bytes?: number): string {
     if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;

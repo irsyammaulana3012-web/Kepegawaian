@@ -203,6 +203,16 @@ export interface EmployeeDocument {
   units_list?: string[];
 }
 
+export interface DocumentTypeDefinition {
+  id: string;
+  name: string; // e.g. "KTP", "Kartu Keluarga", "Ijazah", "SK Pengangkatan", "Sertifikat Pendidik", "NPWP", "BPJS", etc.
+  code: string;
+  description?: string;
+  is_mandatory: boolean; // if true, tracked in matrix and completeness
+  is_active: boolean;
+  sort_order: number;
+}
+
 export interface EmployeeTraining {
   id: string;
   employee_id: string;

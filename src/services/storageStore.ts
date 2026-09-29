@@ -8,6 +8,7 @@ import {
   initialEducation,
   initialPositionHistory,
   initialDocuments,
+  initialDocumentTypes,
   initialTraining,
   initialAttendance,
   initialLeave,
@@ -25,6 +26,7 @@ import {
   EmployeeEducation,
   EmployeePositionHistory,
   EmployeeDocument,
+  DocumentTypeDefinition,
   EmployeeTraining,
   EmployeeAttendance,
   EmployeeLeave,
@@ -44,6 +46,7 @@ const STORAGE_KEYS = {
   EDUCATION: 'simka_education',
   HISTORY: 'simka_history',
   DOCUMENTS: 'simka_documents',
+  DOC_TYPES: 'simka_doc_types',
   TRAINING: 'simka_training',
   ATTENDANCE: 'simka_attendance',
   LEAVE: 'simka_leave',
@@ -143,6 +146,14 @@ class StorageStore {
   }
   setDocuments(docs: EmployeeDocument[]): void {
     setItem(STORAGE_KEYS.DOCUMENTS, docs);
+  }
+
+  // Document Types Definition
+  getDocumentTypes(): DocumentTypeDefinition[] {
+    return getItem<DocumentTypeDefinition[]>(STORAGE_KEYS.DOC_TYPES, initialDocumentTypes);
+  }
+  setDocumentTypes(types: DocumentTypeDefinition[]): void {
+    setItem(STORAGE_KEYS.DOC_TYPES, types);
   }
 
   // Training
@@ -248,6 +259,7 @@ class StorageStore {
     this.setEducation(initialEducation);
     this.setHistory(initialPositionHistory);
     this.setDocuments(initialDocuments);
+    this.setDocumentTypes(initialDocumentTypes);
     this.setTraining(initialTraining);
     this.setAttendance(initialAttendance);
     this.setLeave(initialLeave);

@@ -8,6 +8,7 @@ import {
   EmployeeEducation,
   EmployeePositionHistory,
   EmployeeDocument,
+  DocumentTypeDefinition,
   EmployeeTraining,
   EmployeeAttendance,
   EmployeeLeave,
@@ -15,6 +16,17 @@ import {
   AuditLog,
   UserProfile
 } from '../types';
+
+export const initialDocumentTypes: DocumentTypeDefinition[] = [
+  { id: 'dt-1', name: 'KTP', code: 'KTP', description: 'Kartu Tanda Penduduk Wajib', is_mandatory: true, is_active: true, sort_order: 1 },
+  { id: 'dt-2', name: 'KK', code: 'KK', description: 'Kartu Keluarga', is_mandatory: true, is_active: true, sort_order: 2 },
+  { id: 'dt-3', name: 'Ijazah', code: 'IJZ', description: 'Ijazah Pendidikan Terakhir', is_mandatory: true, is_active: true, sort_order: 3 },
+  { id: 'dt-4', name: 'SK Pengangkatan', code: 'SKA', description: 'Surat Keputusan Pengangkatan Pegawai', is_mandatory: true, is_active: true, sort_order: 4 },
+  { id: 'dt-5', name: 'SK Penugasan', code: 'SKP', description: 'Surat Keputusan Penugasan / Amanah', is_mandatory: true, is_active: true, sort_order: 5 },
+  { id: 'dt-6', name: 'NPWP', code: 'NPWP', description: 'Nomor Pokok Wajib Pajak', is_mandatory: false, is_active: true, sort_order: 6 },
+  { id: 'dt-7', name: 'BPJS', code: 'BPJS', description: 'Kartu BPJS Kesehatan / Ketenagakerjaan', is_mandatory: false, is_active: true, sort_order: 7 },
+  { id: 'dt-8', name: 'Sertifikat Pendidik', code: 'SERGUR', description: 'Sertifikat Pendidik / Pelatihan', is_mandatory: false, is_active: true, sort_order: 8 }
+];
 
 export const initialUnits: Unit[] = [
   { id: 'u-1', code: 'YAS', name: 'Yayasan', description: 'Pengurus Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah', is_active: true, sort_order: 1 },

@@ -19,9 +19,12 @@ import {
   FileCheck,
   Sparkles,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Settings2,
+  Edit2,
+  Check
 } from 'lucide-react';
-import { EmployeeDocument, Employee, Unit } from '../../types';
+import { EmployeeDocument, Employee, Unit, DocumentTypeDefinition } from '../../types';
 import { documentService } from '../../services/documentService';
 import { employeeService } from '../../services/employeeService';
 import { masterDataService } from '../../services/masterDataService';
@@ -34,16 +37,6 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 import { Modal } from '../../components/ui/Modal';
 import { ConfirmationDialog } from '../../components/ui/ConfirmationDialog';
-import { ProgressBar } from '../../components/ui/ProgressBar';
-
-// Standard Document Types Matrix Definition
-const STANDARD_DOC_TYPES = [
-  { key: 'KTP', label: 'KTP', shortLabel: 'KTP' },
-  { key: 'KK', label: 'Kartu Keluarga', shortLabel: 'KK' },
-  { key: 'Ijazah', label: 'Ijazah Terakhir', shortLabel: 'Ijazah' },
-  { key: 'SK Pengangkatan', label: 'SK Pengangkatan', shortLabel: 'SK Angkat' },
-  { key: 'SK Penugasan', label: 'SK Penugasan', shortLabel: 'SK Tugas' }
-];
 
 export const DocumentList: React.FC = () => {
   const navigate = useNavigate();
@@ -51,6 +44,7 @@ export const DocumentList: React.FC = () => {
   const { success, error, info } = useToast();
 
   const [documents, setDocuments] = useState<EmployeeDocument[]>([]);
+  const [docTypes, setDocTypes] = useState<DocumentTypeDefinition[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [units, setUnits] = useState<Unit[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,8 +62,16 @@ export const DocumentList: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Delete Modal State
+  // Manage Document Types Modal State
+  const [isManageTypesOpen, setIsManageTypesOpen] = useState(false);
+  const [newTypeName, setNewTypeName] = useState('');
+  const [newTypeDescription, setNewTypeDescription] = useState('');
+  const [newTypeMandatory, setNewTypeMandatory] = useState(true);
+  const [isSavingType, setIsSavingType] = useState(false);
+
+  // Delete Modals State
   const [docToDelete, setDocToDelete] = useState<EmployeeDocument | null>(null);
+  const [typeToDelete, setTypeToDelete] = useState<DocumentTypeDefinition | null>(null);
 
   // View All Docs Modal for a Specific Employee
   const [selectedEmployeeForView, setSelectedEmployeeForView] = useState<Employee | null>(null);
@@ -77,12 +79,14 @@ export const DocumentList: React.FC = () => {
   const loadData = async () => {
     setIsLoading(true);
     try {
-      const [docData, empData, unitData] = await Promise.all([
+      const [docData, typesData, empData, unitData] = await Promise.all([
         documentService.getAllDocuments(),
+        documentService.getDocumentTypes(),
         employeeService.getEmployees({ limit: 1000 }),
         masterDataService.getUnits()
       ]);
       setDocuments(docData);
+      setDocTypes(typesData);
       setEmployees(empData.data);
       setUnits(unitData);
     } catch (err: any) {
@@ -96,43 +100,50 @@ export const DocumentList: React.FC = () => {
     loadData();
   }, []);
 
+  // Tracked mandatory document columns in the matrix
+  const trackedDocTypes = useMemo(() => {
+    return docTypes.filter(t => t.is_mandatory && t.is_active);
+  }, [docTypes]);
+
   // Map employee with their documents matrix
   const employeeMatrix = useMemo(() => {
     return employees.map(emp => {
       const empDocs = documents.filter(d => d.employee_id === emp.id);
 
-      // Map standard documents
+      // Map documents per tracked type
       const docsByType: Record<string, EmployeeDocument | undefined> = {};
-      STANDARD_DOC_TYPES.forEach(t => {
-        docsByType[t.key] = empDocs.find(d =>
-          d.document_type.toLowerCase() === t.key.toLowerCase() ||
-          (t.key === 'KK' && (d.document_type.toLowerCase().includes('kk') || d.document_type.toLowerCase().includes('kartu keluarga'))) ||
-          (t.key === 'KTP' && d.document_type.toLowerCase().includes('ktp')) ||
-          (t.key === 'Ijazah' && d.document_type.toLowerCase().includes('ijazah')) ||
-          (t.key === 'SK Pengangkatan' && (d.document_type.toLowerCase().includes('pengangkatan') || d.document_type.toLowerCase().includes('sk pengangkatan'))) ||
-          (t.key === 'SK Penugasan' && (d.document_type.toLowerCase().includes('penugasan') || d.document_type.toLowerCase().includes('sk tugas') || d.document_type.toLowerCase().includes('kontrak')))
-        );
+      trackedDocTypes.forEach(t => {
+        docsByType[t.name] = empDocs.find(d => {
+          const docType = d.document_type.toLowerCase();
+          const targetName = t.name.toLowerCase();
+          const targetCode = t.code.toLowerCase();
+
+          return (
+            docType === targetName ||
+            docType === targetCode ||
+            docType.includes(targetName) ||
+            targetName.includes(docType)
+          );
+        });
       });
 
-      // Other documents
+      // Other documents that don't match any tracked column
       const otherDocs = empDocs.filter(d => {
-        const type = d.document_type.toLowerCase();
-        return !type.includes('ktp') &&
-          !type.includes('kk') &&
-          !type.includes('kartu keluarga') &&
-          !type.includes('ijazah') &&
-          !type.includes('pengangkatan') &&
-          !type.includes('penugasan') &&
-          !type.includes('kontrak');
+        return !trackedDocTypes.some(t => {
+          const docType = d.document_type.toLowerCase();
+          const targetName = t.name.toLowerCase();
+          return docType === targetName || docType.includes(targetName) || targetName.includes(docType);
+        });
       });
 
-      // Calculate completeness based on the 5 standard document types
+      // Calculate completeness
       let completedCount = 0;
-      STANDARD_DOC_TYPES.forEach(t => {
-        if (docsByType[t.key]) completedCount++;
+      trackedDocTypes.forEach(t => {
+        if (docsByType[t.name]) completedCount++;
       });
 
-      const percentage = Math.round((completedCount / STANDARD_DOC_TYPES.length) * 100);
+      const totalTracked = trackedDocTypes.length || 1;
+      const percentage = Math.round((completedCount / totalTracked) * 100);
 
       return {
         employee: emp,
@@ -141,10 +152,10 @@ export const DocumentList: React.FC = () => {
         totalDocsCount: empDocs.length,
         completedCount,
         percentage,
-        isComplete: completedCount === STANDARD_DOC_TYPES.length
+        isComplete: completedCount === trackedDocTypes.length && trackedDocTypes.length > 0
       };
     });
-  }, [employees, documents]);
+  }, [employees, documents, trackedDocTypes]);
 
   // Filtered Matrix Rows
   const filteredMatrix = useMemo(() => {
@@ -187,19 +198,19 @@ export const DocumentList: React.FC = () => {
   const incompleteEmployeesCount = totalEmployees - completeEmployeesCount;
   const totalUploadedDocs = documents.length;
 
-  // Open Upload for a Specific Employee and Doc Type
-  const handleQuickUpload = (empId: string, docTypeKey: string) => {
+  // Open Quick Upload for a Specific Employee and Doc Type
+  const handleQuickUpload = (empId: string, typeName: string) => {
     setSelectedEmployeeId(empId);
-    setDocumentType(docTypeKey);
+    setDocumentType(typeName);
     const emp = employees.find(e => e.id === empId);
-    setTitle(`${docTypeKey} - ${emp?.full_name || ''}`);
+    setTitle(`${typeName} - ${emp?.full_name || ''}`);
     setSelectedFile(null);
     setIsModalOpen(true);
   };
 
   const handleOpenGeneralUpload = () => {
     setSelectedEmployeeId(employees[0]?.id || '');
-    setDocumentType('KTP');
+    setDocumentType(docTypes[0]?.name || 'KTP');
     setTitle('');
     setSelectedFile(null);
     setIsModalOpen(true);
@@ -247,6 +258,47 @@ export const DocumentList: React.FC = () => {
     }
   };
 
+  // Add new Custom Document Type Handler
+  const handleCreateDocumentType = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTypeName.trim()) {
+      error('Nama jenis dokumen wajib diisi');
+      return;
+    }
+
+    setIsSavingType(true);
+    try {
+      await documentService.saveDocumentType({
+        name: newTypeName.trim(),
+        description: newTypeDescription.trim() || undefined,
+        is_mandatory: newTypeMandatory,
+        is_active: true
+      });
+
+      success('Jenis Dokumen Ditambahkan', `Jenis dokumen "${newTypeName}" berhasil dibuat dan ditambahkan ke matriks.`);
+      setNewTypeName('');
+      setNewTypeDescription('');
+      setNewTypeMandatory(true);
+      loadData();
+    } catch (err: any) {
+      error('Gagal Menyimpan Jenis Dokumen', err.message);
+    } finally {
+      setIsSavingType(false);
+    }
+  };
+
+  const handleDeleteDocumentType = async () => {
+    if (!typeToDelete) return;
+    try {
+      await documentService.deleteDocumentType(typeToDelete.id);
+      success('Jenis Dokumen Dihapus', `Jenis dokumen "${typeToDelete.name}" telah dihapus.`);
+      setTypeToDelete(null);
+      loadData();
+    } catch (err: any) {
+      error('Gagal Menghapus Jenis Dokumen', err.message);
+    }
+  };
+
   const handleDelete = async () => {
     if (!docToDelete) return;
     try {
@@ -270,25 +322,37 @@ export const DocumentList: React.FC = () => {
               <span>Matriks Kelengkapan Berkas & Dokumen Karyawan</span>
             </h2>
             <Badge variant="emerald" size="sm">
-              Status Visual Hijau/Merah
+              {trackedDocTypes.length} Kolom Dokumen Terlacak
             </Badge>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Setiap baris menampilkan 1 karyawan beserta status kelengkapan dokumen (Hijau = Lengkap & Unduh, Merah = Kosong/Perlu Unggah)
+            Setiap baris menampilkan 1 karyawan. Anda dapat menambah jenis dokumen baru secara fleksibel melalui menu kelola dokumen.
           </p>
         </div>
 
-        {canEdit && (
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={<Plus className="w-4 h-4" />}
-            onClick={handleOpenGeneralUpload}
-            className="shadow-sm"
-          >
-            Unggah Dokumen Baru
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {canEdit && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                leftIcon={<Settings2 className="w-4 h-4 text-emerald-800" />}
+                onClick={() => setIsManageTypesOpen(true)}
+              >
+                Kelola Jenis Dokumen
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                leftIcon={<Plus className="w-4 h-4" />}
+                onClick={handleOpenGeneralUpload}
+                className="shadow-sm"
+              >
+                Unggah Dokumen Baru
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Stats Summary Cards */}
@@ -379,7 +443,7 @@ export const DocumentList: React.FC = () => {
         </div>
       </Card>
 
-      {/* MAIN DOCUMENT MATRIX TABLE (1 ROW = 1 EMPLOYEE) */}
+      {/* MAIN DOCUMENT MATRIX TABLE (DYNAMIC COLUMNS) */}
       <Card>
         {isLoading ? (
           <div className="py-12 text-center text-xs text-slate-500">Memuat matriks dokumen...</div>
@@ -397,12 +461,13 @@ export const DocumentList: React.FC = () => {
                   <th className="py-3 px-3 w-10 text-center">No</th>
                   <th className="py-3 px-4 min-w-[220px]">Nama Karyawan & Unit</th>
                   <th className="py-3 px-3 text-center w-28">Kelengkapan</th>
-                  <th className="py-3 px-3 text-center min-w-[130px]">1. KTP</th>
-                  <th className="py-3 px-3 text-center min-w-[130px]">2. KK</th>
-                  <th className="py-3 px-3 text-center min-w-[130px]">3. Ijazah</th>
-                  <th className="py-3 px-3 text-center min-w-[140px]">4. SK Pengangkatan</th>
-                  <th className="py-3 px-3 text-center min-w-[140px]">5. SK Penugasan</th>
-                  <th className="py-3 px-3 text-center min-w-[110px]">Lainnya</th>
+                  {/* Dynamic Document Columns from Registered Types */}
+                  {trackedDocTypes.map((t, tIdx) => (
+                    <th key={t.id} className="py-3 px-3 text-center min-w-[130px]">
+                      {tIdx + 1}. {t.name}
+                    </th>
+                  ))}
+                  <th className="py-3 px-3 text-center min-w-[100px]">Lainnya</th>
                   <th className="py-3 px-3 text-center w-16">Aksi</th>
                 </tr>
               </thead>
@@ -442,16 +507,16 @@ export const DocumentList: React.FC = () => {
                           <span className={`inline-flex items-center gap-1 text-[11px] font-black px-2 py-0.5 rounded-full ${
                             row.isComplete
                               ? 'bg-emerald-100 text-emerald-800'
-                              : row.completedCount >= 3
+                              : row.completedCount >= Math.ceil(trackedDocTypes.length / 2)
                               ? 'bg-amber-100 text-amber-900'
                               : 'bg-rose-100 text-rose-800'
                           }`}>
-                            {row.completedCount}/{STANDARD_DOC_TYPES.length} ({row.percentage}%)
+                            {row.completedCount}/{trackedDocTypes.length} ({row.percentage}%)
                           </span>
                           <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
                             <div
                               className={`h-full transition-all ${
-                                row.isComplete ? 'bg-emerald-600' : row.completedCount >= 3 ? 'bg-amber-500' : 'bg-rose-500'
+                                row.isComplete ? 'bg-emerald-600' : row.completedCount >= Math.ceil(trackedDocTypes.length / 2) ? 'bg-amber-500' : 'bg-rose-500'
                               }`}
                               style={{ width: `${row.percentage}%` }}
                             />
@@ -459,157 +524,43 @@ export const DocumentList: React.FC = () => {
                         </div>
                       </td>
 
-                      {/* 4. KTP Column */}
-                      <td className="py-3.5 px-3 text-center">
-                        {row.docsByType['KTP'] ? (
-                          <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-xl shadow-2xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span className="font-bold text-[11px]">Ada</span>
-                            <a
-                              href={row.docsByType['KTP']!.file_url}
-                              target="_blank"
-                              rel="noreferrer"
-                              download={row.docsByType['KTP']!.file_name}
-                              title={`Unduh ${row.docsByType['KTP']!.title}`}
-                              className="p-1 rounded text-emerald-800 hover:bg-emerald-200 transition ml-0.5"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleQuickUpload(emp.id, 'KTP')}
-                            className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 px-2.5 py-1 rounded-xl transition text-[11px] font-semibold"
-                            title="Klik untuk mengunggah KTP"
-                          >
-                            <XCircle className="w-3.5 h-3.5 text-rose-500" />
-                            <span>Kosong</span>
-                            {canEdit && <span className="text-[10px] text-rose-500 font-bold ml-0.5">+ Unggah</span>}
-                          </button>
-                        )}
-                      </td>
+                      {/* DYNAMIC DOCUMENT COLUMNS (GREEN / RED) */}
+                      {trackedDocTypes.map((t) => {
+                        const doc = row.docsByType[t.name];
 
-                      {/* 5. KK Column */}
-                      <td className="py-3.5 px-3 text-center">
-                        {row.docsByType['KK'] ? (
-                          <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-xl shadow-2xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span className="font-bold text-[11px]">Ada</span>
-                            <a
-                              href={row.docsByType['KK']!.file_url}
-                              target="_blank"
-                              rel="noreferrer"
-                              download={row.docsByType['KK']!.file_name}
-                              title={`Unduh ${row.docsByType['KK']!.title}`}
-                              className="p-1 rounded text-emerald-800 hover:bg-emerald-200 transition ml-0.5"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleQuickUpload(emp.id, 'KK')}
-                            className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 px-2.5 py-1 rounded-xl transition text-[11px] font-semibold"
-                            title="Klik untuk mengunggah KK"
-                          >
-                            <XCircle className="w-3.5 h-3.5 text-rose-500" />
-                            <span>Kosong</span>
-                            {canEdit && <span className="text-[10px] text-rose-500 font-bold ml-0.5">+ Unggah</span>}
-                          </button>
-                        )}
-                      </td>
+                        return (
+                          <td key={t.id} className="py-3.5 px-3 text-center">
+                            {doc ? (
+                              <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-xl shadow-2xs">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <span className="font-bold text-[11px]">Ada</span>
+                                <a
+                                  href={doc.file_url}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  download={doc.file_name}
+                                  title={`Unduh ${doc.title}`}
+                                  className="p-1 rounded text-emerald-800 hover:bg-emerald-200 transition ml-0.5"
+                                >
+                                  <Download className="w-3.5 h-3.5" />
+                                </a>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => handleQuickUpload(emp.id, t.name)}
+                                className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 px-2.5 py-1 rounded-xl transition text-[11px] font-semibold"
+                                title={`Klik untuk mengunggah ${t.name}`}
+                              >
+                                <XCircle className="w-3.5 h-3.5 text-rose-500" />
+                                <span>Kosong</span>
+                                {canEdit && <span className="text-[10px] text-rose-500 font-bold ml-0.5">+ Unggah</span>}
+                              </button>
+                            )}
+                          </td>
+                        );
+                      })}
 
-                      {/* 6. Ijazah Column */}
-                      <td className="py-3.5 px-3 text-center">
-                        {row.docsByType['Ijazah'] ? (
-                          <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-xl shadow-2xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span className="font-bold text-[11px]">Ada</span>
-                            <a
-                              href={row.docsByType['Ijazah']!.file_url}
-                              target="_blank"
-                              rel="noreferrer"
-                              download={row.docsByType['Ijazah']!.file_name}
-                              title={`Unduh ${row.docsByType['Ijazah']!.title}`}
-                              className="p-1 rounded text-emerald-800 hover:bg-emerald-200 transition ml-0.5"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleQuickUpload(emp.id, 'Ijazah')}
-                            className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 px-2.5 py-1 rounded-xl transition text-[11px] font-semibold"
-                            title="Klik untuk mengunggah Ijazah"
-                          >
-                            <XCircle className="w-3.5 h-3.5 text-rose-500" />
-                            <span>Kosong</span>
-                            {canEdit && <span className="text-[10px] text-rose-500 font-bold ml-0.5">+ Unggah</span>}
-                          </button>
-                        )}
-                      </td>
-
-                      {/* 7. SK Pengangkatan Column */}
-                      <td className="py-3.5 px-3 text-center">
-                        {row.docsByType['SK Pengangkatan'] ? (
-                          <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-xl shadow-2xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span className="font-bold text-[11px]">Ada</span>
-                            <a
-                              href={row.docsByType['SK Pengangkatan']!.file_url}
-                              target="_blank"
-                              rel="noreferrer"
-                              download={row.docsByType['SK Pengangkatan']!.file_name}
-                              title={`Unduh ${row.docsByType['SK Pengangkatan']!.title}`}
-                              className="p-1 rounded text-emerald-800 hover:bg-emerald-200 transition ml-0.5"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleQuickUpload(emp.id, 'SK Pengangkatan')}
-                            className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 px-2.5 py-1 rounded-xl transition text-[11px] font-semibold"
-                            title="Klik untuk mengunggah SK Pengangkatan"
-                          >
-                            <XCircle className="w-3.5 h-3.5 text-rose-500" />
-                            <span>Kosong</span>
-                            {canEdit && <span className="text-[10px] text-rose-500 font-bold ml-0.5">+ Unggah</span>}
-                          </button>
-                        )}
-                      </td>
-
-                      {/* 8. SK Penugasan Column */}
-                      <td className="py-3.5 px-3 text-center">
-                        {row.docsByType['SK Penugasan'] ? (
-                          <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-xl shadow-2xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span className="font-bold text-[11px]">Ada</span>
-                            <a
-                              href={row.docsByType['SK Penugasan']!.file_url}
-                              target="_blank"
-                              rel="noreferrer"
-                              download={row.docsByType['SK Penugasan']!.file_name}
-                              title={`Unduh ${row.docsByType['SK Penugasan']!.title}`}
-                              className="p-1 rounded text-emerald-800 hover:bg-emerald-200 transition ml-0.5"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleQuickUpload(emp.id, 'SK Penugasan')}
-                            className="inline-flex items-center gap-1 bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 px-2.5 py-1 rounded-xl transition text-[11px] font-semibold"
-                            title="Klik untuk mengunggah SK Penugasan"
-                          >
-                            <XCircle className="w-3.5 h-3.5 text-rose-500" />
-                            <span>Kosong</span>
-                            {canEdit && <span className="text-[10px] text-rose-500 font-bold ml-0.5">+ Unggah</span>}
-                          </button>
-                        )}
-                      </td>
-
-                      {/* 9. Other Documents */}
+                      {/* Other Documents Count */}
                       <td className="py-3.5 px-3 text-center">
                         {row.otherDocs.length > 0 ? (
                           <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-slate-100 text-slate-800 px-2 py-0.5 rounded border border-slate-200">
@@ -620,7 +571,7 @@ export const DocumentList: React.FC = () => {
                         )}
                       </td>
 
-                      {/* 10. Actions / View All Details */}
+                      {/* Actions / View All Details */}
                       <td className="py-3.5 px-3 text-center">
                         <button
                           onClick={() => setSelectedEmployeeForView(emp)}
@@ -638,6 +589,117 @@ export const DocumentList: React.FC = () => {
           </div>
         )}
       </Card>
+
+      {/* MODAL KELOLA JENIS DOKUMEN (DYNAMIC DOCUMENT TYPES MANAGER) */}
+      <Modal
+        isOpen={isManageTypesOpen}
+        onClose={() => setIsManageTypesOpen(false)}
+        title="Pengaturan & Kelola Jenis Dokumen Karyawan"
+      >
+        <div className="space-y-6">
+          {/* Form Add New Type */}
+          {canEdit && (
+            <form onSubmit={handleCreateDocumentType} className="p-4 bg-emerald-50/60 rounded-2xl border border-emerald-200 space-y-3">
+              <h4 className="text-xs font-black text-emerald-950 uppercase tracking-wide flex items-center gap-1.5">
+                <Plus className="w-4 h-4 text-emerald-700" />
+                <span>Tambah Jenis Dokumen Baru</span>
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input
+                  label="Nama Jenis Dokumen"
+                  value={newTypeName}
+                  onChange={(e) => setNewTypeName(e.target.value)}
+                  placeholder="Contoh: NPWP / Sertifikat Pendidik / BPJS"
+                  required
+                />
+
+                <Input
+                  label="Keterangan / Deskripsi"
+                  value={newTypeDescription}
+                  onChange={(e) => setNewTypeDescription(e.target.value)}
+                  placeholder="Contoh: Nomor Pokok Wajib Pajak Pegawai"
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-emerald-200">
+                <div>
+                  <span className="text-xs font-bold text-slate-800">Tampilkan sebagai Kolom di Matriks Kelengkapan</span>
+                  <p className="text-[10px] text-slate-500">Jika aktif, jenis dokumen ini akan menjadi kolom tabel dan dihitung dalam % kelengkapan</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newTypeMandatory}
+                    onChange={(e) => setNewTypeMandatory(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-800" />
+                </label>
+              </div>
+
+              <div className="flex justify-end pt-1">
+                <Button variant="primary" size="sm" type="submit" isLoading={isSavingType} leftIcon={<Plus className="w-3.5 h-3.5" />}>
+                  Tambah Jenis Dokumen
+                </Button>
+              </div>
+            </form>
+          )}
+
+          {/* List of Registered Document Types */}
+          <div className="space-y-2">
+            <h4 className="text-xs font-black text-slate-800 uppercase tracking-wide">
+              Daftar Jenis Dokumen yang Terdaftar ({docTypes.length})
+            </h4>
+
+            <div className="space-y-2 max-h-72 overflow-y-auto">
+              {docTypes.map((dt, idx) => (
+                <div
+                  key={dt.id}
+                  className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-mono text-slate-400 font-bold w-5">{idx + 1}.</span>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-900">{dt.name}</span>
+                        {dt.is_mandatory ? (
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                            Matriks Utama
+                          </span>
+                        ) : (
+                          <span className="text-[10px] bg-slate-100 text-slate-600 font-medium px-2 py-0.5 rounded-full">
+                            Opsional
+                          </span>
+                        )}
+                      </div>
+                      {dt.description && (
+                        <p className="text-[11px] text-slate-500 mt-0.5">{dt.description}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {canEdit && (
+                    <button
+                      onClick={() => setTypeToDelete(dt)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                      title="Hapus Jenis Dokumen"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-3 border-t border-slate-100">
+            <Button variant="primary" size="sm" onClick={() => setIsManageTypesOpen(false)}>
+              Selesai
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* MODAL VIEW DETAIL SEMUA BERKAS KARYAWAN */}
       {selectedEmployeeForView && (
@@ -723,7 +785,7 @@ export const DocumentList: React.FC = () => {
                   onClick={() => {
                     const emp = selectedEmployeeForView;
                     setSelectedEmployeeForView(null);
-                    handleQuickUpload(emp.id, 'KTP');
+                    handleQuickUpload(emp.id, docTypes[0]?.name || 'KTP');
                   }}
                 >
                   + Unggah Berkas untuk Karyawan Ini
@@ -761,25 +823,22 @@ export const DocumentList: React.FC = () => {
             </select>
           </div>
 
-          <Select
-            label="Tipe / Jenis Dokumen"
-            value={documentType}
-            onChange={(e) => setDocumentType(e.target.value)}
-            options={[
-              { value: 'KTP', label: '1. KTP (Kartu Tanda Penduduk)' },
-              { value: 'KK', label: '2. Kartu Keluarga (KK)' },
-              { value: 'Ijazah', label: '3. Ijazah Pendidikan Terakhir' },
-              { value: 'SK Pengangkatan', label: '4. SK Pengangkatan Pegawai' },
-              { value: 'SK Penugasan', label: '5. SK Penugasan / Amanah' },
-              { value: 'Transkrip', label: 'Transkrip Nilai' },
-              { value: 'Kontrak Kerja', label: 'Perjanjian Kontrak Kerja' },
-              { value: 'Sertifikat', label: 'Sertifikat Pelatihan / Diklat' },
-              { value: 'NPWP', label: 'NPWP' },
-              { value: 'BPJS', label: 'BPJS' },
-              { value: 'Lainnya', label: 'Dokumen Lainnya' }
-            ]}
-            required
-          />
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              Tipe / Jenis Dokumen <span className="text-rose-500">*</span>
+            </label>
+            <select
+              value={documentType}
+              onChange={(e) => setDocumentType(e.target.value)}
+              className="w-full py-2 px-3 text-xs rounded-xl border border-slate-200 bg-white focus:ring-emerald-600 focus:border-emerald-600 font-medium"
+            >
+              {docTypes.map((dt) => (
+                <option key={dt.id} value={dt.name}>
+                  {dt.name} {dt.description ? `(${dt.description})` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <Input
             label="Judul / Keterangan Dokumen"
@@ -827,7 +886,7 @@ export const DocumentList: React.FC = () => {
         </form>
       </Modal>
 
-      {/* DIALOG KONFIRMASI HAPUS */}
+      {/* DIALOG KONFIRMASI HAPUS BERKAS */}
       <ConfirmationDialog
         isOpen={Boolean(docToDelete)}
         onClose={() => setDocToDelete(null)}
@@ -835,6 +894,17 @@ export const DocumentList: React.FC = () => {
         title="Hapus Dokumen?"
         message={`Apakah Anda yakin ingin menghapus berkas "${docToDelete?.title}"? Tindakan ini tidak dapat dibatalkan.`}
         confirmText="Ya, Hapus Dokumen"
+        type="danger"
+      />
+
+      {/* DIALOG KONFIRMASI HAPUS JENIS DOKUMEN */}
+      <ConfirmationDialog
+        isOpen={Boolean(typeToDelete)}
+        onClose={() => setTypeToDelete(null)}
+        onConfirm={handleDeleteDocumentType}
+        title="Hapus Jenis Dokumen?"
+        message={`Apakah Anda yakin ingin menghapus jenis dokumen "${typeToDelete?.name}"? Kolom ini tidak akan lagi tampil di matriks kelengkapan.`}
+        confirmText="Ya, Hapus Jenis Dokumen"
         type="danger"
       />
     </div>
