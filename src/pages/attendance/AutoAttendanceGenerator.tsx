@@ -18,7 +18,10 @@ import {
   Layers,
   ArrowRight,
   Eye,
-  Settings2
+  Settings2,
+  ArrowDownUp,
+  FolderTree,
+  Check
 } from 'lucide-react';
 import { Employee, Unit } from '../../types';
 import { employeeService } from '../../services/employeeService';
@@ -31,6 +34,29 @@ import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Input } from '../../components/ui/Input';
+
+// Helper: Hierarchical rank for pesantren units
+export const getUnitHierarchyRank = (unitName: string): number => {
+  const u = (unitName || '').toLowerCase();
+  if (u.includes('yayasan') || u.includes('pengurus') || u.includes('pusat')) return 1;
+  if (u.includes('sma') || u.includes('ma ') || u.includes('aliyah') || u.includes('smk') || u.includes('senior')) return 2;
+  if (u.includes('smp') || u.includes('mts') || u.includes('tsanawiyah') || u.includes('junior')) return 3;
+  if (u.includes('sd') || u.includes('mi ') || u.includes('ibtidaiyah') || u.includes('dasar')) return 4;
+  if (u.includes('tk') || u.includes('ra ') || u.includes('paud') || u.includes('raudhatul') || u.includes('kanak')) return 5;
+  if (u.includes('tpq') || u.includes('tpa') || u.includes('halq') || u.includes('tahfidz') || u.includes('pesantren') || u.includes('pondok') || u.includes('asrama')) return 6;
+  return 7;
+};
+
+// Helper: Position rank (Pimpinan -> Guru -> Staf -> Operasional)
+export const getPositionHierarchyRank = (posName: string): number => {
+  const p = (posName || '').toLowerCase();
+  if (p.includes('ketua') || p.includes('mudir') || p.includes('kepala') || p.includes('direktur') || p.includes('pimpinan')) return 1;
+  if (p.includes('wakil') || p.includes('koordinator') || p.includes('sekretaris') || p.includes('bendahara')) return 2;
+  if (p.includes('guru') || p.includes('ustadz') || p.includes('pembina') || p.includes('pengajar') || p.includes('wali kelas') || p.includes('musyrif')) return 3;
+  if (p.includes('staff') || p.includes('staf') || p.includes('admin') || p.includes('tata usaha') || p.includes('tu') || p.includes('laboran') || p.includes('pustakawan')) return 4;
+  if (p.includes('satpam') || p.includes('security') || p.includes('kebersihan') || p.includes('driver') || p.includes('operator')) return 5;
+  return 6;
+};
 
 export const AutoAttendanceGenerator: React.FC = () => {
   const { canEdit } = useAuth();
@@ -49,6 +75,10 @@ export const AutoAttendanceGenerator: React.FC = () => {
   const [eventTime, setEventTime] = useState('08.00 WIB s/d Selesai');
   const [eventLocation, setEventLocation] = useState('Aula Utama Pondok Pesantren Al-Qur\'aniyyah');
   const [leadPerson, setLeadPerson] = useState('Pimpinan Yayasan / Mudir Pesantren');
+
+  // Sorting & Grouping Parameters
+  const [sortBy, setSortBy] = useState<'unit_hierarchy' | 'unit_alphabet' | 'name_asc'>('unit_hierarchy');
+  const [groupByUnit, setGroupByUnit] = useState(true);
 
   // Filter States for Selection Table
   const [search, setSearch] = useState('');
@@ -83,6 +113,28 @@ export const AutoAttendanceGenerator: React.FC = () => {
     fetchData();
   }, []);
 
+  // Sorted list of units according to hierarchy
+  const hierarchySortedUnits = useMemo(() => {
+    return [...units].sort((a, b) => {
+      const rankA = getUnitHierarchyRank(a.name);
+      const rankB = getUnitHierarchyRank(b.name);
+      if (rankA !== rankB) return rankA - rankB;
+      return a.name.localeCompare(b.name);
+    });
+  }, [units]);
+
+  // Unit employee counts for quick chips
+  const unitCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    employees.forEach(emp => {
+      const uList = emp.units_list && emp.units_list.length > 0 ? emp.units_list : [emp.primary_assignment?.unit_name || 'Yayasan'];
+      uList.forEach(u => {
+        counts[u] = (counts[u] || 0) + 1;
+      });
+    });
+    return counts;
+  }, [employees]);
+
   // Filtered employees for selection list
   const filteredEmployees = useMemo(() => {
     return employees.filter(emp => {
@@ -96,8 +148,8 @@ export const AutoAttendanceGenerator: React.FC = () => {
       const matchUnit =
         selectedUnit === 'all' ||
         (emp.units_list && emp.units_list.some(u => {
-          const unitObj = units.find(unit => unit.id === selectedUnit);
-          return unitObj && u.toLowerCase() === unitObj.name.toLowerCase();
+          const unitObj = units.find(unit => unit.id === selectedUnit || unit.name === selectedUnit);
+          return (unitObj && u.toLowerCase() === unitObj.name.toLowerCase()) || u.toLowerCase() === selectedUnit.toLowerCase();
         }));
 
       const matchStatus =
@@ -107,28 +159,83 @@ export const AutoAttendanceGenerator: React.FC = () => {
     });
   }, [employees, search, selectedUnit, selectedStatus, units]);
 
-  // Selected attendees list for preview and print
+  // Selected attendees list with HIERARCHICAL ORDERING: Yayasan -> SMA -> SMP -> SD -> TK -> TPQ -> dst
   const selectedAttendees = useMemo(() => {
-    return employees
+    const selectedList = employees
       .filter(emp => selectedIds.has(emp.id))
-      .map((emp, index) => {
-        // Resolve primary assignment task or position
+      .map(emp => {
         const unitName = emp.primary_assignment?.unit_name || emp.units_list?.[0] || 'Yayasan';
         const taskName = emp.primary_assignment?.task_name || emp.primary_assignment?.position_name || emp.positions_list?.[0] || 'Staff';
+        const posName = emp.primary_assignment?.position_name || emp.positions_list?.[0] || '';
 
         return {
-          no: index + 1,
           id: emp.id,
           name: emp.full_name,
           employee_number: emp.employee_number,
           nik: emp.nik,
           unit: unitName,
           task: taskName,
+          position: posName,
           gender: emp.gender,
-          employment_status: emp.employment_status
+          employment_status: emp.employment_status,
+          unitRank: getUnitHierarchyRank(unitName),
+          posRank: getPositionHierarchyRank(posName || taskName)
         };
       });
-  }, [employees, selectedIds]);
+
+    // Apply Sorting based on parameter
+    selectedList.sort((a, b) => {
+      if (sortBy === 'unit_hierarchy') {
+        // 1. Primary: Unit Hierarchy (Yayasan -> SMA -> SMP -> SD -> TK -> TPQ)
+        if (a.unitRank !== b.unitRank) {
+          return a.unitRank - b.unitRank;
+        }
+        // 2. Secondary: Unit Name Alphabet
+        if (a.unit !== b.unit) {
+          return a.unit.localeCompare(b.unit);
+        }
+        // 3. Tertiary: Position Hierarchy (Pimpinan -> Guru -> Staf)
+        if (a.posRank !== b.posRank) {
+          return a.posRank - b.posRank;
+        }
+        // 4. Quaternary: Name Alphabet (A - Z)
+        return a.name.localeCompare(b.name);
+      } else if (sortBy === 'unit_alphabet') {
+        if (a.unit !== b.unit) {
+          return a.unit.localeCompare(b.unit);
+        }
+        return a.name.localeCompare(b.name);
+      } else {
+        // Name A-Z
+        return a.name.localeCompare(b.name);
+      }
+    });
+
+    // Assign sequential numbering 1, 2, 3...
+    return selectedList.map((item, index) => ({
+      ...item,
+      no: index + 1
+    }));
+  }, [employees, selectedIds, sortBy]);
+
+  // Group attendees by Unit for section display
+  const attendeesByUnit = useMemo(() => {
+    const groups: { unitName: string; attendees: typeof selectedAttendees }[] = [];
+    const unitMap = new Map<string, typeof selectedAttendees>();
+
+    selectedAttendees.forEach(item => {
+      if (!unitMap.has(item.unit)) {
+        unitMap.set(item.unit, []);
+      }
+      unitMap.get(item.unit)!.push(item);
+    });
+
+    unitMap.forEach((items, unitName) => {
+      groups.push({ unitName, attendees: items });
+    });
+
+    return groups;
+  }, [selectedAttendees]);
 
   // Checkbox handlers
   const handleToggleSelect = (id: string) => {
@@ -152,6 +259,21 @@ export const AutoAttendanceGenerator: React.FC = () => {
     const updated = new Set(selectedIds);
     filteredEmployees.forEach(emp => updated.delete(emp.id));
     setSelectedIds(updated);
+  };
+
+  // Quick Select ONLY a specific unit
+  const handleSelectOnlyUnit = (unitNameOrId: string) => {
+    const targetUnit = units.find(u => u.id === unitNameOrId || u.name === unitNameOrId)?.name || unitNameOrId;
+    const matching = employees.filter(emp =>
+      emp.units_list?.some(u => u.toLowerCase() === targetUnit.toLowerCase()) ||
+      emp.primary_assignment?.unit_name?.toLowerCase() === targetUnit.toLowerCase()
+    );
+
+    const updated = new Set<string>();
+    matching.forEach(emp => updated.add(emp.id));
+    setSelectedIds(updated);
+    setSelectedUnit(unitNameOrId);
+    success('Unit Terpilih', `Menandai ${matching.length} karyawan dari unit ${targetUnit}.`);
   };
 
   const handleQuickPreset = (name: string, location: string, time: string) => {
@@ -249,7 +371,7 @@ export const AutoAttendanceGenerator: React.FC = () => {
             top: 0;
             width: 100%;
             margin: 0;
-            padding: 15mm;
+            padding: 12mm 15mm;
             background: white !important;
             color: black !important;
             font-family: 'Times New Roman', Times, serif;
@@ -259,7 +381,7 @@ export const AutoAttendanceGenerator: React.FC = () => {
           }
           @page {
             size: A4 portrait;
-            margin: 10mm;
+            margin: 8mm;
           }
         }
       `}</style>
@@ -273,11 +395,11 @@ export const AutoAttendanceGenerator: React.FC = () => {
               <span>Absensi Otomatis & Generator Lembar Hadir Kegiatan</span>
             </h2>
             <Badge variant="emerald" size="sm">
-              Event Attendance
+              Hierarki Unit Terurut
             </Badge>
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
-            Buat formulir daftar hadir kegiatan resmi dengan kolom No, Nama, Unit, Tugas, dan Paraf berselang-seling
+            Daftar hadir kegiatan terstruktur: Yayasan → SMA → SMP → SD → TK → TPQ/HALQ dengan kolom No, Nama, Unit, Tugas, dan Paraf
           </p>
         </div>
 
@@ -285,7 +407,7 @@ export const AutoAttendanceGenerator: React.FC = () => {
         <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
           <button
             onClick={() => setViewMode('builder')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
               viewMode === 'builder'
                 ? 'bg-white text-emerald-950 shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -296,7 +418,7 @@ export const AutoAttendanceGenerator: React.FC = () => {
           </button>
           <button
             onClick={() => setViewMode('preview')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition ${
               viewMode === 'preview'
                 ? 'bg-emerald-800 text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
@@ -311,10 +433,10 @@ export const AutoAttendanceGenerator: React.FC = () => {
       {/* VIEW MODE 1: BUILDER & SELECTION */}
       {viewMode === 'builder' && (
         <div className="no-print space-y-6">
-          {/* Card 1: Event Details */}
+          {/* Card 1: Event Details & Hierarchy Parameters */}
           <Card
-            title="1. Masukan Rincian Acara / Kegiatan"
-            subtitle="Tentukan nama acara, jadwal pelaksanaan, lokasi, dan penanggung jawab kegiatan"
+            title="1. Masukan Rincian Acara & Parameter Susunan Absensi"
+            subtitle="Tentukan nama acara, jadwal, lokasi, serta parameter pengurutan hierarki unit"
           >
             <div className="space-y-4">
               {/* Presets */}
@@ -386,13 +508,67 @@ export const AutoAttendanceGenerator: React.FC = () => {
                   placeholder="Contoh: Mudir Pesantren / Ketua Panitia"
                 />
               </div>
+
+              {/* PARAMETER SUSUNAN UNIT & GROUPING */}
+              <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FolderTree className="w-4 h-4 text-emerald-800" />
+                    <span className="text-xs font-black text-emerald-950 uppercase tracking-wide">
+                      Parameter Susunan Urutan Lembar Absensi
+                    </span>
+                  </div>
+                  <Badge variant="gold" size="sm">
+                    Hierarki Pesantren
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 mb-1">
+                      Urutan Baris Karyawan:
+                    </label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="w-full py-2 px-3 text-xs rounded-xl border border-emerald-300 bg-white font-medium text-emerald-950 focus:ring-emerald-600"
+                    >
+                      <option value="unit_hierarchy">
+                        ★ Susunan Hierarki Unit (Yayasan → SMA → SMP → SD → TK → TPQ/HALQ)
+                      </option>
+                      <option value="unit_alphabet">
+                        Urut Berdasarkan Nama Unit (A - Z)
+                      </option>
+                      <option value="name_asc">
+                        Urut Berdasarkan Abjad Nama Karyawan (A - Z)
+                      </option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2.5 bg-white rounded-xl border border-emerald-200 mt-auto">
+                    <div>
+                      <span className="text-xs font-bold text-slate-800">Tampilkan Sub-Header Unit</span>
+                      <p className="text-[10px] text-slate-500">Memberi pemisah judul unit (I. Yayasan, II. SMA, dst.)</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={groupByUnit}
+                        onChange={(e) => setGroupByUnit(e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-800" />
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
           </Card>
 
-          {/* Card 2: Filter & Employee Selection Checkbox Table */}
+          {/* Card 2: Interactive Quick Unit Filters & Employee Checkboxes */}
           <Card
-            title="2. Validasi & Seleksi Karyawan (Ceklis Keikutsertaan)"
-            subtitle="Centang atau hilangkan centang pada karyawan yang ingin diikutsertakan dalam lembar absensi ini"
+            title="2. Filter By Unit & Validasi Ceklis Karyawan"
+            subtitle="Gunakan filter unit di bawah ini untuk memilih atau melewati karyawan dalam absensi kegiatan"
             action={
               <div className="flex items-center gap-2">
                 <Button
@@ -415,46 +591,105 @@ export const AutoAttendanceGenerator: React.FC = () => {
             }
           >
             <div className="space-y-4">
-              {/* Filter Row */}
+              {/* QUICK UNIT FILTER CHIPS */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-600 flex items-center gap-1.5">
+                    <Filter className="w-3.5 h-3.5 text-emerald-700" />
+                    Filter Cepat Berdasarkan Unit:
+                  </span>
+                  <span className="text-[11px] text-slate-400">
+                    Klik chip untuk memfilter, klik tombol unit untuk memilih seluruh anggota unit
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedUnit('all')}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                      selectedUnit === 'all'
+                        ? 'bg-emerald-950 text-white shadow-sm ring-2 ring-emerald-800'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <span>Semua Unit</span>
+                    <span className="text-[10px] bg-emerald-800 text-emerald-100 px-1.5 py-0.2 rounded-full">
+                      {employees.length}
+                    </span>
+                  </button>
+
+                  {hierarchySortedUnits.map((u) => {
+                    const count = unitCounts[u.name] || 0;
+                    const isSelected = selectedUnit === u.id || selectedUnit === u.name;
+
+                    return (
+                      <div
+                        key={u.id}
+                        className={`inline-flex items-center rounded-xl border transition ${
+                          isSelected
+                            ? 'bg-emerald-900 text-white border-emerald-950 shadow-sm'
+                            : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-400'
+                        }`}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setSelectedUnit(u.id)}
+                          className="px-2.5 py-1.5 text-xs font-semibold flex items-center gap-1.5"
+                        >
+                          <span>{u.name}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                            isSelected ? 'bg-emerald-800 text-emerald-100' : 'bg-slate-100 text-slate-600'
+                          }`}>
+                            {count}
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleSelectOnlyUnit(u.name)}
+                          title={`Pilih hanya karyawan ${u.name}`}
+                          className={`px-2 py-1.5 border-l text-[10px] font-bold transition ${
+                            isSelected
+                              ? 'border-emerald-800 text-amber-300 hover:bg-emerald-800'
+                              : 'border-slate-100 text-emerald-700 hover:bg-emerald-50'
+                          }`}
+                        >
+                          Pilih Unit Ini
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Search & Status Filter Row */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                <div className="w-full sm:w-72 relative">
+                <div className="w-full sm:w-80 relative">
                   <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Cari nama, NIK, tugas..."
+                    placeholder="Cari nama karyawan, NIK, tugas, jabatan..."
                     className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-emerald-600 focus:border-emerald-600"
                   />
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                   <select
-                    value={selectedUnit}
-                    onChange={(e) => setSelectedUnit(e.target.value)}
-                    className="py-1.5 px-2.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-emerald-600 font-medium"
-                  >
-                    <option value="all">Semua Unit Penugasan</option>
-                    {units.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <select
                     value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
                     className="py-1.5 px-2.5 text-xs rounded-lg border border-slate-200 bg-white focus:ring-emerald-600 font-medium"
                   >
-                    <option value="all">Semua Status</option>
+                    <option value="all">Semua Status Kepegawaian</option>
                     <option value="Tetap">Tetap</option>
                     <option value="Kontrak">Kontrak</option>
                     <option value="Honorer">Honorer</option>
                   </select>
 
                   <Badge variant="gold" size="sm">
-                    Terpilih: {selectedIds.size} / {employees.length}
+                    Terpilih: {selectedIds.size} / {employees.length} Karyawan
                   </Badge>
                 </div>
               </div>
@@ -462,7 +697,7 @@ export const AutoAttendanceGenerator: React.FC = () => {
               {/* Table with Checkboxes */}
               <div className="overflow-x-auto max-h-96 overflow-y-auto border border-slate-200 rounded-xl">
                 <table className="w-full text-left text-xs text-slate-700 whitespace-nowrap">
-                  <thead className="bg-slate-100/80 sticky top-0 z-10 border-b border-slate-200 font-bold text-slate-700 uppercase text-[11px]">
+                  <thead className="bg-slate-100/90 sticky top-0 z-10 border-b border-slate-200 font-bold text-slate-700 uppercase text-[11px]">
                     <tr>
                       <th className="py-2.5 px-3 w-10 text-center">
                         <input
@@ -478,8 +713,8 @@ export const AutoAttendanceGenerator: React.FC = () => {
                       <th className="py-2.5 px-3 w-12">No</th>
                       <th className="py-2.5 px-3">Nama Karyawan</th>
                       <th className="py-2.5 px-3">Unit Penugasan</th>
-                      <th className="py-2.5 px-3">Tugas / Jabatan Utama</th>
-                      <th className="py-2.5 px-3 text-center">Status</th>
+                      <th className="py-2.5 px-3">Tugas Pokok / Jabatan</th>
+                      <th className="py-2.5 px-3 text-center">Keikutsertaan</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -536,8 +771,8 @@ export const AutoAttendanceGenerator: React.FC = () => {
 
               {/* Bottom Action to Proceed */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-slate-100">
-                <div className="text-xs text-slate-500">
-                  Total <strong className="text-emerald-900 font-bold">{selectedAttendees.length}</strong> karyawan siap dibuatkan lembar absensi otomatis.
+                <div className="text-xs text-slate-600">
+                  Susunan terurut: <strong className="text-emerald-900">Yayasan → SMA → SMP → SD → TK → TPQ</strong> ({selectedAttendees.length} Karyawan Terpilih).
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -566,10 +801,10 @@ export const AutoAttendanceGenerator: React.FC = () => {
             </div>
             <div>
               <p className="text-sm font-black text-white">
-                Lembar Hadir Siap Cetak & Ekspor ({selectedAttendees.length} Peserta)
+                Lembar Hadir Terstruktur ({selectedAttendees.length} Peserta)
               </p>
               <p className="text-[11px] text-emerald-200/80">
-                {eventName} • {formattedEventDate}
+                {eventName} • Urutan Hierarki: Yayasan → SMA → SMP → SD → TK → TPQ
               </p>
             </div>
           </div>
@@ -581,7 +816,7 @@ export const AutoAttendanceGenerator: React.FC = () => {
               onClick={() => setViewMode('builder')}
               className="bg-emerald-900 border-emerald-700 text-emerald-100 hover:bg-emerald-800 text-xs"
             >
-              Ubah Pengaturan / Peserta
+              Ubah Pengaturan / Ceklis
             </Button>
             <Button
               variant="outline"
@@ -674,10 +909,60 @@ export const AutoAttendanceGenerator: React.FC = () => {
                     Tidak ada karyawan yang dipilih. Silakan kembali ke tab pengaturan untuk memilih peserta.
                   </td>
                 </tr>
+              ) : groupByUnit && sortBy === 'unit_hierarchy' ? (
+                // RENDER GROUPED BY UNIT SECTION
+                attendeesByUnit.map((group, gIdx) => (
+                  <React.Fragment key={gIdx}>
+                    {/* Unit Subheader */}
+                    <tr className="bg-slate-100/80 font-bold print:bg-slate-100">
+                      <td colSpan={5} className="border border-black py-1.5 px-3 text-emerald-950 tracking-wider text-[11px] uppercase">
+                        UNIT: {group.unitName} ({group.attendees.length} Orang)
+                      </td>
+                    </tr>
+                    {/* Attendees in this unit */}
+                    {group.attendees.map((item) => {
+                      const isOdd = item.no % 2 !== 0;
+                      return (
+                        <tr key={item.id} className="border border-black h-11">
+                          <td className="border border-black py-1 px-2 text-center font-bold font-mono">
+                            {item.no}
+                          </td>
+                          <td className="border border-black py-1 px-3">
+                            <div className="font-bold text-slate-900">{item.name}</div>
+                            <div className="text-[10px] text-slate-500 font-mono print:text-black">
+                              {item.employee_number || item.nik}
+                            </div>
+                          </td>
+                          <td className="border border-black py-1 px-3 text-slate-800 font-medium">
+                            {item.unit}
+                          </td>
+                          <td className="border border-black py-1 px-3 text-slate-800">
+                            {item.task}
+                          </td>
+                          {/* Alternating Signature Box 1.... and 2.... */}
+                          <td className="border border-black py-1 px-2 relative text-slate-600">
+                            {isOdd ? (
+                              <div className="flex items-center text-[11px] font-mono text-black">
+                                <span>{item.no}.</span>
+                                <span className="border-b border-dotted border-black flex-1 ml-1 h-3" />
+                              </div>
+                            ) : (
+                              <div className="flex items-center text-[11px] font-mono text-black justify-end">
+                                <span className="w-16" />
+                                <span>{item.no}.</span>
+                                <span className="border-b border-dotted border-black flex-1 ml-1 h-3" />
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </React.Fragment>
+                ))
               ) : (
-                selectedAttendees.map((item, idx) => {
+                // RENDER FLAT CONTINUOUS TABLE
+                selectedAttendees.map((item) => {
                   const isOdd = item.no % 2 !== 0;
-
                   return (
                     <tr key={item.id} className="border border-black h-11">
                       <td className="border border-black py-1 px-2 text-center font-bold font-mono">
