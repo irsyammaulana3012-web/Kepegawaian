@@ -66,6 +66,44 @@ export const attendanceService = {
     return saved;
   },
 
+  async recordBulkAttendance(
+    employeeIds: string[],
+    date: string,
+    status: AttendanceStatus = 'Hadir',
+    eventName?: string
+  ): Promise<number> {
+    const list = store.getAttendance();
+    let count = 0;
+
+    for (const empId of employeeIds) {
+      const existingIndex = list.findIndex(a => a.employee_id === empId && a.date === date);
+      const noteText = eventName ? `Kegiatan: ${eventName}` : 'Presensi Otomatis';
+
+      if (existingIndex !== -1) {
+        list[existingIndex] = {
+          ...list[existingIndex],
+          status,
+          notes: noteText
+        };
+      } else {
+        list.push({
+          id: `att-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          employee_id: empId,
+          date,
+          check_in: '08:00',
+          status,
+          notes: noteText,
+          created_at: new Date().toISOString()
+        });
+      }
+      count++;
+    }
+
+    store.setAttendance(list);
+    await auditService.log('RECORD_BULK_ATTENDANCE', 'attendance', undefined, { count, date, eventName });
+    return count;
+  },
+
   async deleteAttendance(id: string): Promise<void> {
     const list = store.getAttendance().filter(a => a.id !== id);
     store.setAttendance(list);

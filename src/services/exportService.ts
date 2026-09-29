@@ -118,6 +118,68 @@ export const exportService = {
     auditService.log('EXPORT_PDF', 'employees', undefined, { count: employees.length });
   },
 
+  // Export Event Attendance Sheet (Daftar Hadir Resmi No, Nama, Unit, Tugas, Paraf) to Excel
+  exportEventAttendanceToExcel(
+    event: {
+      name: string;
+      date: string;
+      time: string;
+      location: string;
+      leadName?: string;
+    },
+    attendees: {
+      no: number;
+      name: string;
+      unit: string;
+      task: string;
+    }[]
+  ): void {
+    // Build Header Rows
+    const headerRows = [
+      ['YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH'],
+      ['DAFTAR HADIR / LEMBAR ABSENSI KEGIATAN'],
+      [''],
+      ['Acara / Kegiatan', `: ${event.name}`],
+      ['Hari / Tanggal', `: ${event.date}`],
+      ['Waktu Pelaksanaan', `: ${event.time || '-'}`],
+      ['Tempat / Lokasi', `: ${event.location || '-'}`],
+      ['Jumlah Peserta', `: ${attendees.length} Orang`],
+      [''],
+      ['No', 'Nama Lengkap', 'Unit Penugasan', 'Jabatan / Tugas Pokok', 'Tanda Tangan / Paraf']
+    ];
+
+    const dataRows = attendees.map(a => [
+      a.no,
+      a.name,
+      a.unit,
+      a.task,
+      a.no % 2 !== 0 ? `${a.no}. ....................` : `        ${a.no}. ....................`
+    ]);
+
+    const allRows = [...headerRows, ...dataRows];
+    const worksheet = XLSX.utils.aoa_to_sheet(allRows);
+
+    // Set column widths
+    worksheet['!cols'] = [
+      { wch: 8 },  // No
+      { wch: 32 }, // Nama
+      { wch: 25 }, // Unit
+      { wch: 28 }, // Tugas
+      { wch: 25 }  // Paraf
+    ];
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Daftar Hadir');
+
+    const sanitizedName = event.name.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
+    XLSX.writeFile(workbook, `Daftar_Hadir_${sanitizedName}_${event.date || 'SIMKA'}.xlsx`);
+
+    auditService.log('EXPORT_EXCEL', 'attendance', undefined, {
+      eventName: event.name,
+      count: attendees.length
+    });
+  },
+
   // Trigger Print View
   triggerPrint(): void {
     window.print();

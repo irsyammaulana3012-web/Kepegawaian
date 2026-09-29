@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { CalendarCheck, Search, Filter, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { CalendarCheck, Search, Filter, Plus, FileSpreadsheet } from 'lucide-react';
 import { EmployeeAttendance, AttendanceStatus, Employee } from '../../types';
 import { attendanceService } from '../../services/attendanceService';
 import { employeeService } from '../../services/employeeService';
@@ -13,6 +14,7 @@ import { Input } from '../../components/ui/Input';
 import { Select } from '../../components/ui/Select';
 
 export const AttendanceList: React.FC = () => {
+  const navigate = useNavigate();
   const { canEdit } = useAuth();
   const { success, error } = useToast();
 
@@ -87,11 +89,22 @@ export const AttendanceList: React.FC = () => {
           <p className="text-xs text-slate-500 mt-0.5">Catatan kehadiran, dinas, izin, dan rekapitulasi jam kerja</p>
         </div>
 
-        {canEdit && (
-          <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>
-            Catat Kehadiran Baru
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            leftIcon={<FileSpreadsheet className="w-4 h-4 text-emerald-800" />}
+            onClick={() => navigate('/attendance/generator')}
+          >
+            Absensi Otomatis & Event
           </Button>
-        )}
+
+          {canEdit && (
+            <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={() => setIsModalOpen(true)}>
+              Catat Kehadiran Baru
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card noPadding className="p-4 bg-white border border-slate-200">

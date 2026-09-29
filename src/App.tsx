@@ -21,6 +21,7 @@ import { MasterTasks } from './pages/master/MasterTasks';
 import { ImportExportIndex } from './pages/import-export/ImportExportIndex';
 import { ReportsIndex } from './pages/reports/ReportsIndex';
 import { AttendanceList } from './pages/attendance/AttendanceList';
+import { AutoAttendanceGenerator } from './pages/attendance/AutoAttendanceGenerator';
 import { LeaveList } from './pages/leave/LeaveList';
 import { ExpiringContracts } from './pages/contracts/ExpiringContracts';
 import { AuditLogList } from './pages/audit/AuditLogList';
@@ -93,6 +94,7 @@ export const App: React.FC = () => {
 
               {/* Kepegawaian */}
               <Route path="attendance" element={<AttendanceList />} />
+              <Route path="attendance/generator" element={<AutoAttendanceGenerator />} />
               <Route path="leave" element={<LeaveList />} />
               <Route path="contracts" element={<ExpiringContracts />} />
 

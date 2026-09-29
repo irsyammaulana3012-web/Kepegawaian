@@ -50,7 +50,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     {
       title: 'KEPEGAWAIAN',
       items: [
-        { label: 'Absensi', path: '/attendance', icon: <CalendarCheck className="w-4 h-4" /> },
+        { label: 'Presensi Harian', path: '/attendance', icon: <CalendarCheck className="w-4 h-4" /> },
+        { label: 'Absensi Otomatis & Event', path: '/attendance/generator', icon: <FileSpreadsheet className="w-4 h-4" />, highlight: true },
         { label: 'Cuti & Izin', path: '/leave', icon: <CalendarOff className="w-4 h-4" /> },
         { label: 'Kontrak Berakhir', path: '/contracts', icon: <FileSignature className="w-4 h-4" /> }
       ]
