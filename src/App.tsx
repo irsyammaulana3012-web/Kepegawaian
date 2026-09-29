@@ -12,6 +12,8 @@ import { EmployeeList } from './pages/employees/EmployeeList';
 import { EmployeeDetail } from './pages/employees/EmployeeDetail';
 import { EmployeeForm } from './pages/employees/EmployeeForm';
 import { AssignmentsOverview } from './pages/assignments/AssignmentsOverview';
+import { EducationList } from './pages/education/EducationList';
+import { DocumentList } from './pages/documents/DocumentList';
 import { MasterUnits } from './pages/master/MasterUnits';
 import { MasterDepartments } from './pages/master/MasterDepartments';
 import { MasterPositions } from './pages/master/MasterPositions';
@@ -75,6 +77,10 @@ export const App: React.FC = () => {
 
               {/* Multiple Assignments Cockpit */}
               <Route path="assignments" element={<AssignmentsOverview />} />
+
+              {/* Pendidikan & Dokumen Repository */}
+              <Route path="education" element={<EducationList />} />
+              <Route path="documents" element={<DocumentList />} />
 
               {/* Master Data */}
               <Route path="master/units" element={<MasterUnits />} />

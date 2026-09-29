@@ -3,6 +3,56 @@ import { store } from './storageStore';
 import { auditService } from './auditService';
 
 export const educationService = {
+  async getAllEducation(filters: { search?: string; level?: string; unit_id?: string } = {}): Promise<EmployeeEducation[]> {
+    const all = store.getEducation();
+    const employees = store.getEmployees();
+    const assignments = store.getAssignments();
+    const units = store.getUnits();
+
+    let enriched = all.map(edu => {
+      const emp = employees.find(e => e.id === edu.employee_id);
+      const empAssignments = assignments.filter(a => a.employee_id === edu.employee_id && a.status === 'Aktif');
+      const unitNames = Array.from(
+        new Set(
+          empAssignments.map(a => units.find(u => u.id === a.unit_id)?.name).filter(Boolean)
+        )
+      ) as string[];
+
+      return {
+        ...edu,
+        employee_name: emp?.full_name || 'Tidak Diketahui',
+        employee_number: emp?.employee_number || '',
+        employee_nik: emp?.nik || '',
+        units_list: unitNames,
+        employment_status: emp?.employment_status || ''
+      };
+    });
+
+    if (filters.search) {
+      const q = filters.search.toLowerCase();
+      enriched = enriched.filter(e =>
+        (e.employee_name && e.employee_name.toLowerCase().includes(q)) ||
+        (e.institution_name && e.institution_name.toLowerCase().includes(q)) ||
+        (e.major && e.major.toLowerCase().includes(q)) ||
+        (e.employee_nik && e.employee_nik.includes(q)) ||
+        (e.employee_number && e.employee_number.toLowerCase().includes(q))
+      );
+    }
+
+    if (filters.level && filters.level !== 'all') {
+      enriched = enriched.filter(e => e.level === filters.level);
+    }
+
+    if (filters.unit_id && filters.unit_id !== 'all') {
+      enriched = enriched.filter(e => {
+        const empAssignments = assignments.filter(a => a.employee_id === e.employee_id && a.status === 'Aktif');
+        return empAssignments.some(a => a.unit_id === filters.unit_id);
+      });
+    }
+
+    return enriched.sort((a, b) => (b.end_year || 0) - (a.end_year || 0));
+  },
+
   async getEducationByEmployee(employeeId: string): Promise<EmployeeEducation[]> {
     const all = store.getEducation();
     return all.filter(e => e.employee_id === employeeId).sort((a, b) => (b.end_year || 0) - (a.end_year || 0));

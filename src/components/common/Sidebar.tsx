@@ -6,7 +6,6 @@ import {
   Briefcase,
   GraduationCap,
   FolderLock,
-  Award,
   CalendarCheck,
   CalendarOff,
   FileSignature,
@@ -45,8 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         { label: 'Semua Karyawan', path: '/employees', icon: <Users className="w-4 h-4" /> },
         { label: 'Penugasan (Multi-Unit)', path: '/assignments', icon: <Briefcase className="w-4 h-4" />, highlight: true },
         { label: 'Pendidikan', path: '/education', icon: <GraduationCap className="w-4 h-4" /> },
-        { label: 'Dokumen Karyawan', path: '/documents', icon: <FolderLock className="w-4 h-4" /> },
-        { label: 'Pelatihan & Sertifikasi', path: '/training', icon: <Award className="w-4 h-4" /> }
+        { label: 'Dokumen Karyawan', path: '/documents', icon: <FolderLock className="w-4 h-4" /> }
       ]
     },
     {

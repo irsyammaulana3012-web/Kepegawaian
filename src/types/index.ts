@@ -161,6 +161,13 @@ export interface EmployeeEducation {
   certificate_number?: string;
   notes?: string;
   created_at?: string;
+
+  // Joined employee info
+  employee_name?: string;
+  employee_number?: string;
+  employee_nik?: string;
+  units_list?: string[];
+  employment_status?: string;
 }
 
 export interface EmployeePositionHistory {
@@ -188,6 +195,12 @@ export interface EmployeeDocument {
   mime_type?: string;
   uploaded_by?: string;
   created_at?: string;
+
+  // Joined employee info
+  employee_name?: string;
+  employee_number?: string;
+  employee_nik?: string;
+  units_list?: string[];
 }
 
 export interface EmployeeTraining {
@@ -285,17 +298,46 @@ export interface ExcelImportRow {
   nama: string;
   nik: string;
   nip?: string;
-  unit: string;
-  jabatan: string;
-  tugas?: string;
+  no_kk?: string;
+  nickname?: string;
   jenis_kelamin?: string;
+  tempat_lahir?: string;
   tanggal_lahir?: string;
+  agama?: string;
+  status_pernikahan?: string;
+  alamat?: string;
+  rt?: string;
+  rw?: string;
+  kelurahan?: string;
+  kecamatan?: string;
+  kota?: string;
+  provinsi?: string;
+  kode_pos?: string;
   no_hp?: string;
+  whatsapp?: string;
   email?: string;
-  pendidikan?: string;
   status_kepegawaian?: string;
   tanggal_masuk?: string;
+  tanggal_pengangkatan?: string;
+  sk_pengangkatan?: string;
+  tanggal_sk_pengangkatan?: string;
+  tanggal_akhir_kontrak?: string;
+  unit: string;
+  divisi?: string;
+  jabatan: string;
+  tugas?: string;
+  deskripsi_tugas?: string;
+  sk_penugasan?: string;
+  tanggal_sk_penugasan?: string;
+  tanggal_mulai_penugasan?: string;
+  tanggal_selesai_penugasan?: string;
   is_primary?: boolean;
+  status_penugasan?: string;
+  pendidikan_terakhir?: string;
+  institusi?: string;
+  jurusan?: string;
+  tahun_lulus?: number;
+  nomor_ijazah?: string;
 }
 
 export interface ExcelImportPreview {
@@ -306,6 +348,7 @@ export interface ExcelImportPreview {
   valid_rows: {
     employee: Partial<Employee>;
     assignments: Partial<EmployeeAssignment>[];
+    education?: Partial<EmployeeEducation>[];
     is_existing: boolean;
   }[];
   errors: { row: number; message: string; data: any }[];

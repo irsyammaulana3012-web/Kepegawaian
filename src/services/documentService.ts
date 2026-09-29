@@ -4,6 +4,57 @@ import { auditService } from './auditService';
 import { supabase, isConfigured } from '../lib/supabase';
 
 export const documentService = {
+  async getAllDocuments(filters: { search?: string; document_type?: string; unit_id?: string } = {}): Promise<EmployeeDocument[]> {
+    const all = store.getDocuments();
+    const employees = store.getEmployees();
+    const assignments = store.getAssignments();
+    const units = store.getUnits();
+
+    let enriched = all.map(doc => {
+      const emp = employees.find(e => e.id === doc.employee_id);
+      const empAssignments = assignments.filter(a => a.employee_id === doc.employee_id && a.status === 'Aktif');
+      const unitNames = Array.from(
+        new Set(
+          empAssignments.map(a => units.find(u => u.id === a.unit_id)?.name).filter(Boolean)
+        )
+      ) as string[];
+
+      return {
+        ...doc,
+        employee_name: emp?.full_name || 'Tidak Diketahui',
+        employee_number: emp?.employee_number || '',
+        employee_nik: emp?.nik || '',
+        units_list: unitNames
+      };
+    });
+
+    if (filters.search) {
+      const q = filters.search.toLowerCase();
+      enriched = enriched.filter(d =>
+        (d.title && d.title.toLowerCase().includes(q)) ||
+        (d.file_name && d.file_name.toLowerCase().includes(q)) ||
+        (d.employee_name && d.employee_name.toLowerCase().includes(q)) ||
+        (d.employee_nik && d.employee_nik.includes(q)) ||
+        (d.employee_number && d.employee_number.toLowerCase().includes(q))
+      );
+    }
+
+    if (filters.document_type && filters.document_type !== 'all') {
+      enriched = enriched.filter(d => d.document_type === filters.document_type);
+    }
+
+    if (filters.unit_id && filters.unit_id !== 'all') {
+      enriched = enriched.filter(d => {
+        const empAssignments = assignments.filter(a => a.employee_id === d.employee_id && a.status === 'Aktif');
+        return empAssignments.some(a => a.unit_id === filters.unit_id);
+      });
+    }
+
+    return enriched.sort((a, b) => {
+      return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
+    });
+  },
+
   async getDocumentsByEmployee(employeeId: string): Promise<EmployeeDocument[]> {
     const all = store.getDocuments();
     return all.filter(d => d.employee_id === employeeId).sort((a, b) => {

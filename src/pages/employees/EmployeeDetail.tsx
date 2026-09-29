@@ -8,7 +8,6 @@ import {
   GraduationCap,
   History,
   FolderLock,
-  Award,
   CalendarCheck,
   CalendarOff,
   StickyNote,
@@ -38,7 +37,6 @@ import { EmployeeAssignmentsTab } from './EmployeeAssignmentsTab';
 import { EmployeeEducationTab } from './EmployeeEducationTab';
 import { EmployeeHistoryTimelineTab } from './EmployeeHistoryTimelineTab';
 import { EmployeeDocumentsTab } from './EmployeeDocumentsTab';
-import { EmployeeTrainingTab } from './EmployeeTrainingTab';
 import { EmployeeAttendanceTab } from './EmployeeAttendanceTab';
 import { EmployeeLeaveTab } from './EmployeeLeaveTab';
 import { EmployeeNotesTab } from './EmployeeNotesTab';
@@ -50,7 +48,7 @@ export const EmployeeDetail: React.FC = () => {
   const { error } = useToast();
 
   const [employee, setEmployee] = useState<Employee | null>(null);
-  const [activeTab, setActiveTab] = useState<'profile' | 'employment' | 'assignments' | 'education' | 'history' | 'documents' | 'training' | 'attendance' | 'leave' | 'notes'>('assignments');
+  const [activeTab, setActiveTab] = useState<'profile' | 'employment' | 'assignments' | 'education' | 'history' | 'documents' | 'attendance' | 'leave' | 'notes'>('assignments');
   const [isLoading, setIsLoading] = useState(true);
 
   const loadEmployee = async () => {
@@ -85,16 +83,15 @@ export const EmployeeDetail: React.FC = () => {
   }
 
   const tabs = [
-    { id: 'assignments', label: '3. Penugasan (Multi-Unit)', icon: <Briefcase className="w-4 h-4" />, count: employee.assignment_count, highlight: true },
-    { id: 'profile', label: '1. Profil Pribadi', icon: <User className="w-4 h-4" /> },
-    { id: 'employment', label: '2. Kepegawaian', icon: <FileText className="w-4 h-4" /> },
+    { id: 'assignments', label: '1. Penugasan (Multi-Unit)', icon: <Briefcase className="w-4 h-4" />, count: employee.assignment_count, highlight: true },
+    { id: 'profile', label: '2. Profil Pribadi', icon: <User className="w-4 h-4" /> },
+    { id: 'employment', label: '3. Kepegawaian', icon: <FileText className="w-4 h-4" /> },
     { id: 'education', label: '4. Pendidikan', icon: <GraduationCap className="w-4 h-4" /> },
     { id: 'history', label: '5. Riwayat Penugasan', icon: <History className="w-4 h-4" /> },
     { id: 'documents', label: '6. Dokumen & Berkas', icon: <FolderLock className="w-4 h-4" /> },
-    { id: 'training', label: '7. Pelatihan & Diklat', icon: <Award className="w-4 h-4" /> },
-    { id: 'attendance', label: '8. Absensi Presensi', icon: <CalendarCheck className="w-4 h-4" /> },
-    { id: 'leave', label: '9. Cuti & Izin', icon: <CalendarOff className="w-4 h-4" /> },
-    { id: 'notes', label: '10. Catatan Internal', icon: <StickyNote className="w-4 h-4" /> }
+    { id: 'attendance', label: '7. Absensi Presensi', icon: <CalendarCheck className="w-4 h-4" /> },
+    { id: 'leave', label: '8. Cuti & Izin', icon: <CalendarOff className="w-4 h-4" /> },
+    { id: 'notes', label: '9. Catatan Internal', icon: <StickyNote className="w-4 h-4" /> }
   ];
 
   return (
@@ -379,12 +376,7 @@ export const EmployeeDetail: React.FC = () => {
           <EmployeeDocumentsTab employeeId={employee.id} />
         )}
 
-        {/* TAB 7: PELATIHAN & SERTIFIKASI */}
-        {activeTab === 'training' && (
-          <EmployeeTrainingTab employeeId={employee.id} />
-        )}
-
-        {/* TAB 8: ABSENSI */}
+        {/* TAB 7: ABSENSI */}
         {activeTab === 'attendance' && (
           <EmployeeAttendanceTab employeeId={employee.id} />
         )}

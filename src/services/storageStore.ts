@@ -202,6 +202,58 @@ class StorageStore {
 
   resetToDefault(): void {
     localStorage.clear();
+    this.loadDemoData();
+  }
+
+  // Clear transactional/employee data only, keeping master data (units, positions, tasks, users) intact
+  clearEmployeeDataOnly(): void {
+    this.setEmployees([]);
+    this.setAssignments([]);
+    this.setEducation([]);
+    this.setHistory([]);
+    this.setDocuments([]);
+    this.setTraining([]);
+    this.setAttendance([]);
+    this.setLeave([]);
+    this.setNotes([]);
+    this.setAuditLogs([]);
+  }
+
+  // Clear all data including master data (100% clean slate)
+  clearAllData(): void {
+    this.setUnits([]);
+    this.setDepartments([]);
+    this.setPositions([]);
+    this.setTasks([]);
+    this.setEmployees([]);
+    this.setAssignments([]);
+    this.setEducation([]);
+    this.setHistory([]);
+    this.setDocuments([]);
+    this.setTraining([]);
+    this.setAttendance([]);
+    this.setLeave([]);
+    this.setNotes([]);
+    this.setAuditLogs([]);
+  }
+
+  // Load pesantren demo/sample data
+  loadDemoData(): void {
+    this.setUnits(initialUnits);
+    this.setDepartments(initialDepartments);
+    this.setPositions(initialPositions);
+    this.setTasks(initialTasks);
+    this.setEmployees(initialEmployees);
+    this.setAssignments(initialAssignments);
+    this.setEducation(initialEducation);
+    this.setHistory(initialPositionHistory);
+    this.setDocuments(initialDocuments);
+    this.setTraining(initialTraining);
+    this.setAttendance(initialAttendance);
+    this.setLeave(initialLeave);
+    this.setNotes(initialNotes);
+    this.setAuditLogs(initialAuditLogs);
+    this.setUsers(initialUsers);
   }
 }
 
