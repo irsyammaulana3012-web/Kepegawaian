@@ -440,111 +440,72 @@ export const EmployeeList: React.FC = () => {
             onAction={handleResetFilters}
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-700 whitespace-nowrap">
-              <thead className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
-                <tr>
-                  <th className="py-3.5 px-4 w-12 text-center">No</th>
-                  <th className="py-3.5 px-4">Karyawan</th>
-                  <th className="py-3.5 px-4">NIK & NIP</th>
-                  <th className="py-3.5 px-4">Penugasan & Unit</th>
-                  <th className="py-3.5 px-4">Status Kerja</th>
-                  <th className="py-3.5 px-4">Tgl Masuk</th>
-                  <th className="py-3.5 px-4">Kelengkapan</th>
-                  <th className="py-3.5 px-4 text-center">Status</th>
-                  <th className="py-3.5 px-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {employees.map((emp, index) => {
-                  const rowNumber = (currentPage - 1) * limit + index + 1;
-                  const isMultiUnit = (emp.units_list?.length || 0) > 1;
-                  const hasMultiAssignment = (emp.assignment_count || 0) > 1;
+          <>
+            {/* MOBILE VIEW (CARD LIST FOR PHONES) */}
+            <div className="block md:hidden divide-y divide-slate-100">
+              {employees.map((emp, index) => {
+                const rowNumber = (currentPage - 1) * limit + index + 1;
+                const isMultiUnit = (emp.units_list?.length || 0) > 1;
+                const hasMultiAssignment = (emp.assignment_count || 0) > 1;
 
-                  return (
-                    <tr
-                      key={emp.id}
-                      className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
-                      onClick={() => navigate(`/employees/${emp.id}`)}
-                    >
-                      {/* No */}
-                      <td className="py-3.5 px-4 text-center font-medium text-slate-400">
-                        {rowNumber}
-                      </td>
-
-                      {/* Photo & Name */}
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs shrink-0 border border-emerald-200">
-                            {emp.photo_url ? (
-                              <img
-                                src={emp.photo_url}
-                                alt={emp.full_name}
-                                className="w-full h-full object-cover rounded-xl"
-                              />
-                            ) : (
-                              emp.full_name.charAt(0).toUpperCase()
-                            )}
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900 group-hover:text-emerald-800 transition">
-                              {emp.full_name}
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">
-                              <span className="font-mono font-semibold text-emerald-900 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200/60">
-                                {emp.employee_number}
-                              </span>
-                              {emp.nickname && <span>({emp.nickname})</span>}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* NIK & NIP */}
-                      <td className="py-3.5 px-4 font-mono text-[11px]">
-                        <div className="font-semibold text-slate-800">{emp.nik}</div>
-                        <div className="text-slate-400">{emp.nip || '-'}</div>
-                      </td>
-
-                      {/* MULTIPLE PENUGASAN DISPLAY */}
-                      <td className="py-3.5 px-4">
-                        <div className="space-y-1">
-                          {/* Primary Assignment Badge */}
-                          {emp.primary_assignment ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-slate-900">
-                                {emp.primary_assignment.position_name || '-'}
-                              </span>
-                              <span className="text-slate-400">•</span>
-                              <span className="text-emerald-800 font-semibold">
-                                {emp.primary_assignment.unit_name || '-'}
-                              </span>
-                            </div>
+                return (
+                  <div
+                    key={emp.id}
+                    onClick={() => navigate(`/employees/${emp.id}`)}
+                    className="p-4 hover:bg-slate-50 active:bg-emerald-50/50 transition cursor-pointer space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 font-black flex items-center justify-center text-sm shrink-0 border border-emerald-200 shadow-sm">
+                          {emp.photo_url ? (
+                            <img
+                              src={emp.photo_url}
+                              alt={emp.full_name}
+                              className="w-full h-full object-cover rounded-2xl"
+                            />
                           ) : (
-                            <span className="text-slate-400 italic">Belum ada penugasan</span>
+                            emp.full_name.charAt(0).toUpperCase()
                           )}
-
-                          {/* Multi-Assignment Tag & Unit Pill */}
-                          <div className="flex flex-wrap items-center gap-1">
-                            {hasMultiAssignment && (
-                              <span className="inline-flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">
-                                <Layers className="w-3 h-3" />
-                                <span>{emp.assignment_count} Penugasan</span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] text-slate-400 font-mono">#{rowNumber}</span>
+                            <h4 className="font-bold text-slate-900 text-sm">{emp.full_name}</h4>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                            <span className="font-mono text-[10px] font-bold text-emerald-900 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                              {emp.employee_number}
+                            </span>
+                            {emp.nirg && (
+                              <span className="font-mono text-[10px] font-bold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                                NIRG: {emp.nirg}
                               </span>
                             )}
-
-                            {isMultiUnit && (
-                              <span className="inline-flex items-center gap-1 text-[10px] bg-purple-50 text-purple-800 font-bold px-1.5 py-0.5 rounded border border-purple-200">
-                                <Building2 className="w-3 h-3" />
-                                <span>{emp.units_list?.join(' • ')}</span>
+                            {emp.nirk && (
+                              <span className="font-mono text-[10px] font-bold text-indigo-900 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200">
+                                NIRK: {emp.nirk}
                               </span>
                             )}
                           </div>
                         </div>
-                      </td>
+                      </div>
 
-                      {/* Employment Status */}
-                      <td className="py-3.5 px-4">
+                      <Badge variant={emp.is_active ? 'emerald' : 'slate'} size="sm">
+                        {emp.is_active ? 'Aktif' : 'Nonaktif'}
+                      </Badge>
+                    </div>
+
+                    {/* Assignment & Units */}
+                    <div className="text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1">
+                      <div className="flex items-center justify-between text-slate-700">
+                        <span className="font-semibold text-slate-900">
+                          {emp.primary_assignment?.position_name || 'Belum Ada Jabatan'}
+                        </span>
+                        <span className="font-bold text-emerald-800">
+                          {emp.primary_assignment?.unit_name || '-'}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1 pt-1">
                         <Badge
                           variant={
                             emp.employment_status === 'Tetap'
@@ -557,98 +518,272 @@ export const EmployeeList: React.FC = () => {
                         >
                           {emp.employment_status}
                         </Badge>
-                      </td>
+                        {hasMultiAssignment && (
+                          <span className="inline-flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">
+                            <Layers className="w-3 h-3" />
+                            <span>{emp.assignment_count} Tugas</span>
+                          </span>
+                        )}
+                        {isMultiUnit && (
+                          <span className="inline-flex items-center gap-1 text-[10px] bg-purple-50 text-purple-800 font-bold px-1.5 py-0.5 rounded border border-purple-200">
+                            <Building2 className="w-3 h-3" />
+                            <span>Multi-Unit</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
 
-                      {/* Join Date */}
-                      <td className="py-3.5 px-4 text-slate-600">
-                        {new Date(emp.join_date).toLocaleDateString('id-ID', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        })}
-                      </td>
+                    {/* Actions & Completeness */}
+                    <div className="flex items-center justify-between pt-1" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-slate-500 font-bold">Kelengkapan:</span>
+                        <span className="text-xs font-mono font-black text-slate-800">{emp.data_completeness_pct}%</span>
+                      </div>
 
-                      {/* Completeness Gauge */}
-                      <td className="py-3.5 px-4">
-                        <div className="w-24">
-                          <div className="flex justify-between text-[10px] font-bold text-slate-600 mb-1">
-                            <span>{emp.data_completeness_pct}%</span>
-                          </div>
-                          <div className="w-full bg-slate-100 rounded-full h-1.5">
-                            <div
-                              className={`h-full rounded-full ${
-                                (emp.data_completeness_pct || 0) === 100
-                                  ? 'bg-emerald-600'
-                                  : (emp.data_completeness_pct || 0) < 60
-                                  ? 'bg-rose-500'
-                                  : 'bg-amber-500'
-                              }`}
-                              style={{ width: `${emp.data_completeness_pct || 0}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Active Status */}
-                      <td className="py-3.5 px-4 text-center">
-                        <Badge variant={emp.is_active ? 'emerald' : 'slate'} size="sm">
-                          {emp.is_active ? 'Aktif' : 'Nonaktif'}
-                        </Badge>
-                      </td>
-
-                      {/* Actions */}
-                      <td
-                        className="py-3.5 px-4 text-right"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => navigate(`/employees/${emp.id}`)}
+                          className="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-900 hover:bg-emerald-100 flex items-center gap-1"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Detail</span>
+                        </button>
+                        {canEdit && (
                           <button
-                            onClick={() => navigate(`/employees/${emp.id}`)}
-                            className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 transition"
-                            title="Lihat Detail Profil"
+                            onClick={() => navigate(`/employees/${emp.id}/edit`)}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50"
                           >
-                            <Eye className="w-4 h-4" />
+                            <Edit className="w-4 h-4" />
                           </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
 
-                          {canEdit && (
-                            <>
-                              <button
-                                onClick={() => navigate(`/employees/${emp.id}/edit`)}
-                                className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition"
-                                title="Edit Data"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </button>
+            {/* DESKTOP VIEW (FULL RICH DATA TABLE) */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-700 whitespace-nowrap">
+                <thead className="bg-slate-50/80 border-b border-slate-100 text-[11px] font-bold text-slate-600 uppercase tracking-wider">
+                  <tr>
+                    <th className="py-3.5 px-4 w-12 text-center">No</th>
+                    <th className="py-3.5 px-4">Karyawan & Registrasi</th>
+                    <th className="py-3.5 px-4">NIK & NIP</th>
+                    <th className="py-3.5 px-4">Penugasan & Unit</th>
+                    <th className="py-3.5 px-4">Status Kerja</th>
+                    <th className="py-3.5 px-4">Tgl Masuk</th>
+                    <th className="py-3.5 px-4">Kelengkapan</th>
+                    <th className="py-3.5 px-4 text-center">Status</th>
+                    <th className="py-3.5 px-4 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {employees.map((emp, index) => {
+                    const rowNumber = (currentPage - 1) * limit + index + 1;
+                    const isMultiUnit = (emp.units_list?.length || 0) > 1;
+                    const hasMultiAssignment = (emp.assignment_count || 0) > 1;
 
-                              <button
-                                onClick={() => setEmployeeToToggleStatus(emp)}
-                                className={`p-1.5 rounded-lg transition ${
-                                  emp.is_active
-                                    ? 'text-slate-500 hover:text-rose-600 hover:bg-rose-50'
-                                    : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50'
+                    return (
+                      <tr
+                        key={emp.id}
+                        className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
+                        onClick={() => navigate(`/employees/${emp.id}`)}
+                      >
+                        {/* No */}
+                        <td className="py-3.5 px-4 text-center font-medium text-slate-400">
+                          {rowNumber}
+                        </td>
+
+                        {/* Photo & Name */}
+                        <td className="py-3.5 px-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-xs shrink-0 border border-emerald-200">
+                              {emp.photo_url ? (
+                                <img
+                                  src={emp.photo_url}
+                                  alt={emp.full_name}
+                                  className="w-full h-full object-cover rounded-xl"
+                                />
+                              ) : (
+                                emp.full_name.charAt(0).toUpperCase()
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-bold text-slate-900 group-hover:text-emerald-800 transition">
+                                {emp.full_name}
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">
+                                <span className="font-mono font-semibold text-emerald-900 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200/60">
+                                  {emp.employee_number}
+                                </span>
+                                {emp.nirg && (
+                                  <span className="font-mono font-bold text-amber-900 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200/60">
+                                    NIRG: {emp.nirg}
+                                  </span>
+                                )}
+                                {emp.nirk && (
+                                  <span className="font-mono font-bold text-indigo-900 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-200/60">
+                                    NIRK: {emp.nirk}
+                                  </span>
+                                )}
+                                {emp.nickname && <span>({emp.nickname})</span>}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* NIK & NIP */}
+                        <td className="py-3.5 px-4 font-mono text-[11px]">
+                          <div className="font-semibold text-slate-800">{emp.nik}</div>
+                          <div className="text-slate-400">{emp.nip || '-'}</div>
+                        </td>
+
+                        {/* MULTIPLE PENUGASAN DISPLAY */}
+                        <td className="py-3.5 px-4">
+                          <div className="space-y-1">
+                            {/* Primary Assignment Badge */}
+                            {emp.primary_assignment ? (
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-bold text-slate-900">
+                                  {emp.primary_assignment.position_name || '-'}
+                                </span>
+                                <span className="text-slate-400">•</span>
+                                <span className="text-emerald-800 font-semibold">
+                                  {emp.primary_assignment.unit_name || '-'}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-slate-400 italic">Belum ada penugasan</span>
+                            )}
+
+                            {/* Multi-Assignment Tag & Unit Pill */}
+                            <div className="flex flex-wrap items-center gap-1">
+                              {hasMultiAssignment && (
+                                <span className="inline-flex items-center gap-1 text-[10px] bg-amber-50 text-amber-800 font-bold px-1.5 py-0.5 rounded border border-amber-200">
+                                  <Layers className="w-3 h-3" />
+                                  <span>{emp.assignment_count} Penugasan</span>
+                                </span>
+                              )}
+
+                              {isMultiUnit && (
+                                <span className="inline-flex items-center gap-1 text-[10px] bg-purple-50 text-purple-800 font-bold px-1.5 py-0.5 rounded border border-purple-200">
+                                  <Building2 className="w-3 h-3" />
+                                  <span>{emp.units_list?.join(' • ')}</span>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Employment Status */}
+                        <td className="py-3.5 px-4">
+                          <Badge
+                            variant={
+                              emp.employment_status === 'Tetap'
+                                ? 'emerald'
+                                : emp.employment_status === 'Kontrak'
+                                ? 'amber'
+                                : 'blue'
+                            }
+                            size="sm"
+                          >
+                            {emp.employment_status}
+                          </Badge>
+                        </td>
+
+                        {/* Join Date */}
+                        <td className="py-3.5 px-4 text-slate-600">
+                          {new Date(emp.join_date).toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                          })}
+                        </td>
+
+                        {/* Completeness Gauge */}
+                        <td className="py-3.5 px-4">
+                          <div className="w-24">
+                            <div className="flex justify-between text-[10px] font-bold text-slate-600 mb-1">
+                              <span>{emp.data_completeness_pct}%</span>
+                            </div>
+                            <div className="w-full bg-slate-100 rounded-full h-1.5">
+                              <div
+                                className={`h-full rounded-full ${
+                                  (emp.data_completeness_pct || 0) === 100
+                                    ? 'bg-emerald-600'
+                                    : (emp.data_completeness_pct || 0) < 60
+                                    ? 'bg-rose-500'
+                                    : 'bg-amber-500'
                                 }`}
-                                title={emp.is_active ? 'Nonaktifkan Karyawan' : 'Aktifkan Karyawan'}
-                              >
-                                {emp.is_active ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
-                              </button>
+                                style={{ width: `${emp.data_completeness_pct || 0}%` }}
+                              />
+                            </div>
+                          </div>
+                        </td>
 
-                              <button
-                                onClick={() => setEmployeeToDelete(emp)}
-                                className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition"
-                                title="Hapus Karyawan"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                        {/* Active Status */}
+                        <td className="py-3.5 px-4 text-center">
+                          <Badge variant={emp.is_active ? 'emerald' : 'slate'} size="sm">
+                            {emp.is_active ? 'Aktif' : 'Nonaktif'}
+                          </Badge>
+                        </td>
+
+                        {/* Actions */}
+                        <td
+                          className="py-3.5 px-4 text-right"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => navigate(`/employees/${emp.id}`)}
+                              className="p-1.5 rounded-lg text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 transition"
+                              title="Lihat Detail Profil"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+
+                            {canEdit && (
+                              <>
+                                <button
+                                  onClick={() => navigate(`/employees/${emp.id}/edit`)}
+                                  className="p-1.5 rounded-lg text-slate-500 hover:text-amber-700 hover:bg-amber-50 transition"
+                                  title="Edit Data"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </button>
+
+                                <button
+                                  onClick={() => setEmployeeToToggleStatus(emp)}
+                                  className={`p-1.5 rounded-lg transition ${
+                                    emp.is_active
+                                      ? 'text-slate-500 hover:text-rose-600 hover:bg-rose-50'
+                                      : 'text-slate-500 hover:text-emerald-600 hover:bg-emerald-50'
+                                  }`}
+                                  title={emp.is_active ? 'Nonaktifkan Karyawan' : 'Aktifkan Karyawan'}
+                                >
+                                  {emp.is_active ? <XCircle className="w-4 h-4" /> : <CheckCircle2 className="w-4 h-4" />}
+                                </button>
+
+                                <button
+                                  onClick={() => setEmployeeToDelete(emp)}
+                                  className="p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition"
+                                  title="Hapus Karyawan"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
 
         {/* Pagination Controls */}

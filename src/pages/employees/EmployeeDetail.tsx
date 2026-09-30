@@ -156,10 +156,20 @@ export const EmployeeDetail: React.FC = () => {
                 </Badge>
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
                 <span className="font-mono font-bold text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                   ID: {employee.employee_number}
                 </span>
+                {employee.nirg && (
+                  <span className="font-mono font-bold text-amber-900 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                    NIRG: {employee.nirg}
+                  </span>
+                )}
+                {employee.nirk && (
+                  <span className="font-mono font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
+                    NIRK: {employee.nirk}
+                  </span>
+                )}
                 <span>NIK: <strong>{employee.nik}</strong></span>
                 {employee.nip && <span>NIP: <strong>{employee.nip}</strong></span>}
                 <span>Status: <strong className="text-emerald-800">{employee.employment_status}</strong></span>
@@ -234,8 +244,16 @@ export const EmployeeDetail: React.FC = () => {
         {/* TAB 1: PROFIL PRIBADI */}
         {activeTab === 'profile' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card title="Data Identitas & Pribadi">
+            <Card title="Data Identitas & Registrasi Yayasan">
               <div className="divide-y divide-slate-100 text-xs">
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">NIRG (Registrasi Guru)</span>
+                  <span className="font-mono font-bold text-amber-900">{employee.nirg || '-'}</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">NIRK (Registrasi Karyawan)</span>
+                  <span className="font-mono font-bold text-indigo-900">{employee.nirk || '-'}</span>
+                </div>
                 <div className="py-2.5 flex justify-between">
                   <span className="text-slate-500">Nama Lengkap</span>
                   <span className="font-bold text-slate-900">{employee.full_name}</span>
@@ -243,6 +261,10 @@ export const EmployeeDetail: React.FC = () => {
                 <div className="py-2.5 flex justify-between">
                   <span className="text-slate-500">Nama Panggilan</span>
                   <span className="font-medium text-slate-800">{employee.nickname || '-'}</span>
+                </div>
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">Pendidikan Terakhir</span>
+                  <span className="font-bold text-emerald-800">{employee.last_education || '-'}</span>
                 </div>
                 <div className="py-2.5 flex justify-between">
                   <span className="text-slate-500">Jenis Kelamin</span>
@@ -304,14 +326,24 @@ export const EmployeeDetail: React.FC = () => {
         {/* TAB 2: DATA KEPEGAWAIAN */}
         {activeTab === 'employment' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card title="Status & Pengangkatan">
+            <Card title="Status & Masa Kerja">
               <div className="divide-y divide-slate-100 text-xs">
                 <div className="py-2.5 flex justify-between">
                   <span className="text-slate-500">Status Kepegawaian</span>
                   <Badge variant="emerald" size="sm">{employee.employment_status}</Badge>
                 </div>
                 <div className="py-2.5 flex justify-between">
-                  <span className="text-slate-500">Tanggal Mulai Bekerja</span>
+                  <span className="text-slate-500">Tahun Masuk</span>
+                  <span className="font-bold text-slate-900">{employee.entry_year || (employee.join_date ? employee.join_date.split('-')[0] : '-')}</span>
+                </div>
+                {employee.exit_year && (
+                  <div className="py-2.5 flex justify-between">
+                    <span className="text-slate-500">Tahun Keluar</span>
+                    <span className="font-bold text-rose-800">{employee.exit_year}</span>
+                  </div>
+                )}
+                <div className="py-2.5 flex justify-between">
+                  <span className="text-slate-500">Tanggal Mulai Bekerja (TMT)</span>
                   <span className="font-bold text-slate-900">
                     {new Date(employee.join_date).toLocaleDateString('id-ID', { dateStyle: 'long' })}
                   </span>
@@ -337,8 +369,27 @@ export const EmployeeDetail: React.FC = () => {
               </div>
             </Card>
 
-            <Card title="Status Keaktifan & Masa Kerja">
+            <Card title="Rekening Perbankan & Status">
               <div className="space-y-4 text-xs">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                  <h4 className="font-bold text-slate-900 mb-2 flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-emerald-700" />
+                    <span>Rekening Penggajian</span>
+                  </h4>
+                  <div className="divide-y divide-slate-100 text-xs">
+                    <div className="py-1.5 flex justify-between">
+                      <span className="text-slate-500">Bank</span>
+                      <span className="font-bold text-slate-800">{employee.bank_name || 'Bank Syariah Indonesia (BSI)'}</span>
+                    </div>
+                    <div className="py-1.5 flex justify-between">
+                      <span className="text-slate-500">Nomor Rekening</span>
+                      <span className="font-mono font-extrabold text-emerald-900 text-sm">
+                        {employee.bank_account_number || '-'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-100">
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-5 h-5 text-emerald-700" />
@@ -363,7 +414,7 @@ export const EmployeeDetail: React.FC = () => {
 
         {/* TAB 4: PENDIDIKAN */}
         {activeTab === 'education' && (
-          <EmployeeEducationTab employeeId={employee.id} />
+          <EmployeeEducationTab employeeId={employee.id} employee={employee} />
         )}
 
         {/* TAB 5: RIWAYAT PENUGASAN TIMELINE */}

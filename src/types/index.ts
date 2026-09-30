@@ -67,11 +67,26 @@ export interface Task {
   created_at?: string;
 }
 
+export interface FormalEducationRecord {
+  level: 'SD' | 'SMP' | 'SMA/SMK' | 'S1' | 'S2' | 'S3' | string;
+  year?: string;
+  institution?: string;
+}
+
+export interface NonformalEducationRecord {
+  name: string;
+  institution?: string;
+  year?: string;
+  notes?: string;
+}
+
 export interface Employee {
   id: string;
   employee_number: string; // e.g. YPA-0001
   nik: string;             // 16 digits
   nip?: string;
+  nirg?: string;           // Nomor Induk Registrasi Guru
+  nirk?: string;           // Nomor Induk Registrasi Karyawan
   no_kk?: string;
   
   // Personal
@@ -83,6 +98,7 @@ export interface Employee {
   birth_date?: string;
   religion: string;
   marital_status: string;
+  last_education?: string; // Pendidikan Terakhir (SD, SMP, SMA, S1, S2, S3, Pesantren)
   
   // Address
   address?: string;
@@ -102,6 +118,8 @@ export interface Employee {
   // Employment
   employment_status: EmploymentStatus;
   join_date: string;
+  entry_year?: string;    // Tahun Masuk
+  exit_year?: string;     // Tahun Keluar
   appointment_date?: string;
   appointment_sk_number?: string;
   appointment_sk_date?: string;
@@ -109,6 +127,14 @@ export interface Employee {
   is_active: boolean;
   inactive_reason?: string;
   inactive_date?: string;
+
+  // Bank & Finance
+  bank_name?: string;
+  bank_account_number?: string;
+
+  // Education breakdown
+  formal_education?: FormalEducationRecord[];
+  nonformal_education?: NonformalEducationRecord[];
   
   created_at?: string;
   updated_at?: string;
@@ -305,6 +331,8 @@ export interface DashboardStats {
 }
 
 export interface ExcelImportRow {
+  nirg?: string;
+  nirk?: string;
   nama: string;
   nik: string;
   nip?: string;
@@ -327,11 +355,15 @@ export interface ExcelImportRow {
   whatsapp?: string;
   email?: string;
   status_kepegawaian?: string;
+  tahun_masuk?: string;
+  tahun_keluar?: string;
   tanggal_masuk?: string;
   tanggal_pengangkatan?: string;
   sk_pengangkatan?: string;
   tanggal_sk_pengangkatan?: string;
   tanggal_akhir_kontrak?: string;
+  nama_bank?: string;
+  nomor_rekening?: string;
   unit: string;
   divisi?: string;
   jabatan: string;
@@ -344,6 +376,22 @@ export interface ExcelImportRow {
   is_primary?: boolean;
   status_penugasan?: string;
   pendidikan_terakhir?: string;
+  sd_tahun?: string;
+  sd_instansi?: string;
+  smp_tahun?: string;
+  smp_instansi?: string;
+  sma_tahun?: string;
+  sma_instansi?: string;
+  s1_tahun?: string;
+  s1_instansi?: string;
+  s2_tahun?: string;
+  s2_instansi?: string;
+  s3_tahun?: string;
+  s3_instansi?: string;
+  nonformal_nama?: string;
+  nonformal_instansi?: string;
+  nonformal_tahun?: string;
+  nonformal_keterangan?: string;
   institusi?: string;
   jurusan?: string;
   tahun_lulus?: number;

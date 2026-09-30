@@ -8,233 +8,122 @@ import { educationService } from './educationService';
 import { auditService } from './auditService';
 
 export const excelService = {
-  // Generate downloadable comprehensive sample Excel template
+  // Generate downloadable comprehensive sample Excel template with Foundation Draft Schema
   generateTemplate(): void {
     const templateData = [
       {
+        'NIRG': 'G-SMP-2019-001',
+        'NIRK': '',
         'Nama Lengkap': 'Ahmad Fauzi, S.Pd.',
         'NIK': '3201012345670001',
         'NIP': '198809152015011003',
-        'No KK': '3201019988770001',
-        'Nama Panggilan': 'Ustadz Fauzi',
-        'Jenis Kelamin': 'Laki-laki',
         'Tempat Lahir': 'Bogor',
         'Tanggal Lahir': '1988-09-15',
-        'Agama': 'Islam',
-        'Status Pernikahan': 'Menikah',
-        'Alamat Lengkap': 'Jl. Pesantren No. 12, Ciriung',
-        'RT': '002',
-        'RW': '005',
-        'Kelurahan': 'Ciriung',
-        'Kecamatan': 'Cibinong',
-        'Kota/Kabupaten': 'Kabupaten Bogor',
-        'Provinsi': 'Jawa Barat',
-        'Kode Pos': '16918',
-        'No HP': '085712345678',
-        'WhatsApp': '085712345678',
-        'Email': 'ahmad.fauzi@alquraniyyah.sch.id',
-        'Status Kepegawaian': 'Tetap',
-        'Tanggal Masuk': '2019-08-01',
-        'Tanggal Pengangkatan': '2020-01-01',
-        'Nomor SK Pengangkatan': 'SK-YPA/2020/001',
-        'Tanggal SK Pengangkatan': '2020-01-01',
-        'Tanggal Akhir Kontrak': '',
-        'Unit Penugasan': 'SMP IT Al-Qur\'aniyyah',
-        'Divisi/Bagian': 'Kurikulum',
+        'Pendidikan Terakhir': 'S1',
+        'Jenis Kelamin (L/P)': 'Laki-laki',
+        'Alamat': 'Jl. Pesantren No. 12, Ciriung, Cibinong, Bogor',
+        'Unit Kerja': 'SMP IT Al-Qur\'aniyyah',
         'Jabatan': 'Guru',
         'Tugas Pokok': 'Guru IPS Terpadu',
-        'Deskripsi Tugas Khusus': 'Pengampu mata pelajaran IPS Kelas VII & VIII',
-        'Nomor SK Penugasan': 'SKP-SMP/2024/012',
-        'Tanggal SK Penugasan': '2024-07-01',
-        'Tanggal Mulai Penugasan': '2024-07-01',
-        'Tanggal Selesai Penugasan': '',
-        'Penugasan Utama (Ya/Tidak)': 'Ya',
-        'Status Penugasan': 'Aktif',
-        'Pendidikan Terakhir': 'S1',
-        'Nama Institusi/Kampus': 'Universitas Negeri Jakarta',
-        'Jurusan': 'Pendidikan IPS',
-        'Tahun Lulus': '2012',
-        'Nomor Ijazah': 'IJZ-UNJ-2012-98765'
+        'Nomor Telepon': '085712345678',
+        'Tahun Masuk': '2019',
+        'Tahun Keluar': '',
+        'Email': 'ahmad.fauzi@alquraniyyah.sch.id',
+        'Status Karyawan': 'Tetap',
+        'Nama Bank': 'Bank Syariah Indonesia (BSI)',
+        'Nomor Rekening': '7123456789',
+        'Pendidikan SD - Tahun': '2000',
+        'Pendidikan SD - Instansi': 'SDN 01 Cibinong',
+        'Pendidikan SMP - Tahun': '2003',
+        'Pendidikan SMP - Instansi': 'SMPN 01 Cibinong',
+        'Pendidikan SMA/SMK - Tahun': '2006',
+        'Pendidikan SMA/SMK - Instansi': 'SMAN 01 Cibinong',
+        'Pendidikan S1 - Tahun': '2011',
+        'Pendidikan S1 - Instansi': 'Universitas Negeri Jakarta',
+        'Pendidikan S2 - Tahun': '',
+        'Pendidikan S2 - Instansi': '',
+        'Pendidikan S3 - Tahun': '',
+        'Pendidikan S3 - Instansi': '',
+        'Pendidikan Nonformal - Nama': 'Pondok Pesantren Al-Falah',
+        'Pendidikan Nonformal - Instansi': 'Ponpes Al-Falah Bogor',
+        'Pendidikan Nonformal - Tahun': '2008',
+        'Pendidikan Nonformal - Keterangan': 'Khatam Al-Qur\'an & Kitab Kuning'
       },
       {
+        'NIRG': 'G-SMP-2019-001',
+        'NIRK': '',
         'Nama Lengkap': 'Ahmad Fauzi, S.Pd.',
         'NIK': '3201012345670001',
         'NIP': '198809152015011003',
-        'No KK': '3201019988770001',
-        'Nama Panggilan': 'Ustadz Fauzi',
-        'Jenis Kelamin': 'Laki-laki',
         'Tempat Lahir': 'Bogor',
         'Tanggal Lahir': '1988-09-15',
-        'Agama': 'Islam',
-        'Status Pernikahan': 'Menikah',
-        'Alamat Lengkap': 'Jl. Pesantren No. 12, Ciriung',
-        'RT': '002',
-        'RW': '005',
-        'Kelurahan': 'Ciriung',
-        'Kecamatan': 'Cibinong',
-        'Kota/Kabupaten': 'Kabupaten Bogor',
-        'Provinsi': 'Jawa Barat',
-        'Kode Pos': '16918',
-        'No HP': '085712345678',
-        'WhatsApp': '085712345678',
-        'Email': 'ahmad.fauzi@alquraniyyah.sch.id',
-        'Status Kepegawaian': 'Tetap',
-        'Tanggal Masuk': '2019-08-01',
-        'Tanggal Pengangkatan': '2020-01-01',
-        'Nomor SK Pengangkatan': 'SK-YPA/2020/001',
-        'Tanggal SK Pengangkatan': '2020-01-01',
-        'Tanggal Akhir Kontrak': '',
-        'Unit Penugasan': 'SMP IT Al-Qur\'aniyyah',
-        'Divisi/Bagian': 'Kesiswaan',
-        'Jabatan': 'Wali Kelas',
-        'Tugas Pokok': 'Wali Kelas VII-A',
-        'Deskripsi Tugas Khusus': 'Membimbing dan memantau perkembangan siswa kelas VII-A',
-        'Nomor SK Penugasan': 'SKP-SMP/2024/013',
-        'Tanggal SK Penugasan': '2024-07-01',
-        'Tanggal Mulai Penugasan': '2024-07-01',
-        'Tanggal Selesai Penugasan': '',
-        'Penugasan Utama (Ya/Tidak)': 'Tidak',
-        'Status Penugasan': 'Aktif',
         'Pendidikan Terakhir': 'S1',
-        'Nama Institusi/Kampus': 'Universitas Negeri Jakarta',
-        'Jurusan': 'Pendidikan IPS',
-        'Tahun Lulus': '2012',
-        'Nomor Ijazah': 'IJZ-UNJ-2012-98765'
-      },
-      {
-        'Nama Lengkap': 'Ahmad Fauzi, S.Pd.',
-        'NIK': '3201012345670001',
-        'NIP': '198809152015011003',
-        'No KK': '3201019988770001',
-        'Nama Panggilan': 'Ustadz Fauzi',
-        'Jenis Kelamin': 'Laki-laki',
-        'Tempat Lahir': 'Bogor',
-        'Tanggal Lahir': '1988-09-15',
-        'Agama': 'Islam',
-        'Status Pernikahan': 'Menikah',
-        'Alamat Lengkap': 'Jl. Pesantren No. 12, Ciriung',
-        'RT': '002',
-        'RW': '005',
-        'Kelurahan': 'Ciriung',
-        'Kecamatan': 'Cibinong',
-        'Kota/Kabupaten': 'Kabupaten Bogor',
-        'Provinsi': 'Jawa Barat',
-        'Kode Pos': '16918',
-        'No HP': '085712345678',
-        'WhatsApp': '085712345678',
-        'Email': 'ahmad.fauzi@alquraniyyah.sch.id',
-        'Status Kepegawaian': 'Tetap',
-        'Tanggal Masuk': '2019-08-01',
-        'Tanggal Pengangkatan': '2020-01-01',
-        'Nomor SK Pengangkatan': 'SK-YPA/2020/001',
-        'Tanggal SK Pengangkatan': '2020-01-01',
-        'Tanggal Akhir Kontrak': '',
-        'Unit Penugasan': 'SMA IT Al-Qur\'aniyyah',
-        'Divisi/Bagian': 'Kurikulum',
+        'Jenis Kelamin (L/P)': 'Laki-laki',
+        'Alamat': 'Jl. Pesantren No. 12, Ciriung, Cibinong, Bogor',
+        'Unit Kerja': 'SMA IT Al-Qur\'aniyyah',
         'Jabatan': 'Guru',
         'Tugas Pokok': 'Guru Sosiologi',
-        'Deskripsi Tugas Khusus': 'Mata pelajaran Sosiologi Kelas X & XI',
-        'Nomor SK Penugasan': 'SKP-SMA/2024/008',
-        'Tanggal SK Penugasan': '2024-07-01',
-        'Tanggal Mulai Penugasan': '2024-07-01',
-        'Tanggal Selesai Penugasan': '',
-        'Penugasan Utama (Ya/Tidak)': 'Tidak',
-        'Status Penugasan': 'Aktif',
-        'Pendidikan Terakhir': 'S1',
-        'Nama Institusi/Kampus': 'Universitas Negeri Jakarta',
-        'Jurusan': 'Pendidikan IPS',
-        'Tahun Lulus': '2012',
-        'Nomor Ijazah': 'IJZ-UNJ-2012-98765'
-      },
-      {
-        'Nama Lengkap': 'Ahmad Fauzi, S.Pd.',
-        'NIK': '3201012345670001',
-        'NIP': '198809152015011003',
-        'No KK': '3201019988770001',
-        'Nama Panggilan': 'Ustadz Fauzi',
-        'Jenis Kelamin': 'Laki-laki',
-        'Tempat Lahir': 'Bogor',
-        'Tanggal Lahir': '1988-09-15',
-        'Agama': 'Islam',
-        'Status Pernikahan': 'Menikah',
-        'Alamat Lengkap': 'Jl. Pesantren No. 12, Ciriung',
-        'RT': '002',
-        'RW': '005',
-        'Kelurahan': 'Ciriung',
-        'Kecamatan': 'Cibinong',
-        'Kota/Kabupaten': 'Kabupaten Bogor',
-        'Provinsi': 'Jawa Barat',
-        'Kode Pos': '16918',
-        'No HP': '085712345678',
-        'WhatsApp': '085712345678',
+        'Nomor Telepon': '085712345678',
+        'Tahun Masuk': '2019',
+        'Tahun Keluar': '',
         'Email': 'ahmad.fauzi@alquraniyyah.sch.id',
-        'Status Kepegawaian': 'Tetap',
-        'Tanggal Masuk': '2019-08-01',
-        'Tanggal Pengangkatan': '2020-01-01',
-        'Nomor SK Pengangkatan': 'SK-YPA/2020/001',
-        'Tanggal SK Pengangkatan': '2020-01-01',
-        'Tanggal Akhir Kontrak': '',
-        'Unit Penugasan': 'Yayasan',
-        'Divisi/Bagian': 'Sekretariat',
-        'Jabatan': 'Koordinator',
-        'Tugas Pokok': 'Koordinator Rapat Pimpinan',
-        'Deskripsi Tugas Khusus': 'Menyiapkan agenda rapat pimpinan yayasan',
-        'Nomor SK Penugasan': 'SK-YPA/2024/005',
-        'Tanggal SK Penugasan': '2024-01-10',
-        'Tanggal Mulai Penugasan': '2024-01-10',
-        'Tanggal Selesai Penugasan': '',
-        'Penugasan Utama (Ya/Tidak)': 'Tidak',
-        'Status Penugasan': 'Aktif',
-        'Pendidikan Terakhir': 'S1',
-        'Nama Institusi/Kampus': 'Universitas Negeri Jakarta',
-        'Jurusan': 'Pendidikan IPS',
-        'Tahun Lulus': '2012',
-        'Nomor Ijazah': 'IJZ-UNJ-2012-98765'
+        'Status Karyawan': 'Tetap',
+        'Nama Bank': 'Bank Syariah Indonesia (BSI)',
+        'Nomor Rekening': '7123456789',
+        'Pendidikan SD - Tahun': '2000',
+        'Pendidikan SD - Instansi': 'SDN 01 Cibinong',
+        'Pendidikan SMP - Tahun': '2003',
+        'Pendidikan SMP - Instansi': 'SMPN 01 Cibinong',
+        'Pendidikan SMA/SMK - Tahun': '2006',
+        'Pendidikan SMA/SMK - Instansi': 'SMAN 01 Cibinong',
+        'Pendidikan S1 - Tahun': '2011',
+        'Pendidikan S1 - Instansi': 'Universitas Negeri Jakarta',
+        'Pendidikan S2 - Tahun': '',
+        'Pendidikan S2 - Instansi': '',
+        'Pendidikan S3 - Tahun': '',
+        'Pendidikan S3 - Instansi': '',
+        'Pendidikan Nonformal - Nama': 'Pondok Pesantren Al-Falah',
+        'Pendidikan Nonformal - Instansi': 'Ponpes Al-Falah Bogor',
+        'Pendidikan Nonformal - Tahun': '2008',
+        'Pendidikan Nonformal - Keterangan': 'Khatam Al-Qur\'an & Kitab Kuning'
       },
       {
-        'Nama Lengkap': 'Ustadzah Fatimah Zahra, S.Ag.',
-        'NIK': '3201013456780001',
-        'NIP': '199003202018012004',
-        'No KK': '3201018899000002',
-        'Nama Panggilan': 'Ustadzah Fatimah',
-        'Jenis Kelamin': 'Perempuan',
+        'NIRG': '',
+        'NIRK': 'K-YAS-2021-008',
+        'Nama Lengkap': 'Siti Rahmawati, S.E.',
+        'NIK': '3201015678900002',
+        'NIP': '199204122021012005',
         'Tempat Lahir': 'Bandung',
-        'Tanggal Lahir': '1990-03-20',
-        'Agama': 'Islam',
-        'Status Pernikahan': 'Menikah',
-        'Alamat Lengkap': 'Kompleks Pesantren Blok B No. 4',
-        'RT': '001',
-        'RW': '003',
-        'Kelurahan': 'Ciriung',
-        'Kecamatan': 'Cibinong',
-        'Kota/Kabupaten': 'Kabupaten Bogor',
-        'Provinsi': 'Jawa Barat',
-        'Kode Pos': '16918',
-        'No HP': '081398765432',
-        'WhatsApp': '081398765432',
-        'Email': 'fatimah.zahra@alquraniyyah.sch.id',
-        'Status Kepegawaian': 'Tetap',
-        'Tanggal Masuk': '2018-01-15',
-        'Tanggal Pengangkatan': '2018-07-01',
-        'Nomor SK Pengangkatan': 'SK-YPA/2018/019',
-        'Tanggal SK Pengangkatan': '2018-07-01',
-        'Tanggal Akhir Kontrak': '',
-        'Unit Penugasan': 'HALQ',
-        'Divisi/Bagian': 'Tahfidz Qur\'an',
-        'Jabatan': 'Pembina',
-        'Tugas Pokok': 'Pembina Halaqah Tahfidz Putri',
-        'Deskripsi Tugas Khusus': 'Membina hafalan santriwati juz 1-15',
-        'Nomor SK Penugasan': 'SK-HLQ/2024/002',
-        'Tanggal SK Penugasan': '2024-01-05',
-        'Tanggal Mulai Penugasan': '2024-01-05',
-        'Tanggal Selesai Penugasan': '',
-        'Penugasan Utama (Ya/Tidak)': 'Ya',
-        'Status Penugasan': 'Aktif',
+        'Tanggal Lahir': '1992-04-12',
         'Pendidikan Terakhir': 'S1',
-        'Nama Institusi/Kampus': 'UIN Syarif Hidayatullah',
-        'Jurusan': 'Ilmu Al-Qur\'an dan Tafsir',
-        'Tahun Lulus': '2013',
-        'Nomor Ijazah': 'IJZ-UIN-2013-44123'
+        'Jenis Kelamin (L/P)': 'Perempuan',
+        'Alamat': 'Kompleks Pesantren Blok C No. 5, Ciriung',
+        'Unit Kerja': 'Yayasan',
+        'Jabatan': 'Staff Keuangan',
+        'Tugas Pokok': 'Administrasi Gaji & Keuangan Yayasan',
+        'Nomor Telepon': '081298765432',
+        'Tahun Masuk': '2021',
+        'Tahun Keluar': '',
+        'Email': 'siti.rahma@alquraniyyah.sch.id',
+        'Status Karyawan': 'Tetap',
+        'Nama Bank': 'Bank Mandiri',
+        'Nomor Rekening': '1330019876543',
+        'Pendidikan SD - Tahun': '2004',
+        'Pendidikan SD - Instansi': 'SDN 02 Bandung',
+        'Pendidikan SMP - Tahun': '2007',
+        'Pendidikan SMP - Instansi': 'SMPN 03 Bandung',
+        'Pendidikan SMA/SMK - Tahun': '2010',
+        'Pendidikan SMA/SMK - Instansi': 'SMKN 01 Bandung',
+        'Pendidikan S1 - Tahun': '2015',
+        'Pendidikan S1 - Instansi': 'Universitas Padjadjaran',
+        'Pendidikan S2 - Tahun': '',
+        'Pendidikan S2 - Instansi': '',
+        'Pendidikan S3 - Tahun': '',
+        'Pendidikan S3 - Instansi': '',
+        'Pendidikan Nonformal - Nama': 'Pelatihan Akuntansi Syariah',
+        'Pendidikan Nonformal - Instansi': 'Ikatan Akuntan Indonesia',
+        'Pendidikan Nonformal - Tahun': '2018',
+        'Pendidikan Nonformal - Keterangan': 'Sertifikasi Brevet & Akuntansi'
       }
     ];
 
@@ -248,7 +137,7 @@ export const excelService = {
     }));
     worksheet['!cols'] = colWidths;
 
-    XLSX.writeFile(workbook, 'Template_Import_Lengkap_SIMKA_Al-Quraniyyah.xlsx');
+    XLSX.writeFile(workbook, 'Template_Draft_Karyawan_Al-Quraniyyah.xlsx');
   },
 
   // Parse uploaded Excel / CSV file
@@ -307,19 +196,21 @@ export const excelService = {
       };
 
       // 1. Personal Identity Fields
-      const rawName = getVal('nama');
-      const rawNik = getVal('nik');
-      const rawNip = getVal('nip');
-      const rawKk = getVal('no_kk');
-      const rawNickname = getVal('nickname');
-      const rawGender = getVal('jenis_kelamin');
-      const rawBirthPlace = getVal('tempat_lahir');
-      const rawBirthDate = getVal('tanggal_lahir');
+      const rawNirg = getVal('nirg') || getVal('NIRG');
+      const rawNirk = getVal('nirk') || getVal('NIRK');
+      const rawName = getVal('nama') || getVal('Nama Lengkap');
+      const rawNik = getVal('nik') || getVal('NIK');
+      const rawNip = getVal('nip') || getVal('NIP');
+      const rawKk = getVal('no_kk') || getVal('No KK');
+      const rawNickname = getVal('nickname') || getVal('Nama Panggilan');
+      const rawGender = getVal('jenis_kelamin') || getVal('Jenis Kelamin (L/P)');
+      const rawBirthPlace = getVal('tempat_lahir') || getVal('Tempat Lahir');
+      const rawBirthDate = getVal('tanggal_lahir') || getVal('Tanggal Lahir');
       const rawReligion = getVal('agama', 'Islam');
       const rawMarital = getVal('status_pernikahan', 'Menikah');
 
       // 2. Address & Domisili Fields
-      const rawAddress = getVal('alamat');
+      const rawAddress = getVal('alamat') || getVal('Alamat Lengkap');
       const rawRt = getVal('rt');
       const rawRw = getVal('rw');
       const rawKelurahan = getVal('kelurahan');
@@ -329,37 +220,59 @@ export const excelService = {
       const rawPostalCode = getVal('kode_pos');
 
       // 3. Contact Fields
-      const rawPhone = getVal('no_hp');
-      const rawWa = getVal('whatsapp');
-      const rawEmail = getVal('email');
+      const rawPhone = getVal('no_hp') || getVal('Nomor Telepon');
+      const rawWa = getVal('whatsapp') || getVal('Nomor Telepon');
+      const rawEmail = getVal('email') || getVal('Email');
 
-      // 4. Employment Fields
-      const rawStatus = getVal('status_kepegawaian', 'Tetap');
-      const rawJoinDate = getVal('tanggal_masuk', new Date().toISOString().split('T')[0]);
+      // 4. Employment & Banking Fields
+      const rawStatus = getVal('status_kepegawaian') || getVal('Status Karyawan') || 'Tetap';
+      const rawTahunMasuk = getVal('tahun_masuk') || getVal('Tahun Masuk');
+      const rawTahunKeluar = getVal('tahun_keluar') || getVal('Tahun Keluar');
+      const rawJoinDate = getVal('tanggal_masuk', rawTahunMasuk ? `${rawTahunMasuk}-01-01` : new Date().toISOString().split('T')[0]);
       const rawAppointmentDate = getVal('tanggal_pengangkatan');
       const rawAppointmentSkNumber = getVal('sk_pengangkatan');
       const rawAppointmentSkDate = getVal('tanggal_sk_pengangkatan');
       const rawContractEndDate = getVal('tanggal_akhir_kontrak');
+      const rawBankName = getVal('nama_bank') || getVal('Nama Bank');
+      const rawBankAccountNumber = getVal('nomor_rekening') || getVal('Nomor Rekening');
 
       // 5. Assignment Fields
-      const rawUnit = getVal('unit');
-      const rawDivisi = getVal('divisi');
-      const rawPosition = getVal('jabatan');
-      const rawTask = getVal('tugas');
-      const rawTaskDesc = getVal('deskripsi_tugas');
-      const rawSkPenugasan = getVal('sk_penugasan');
-      const rawTglSkPenugasan = getVal('tanggal_sk_penugasan');
+      const rawUnit = getVal('unit') || getVal('Unit Kerja') || getVal('Unit Penugasan');
+      const rawDivisi = getVal('divisi') || getVal('Divisi/Bagian');
+      const rawPosition = getVal('jabatan') || getVal('Jabatan');
+      const rawTask = getVal('tugas') || getVal('Tugas Pokok');
+      const rawTaskDesc = getVal('deskripsi_tugas') || getVal('Deskripsi Tugas Khusus');
+      const rawSkPenugasan = getVal('sk_penugasan') || getVal('Nomor SK Penugasan');
+      const rawTglSkPenugasan = getVal('tanggal_sk_penugasan') || getVal('Tanggal SK Penugasan');
       const rawTglMulaiPenugasan = getVal('tanggal_mulai_penugasan', rawJoinDate);
       const rawTglSelesaiPenugasan = getVal('tanggal_selesai_penugasan');
-      const rawIsPrimary = getVal('is_primary').toLowerCase();
+      const rawIsPrimary = (getVal('is_primary') || getVal('Penugasan Utama (Ya/Tidak)')).toLowerCase();
       const rawStatusPenugasan = getVal('status_penugasan', 'Aktif');
 
-      // 6. Education Fields
-      const rawEduLevel = getVal('pendidikan_terakhir');
-      const rawEduInstitution = getVal('institusi');
-      const rawEduMajor = getVal('jurusan');
-      const rawEduYear = getVal('tahun_lulus');
-      const rawEduCertNum = getVal('nomor_ijazah');
+      // 6. Education Fields (Summary & Breakdown)
+      const rawEduLevel = getVal('pendidikan_terakhir') || getVal('Pendidikan Terakhir');
+      const rawSdTahun = getVal('sd_tahun') || getVal('Pendidikan SD - Tahun');
+      const rawSdInstansi = getVal('sd_instansi') || getVal('Pendidikan SD - Instansi');
+      const rawSmpTahun = getVal('smp_tahun') || getVal('Pendidikan SMP - Tahun');
+      const rawSmpInstansi = getVal('smp_instansi') || getVal('Pendidikan SMP - Instansi');
+      const rawSmaTahun = getVal('sma_tahun') || getVal('Pendidikan SMA/SMK - Tahun');
+      const rawSmaInstansi = getVal('sma_instansi') || getVal('Pendidikan SMA/SMK - Instansi');
+      const rawS1Tahun = getVal('s1_tahun') || getVal('Pendidikan S1 - Tahun');
+      const rawS1Instansi = getVal('s1_instansi') || getVal('Pendidikan S1 - Instansi');
+      const rawS2Tahun = getVal('s2_tahun') || getVal('Pendidikan S2 - Tahun');
+      const rawS2Instansi = getVal('s2_instansi') || getVal('Pendidikan S2 - Instansi');
+      const rawS3Tahun = getVal('s3_tahun') || getVal('Pendidikan S3 - Tahun');
+      const rawS3Instansi = getVal('s3_instansi') || getVal('Pendidikan S3 - Instansi');
+
+      const rawNonformalNama = getVal('nonformal_nama') || getVal('Pendidikan Nonformal - Nama');
+      const rawNonformalInstansi = getVal('nonformal_instansi') || getVal('Pendidikan Nonformal - Instansi');
+      const rawNonformalTahun = getVal('nonformal_tahun') || getVal('Pendidikan Nonformal - Tahun');
+      const rawNonformalKet = getVal('nonformal_keterangan') || getVal('Pendidikan Nonformal - Keterangan');
+
+      const rawEduInstitution = getVal('institusi') || getVal('Nama Institusi/Kampus');
+      const rawEduMajor = getVal('jurusan') || getVal('Jurusan');
+      const rawEduYear = getVal('tahun_lulus') || getVal('Tahun Lulus');
+      const rawEduCertNum = getVal('nomor_ijazah') || getVal('Nomor Ijazah');
 
       // Validation
       if (!rawName) {
@@ -420,11 +333,31 @@ export const excelService = {
           ? rawStatus
           : 'Tetap') as any;
 
+        const formalEduList: any[] = [];
+        if (rawSdInstansi) formalEduList.push({ level: 'SD', year: rawSdTahun, institution: rawSdInstansi });
+        if (rawSmpInstansi) formalEduList.push({ level: 'SMP', year: rawSmpTahun, institution: rawSmpInstansi });
+        if (rawSmaInstansi) formalEduList.push({ level: 'SMA/SMK', year: rawSmaTahun, institution: rawSmaInstansi });
+        if (rawS1Instansi) formalEduList.push({ level: 'S1', year: rawS1Tahun, institution: rawS1Instansi });
+        if (rawS2Instansi) formalEduList.push({ level: 'S2', year: rawS2Tahun, institution: rawS2Instansi });
+        if (rawS3Instansi) formalEduList.push({ level: 'S3', year: rawS3Tahun, institution: rawS3Instansi });
+
+        const nonformalEduList: any[] = [];
+        if (rawNonformalNama || rawNonformalInstansi) {
+          nonformalEduList.push({
+            name: rawNonformalNama || 'Pelatihan / Pesantren',
+            institution: rawNonformalInstansi,
+            year: rawNonformalTahun,
+            notes: rawNonformalKet
+          });
+        }
+
         groupedMap.set(groupKey, {
           employee: {
             id: existingInDb ? existingInDb.id : undefined,
             employee_number: existingInDb ? existingInDb.employee_number : undefined,
             nik: rawNik,
+            nirg: rawNirg || (existingInDb?.nirg || undefined),
+            nirk: rawNirk || (existingInDb?.nirk || undefined),
             nip: rawNip || (existingInDb?.nip || ''),
             no_kk: rawKk || (existingInDb?.no_kk || ''),
             full_name: rawName,
@@ -434,6 +367,7 @@ export const excelService = {
             birth_date: rawBirthDate || (existingInDb?.birth_date || ''),
             religion: rawReligion || (existingInDb?.religion || 'Islam'),
             marital_status: rawMarital || (existingInDb?.marital_status || 'Menikah'),
+            last_education: rawEduLevel || (existingInDb?.last_education || undefined),
             address: rawAddress || (existingInDb?.address || ''),
             rt: rawRt || (existingInDb?.rt || ''),
             rw: rawRw || (existingInDb?.rw || ''),
@@ -446,11 +380,17 @@ export const excelService = {
             whatsapp: rawWa || rawPhone || (existingInDb?.whatsapp || ''),
             email: rawEmail || (existingInDb?.email || ''),
             employment_status: normalizedStatus,
+            entry_year: rawTahunMasuk || (existingInDb?.entry_year || undefined),
+            exit_year: rawTahunKeluar || (existingInDb?.exit_year || undefined),
             join_date: rawJoinDate || (existingInDb?.join_date || new Date().toISOString().split('T')[0]),
             appointment_date: rawAppointmentDate || (existingInDb?.appointment_date || undefined),
             appointment_sk_number: rawAppointmentSkNumber || (existingInDb?.appointment_sk_number || undefined),
             appointment_sk_date: rawAppointmentSkDate || (existingInDb?.appointment_sk_date || undefined),
             contract_end_date: rawContractEndDate || (existingInDb?.contract_end_date || undefined),
+            bank_name: rawBankName || (existingInDb?.bank_name || undefined),
+            bank_account_number: rawBankAccountNumber || (existingInDb?.bank_account_number || undefined),
+            formal_education: formalEduList.length > 0 ? formalEduList : (existingInDb?.formal_education || undefined),
+            nonformal_education: nonformalEduList.length > 0 ? nonformalEduList : (existingInDb?.nonformal_education || undefined),
             is_active: true
           },
           assignments: [],
@@ -461,21 +401,30 @@ export const excelService = {
 
       const group = groupedMap.get(groupKey)!;
 
-      // Add Education if present and not already added
-      if (rawEduInstitution || rawEduLevel) {
-        const eduLevel = rawEduLevel || 'S1';
-        const alreadyHasEdu = group.education?.some(e => e.institution_name === rawEduInstitution && e.level === eduLevel);
-        if (!alreadyHasEdu && rawEduInstitution) {
+      // Add Education records
+      const addEduIfValid = (level: string, inst: string, yr?: string, cert?: string, maj?: string) => {
+        if (!inst) return;
+        const exists = group.education?.some(e => e.level === level && e.institution_name === inst);
+        if (!exists) {
           group.education = group.education || [];
           group.education.push({
-            level: eduLevel,
-            institution_name: rawEduInstitution,
-            major: rawEduMajor || undefined,
-            end_year: rawEduYear ? parseInt(rawEduYear, 10) : undefined,
-            certificate_number: rawEduCertNum || undefined
+            level,
+            institution_name: inst,
+            major: maj || undefined,
+            end_year: yr ? parseInt(yr, 10) : undefined,
+            certificate_number: cert || undefined
           });
         }
-      }
+      };
+
+      if (rawSdInstansi) addEduIfValid('SD', rawSdInstansi, rawSdTahun);
+      if (rawSmpInstansi) addEduIfValid('SMP', rawSmpInstansi, rawSmpTahun);
+      if (rawSmaInstansi) addEduIfValid('SMA/SMK', rawSmaInstansi, rawSmaTahun);
+      if (rawS1Instansi) addEduIfValid('S1', rawS1Instansi, rawS1Tahun, rawEduCertNum, rawEduMajor);
+      if (rawS2Instansi) addEduIfValid('S2', rawS2Instansi, rawS2Tahun);
+      if (rawS3Instansi) addEduIfValid('S3', rawS3Instansi, rawS3Tahun);
+      if (rawEduInstitution) addEduIfValid(rawEduLevel || 'S1', rawEduInstitution, rawEduYear, rawEduCertNum, rawEduMajor);
+      if (rawNonformalInstansi) addEduIfValid('Pendidikan Nonformal', rawNonformalInstansi, rawNonformalTahun, undefined, rawNonformalNama);
 
       // Prepare Assignment
       if (matchedUnit && matchedPosition) {

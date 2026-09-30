@@ -125,6 +125,8 @@ export const employeeService = {
         e.full_name.toLowerCase().includes(q) ||
         e.employee_number.toLowerCase().includes(q) ||
         e.nik.includes(q) ||
+        (e.nirg && e.nirg.toLowerCase().includes(q)) ||
+        (e.nirk && e.nirk.toLowerCase().includes(q)) ||
         (e.nip && e.nip.includes(q)) ||
         (e.phone && e.phone.includes(q)) ||
         (e.nickname && e.nickname.toLowerCase().includes(q))

@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { GraduationCap, Plus, Edit2, Trash2, BookOpen } from 'lucide-react';
-import { EmployeeEducation } from '../../types';
+import { Employee, EmployeeEducation } from '../../types';
 import { educationService } from '../../services/educationService';
+import { employeeService } from '../../services/employeeService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { Button } from '../../components/ui/Button';
@@ -12,9 +11,10 @@ import { ConfirmationDialog } from '../../components/ui/ConfirmationDialog';
 
 interface EmployeeEducationTabProps {
   employeeId: string;
+  employee?: Employee | null;
 }
 
-export const EmployeeEducationTab: React.FC<EmployeeEducationTabProps> = ({ employeeId }) => {
+export const EmployeeEducationTab: React.FC<EmployeeEducationTabProps> = ({ employeeId, employee }) => {
   const { canEdit } = useAuth();
   const { success, error } = useToast();
 
@@ -123,10 +123,74 @@ export const EmployeeEducationTab: React.FC<EmployeeEducationTabProps> = ({ empl
 
   return (
     <div className="space-y-6">
+      {/* 1. Riwayat Pendidikan Formal Breakdown (SD - S3) */}
+      {employee?.formal_education && employee.formal_education.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <GraduationCap className="w-5 h-5 text-emerald-800" />
+            <div>
+              <h4 className="font-bold text-slate-900 text-sm">Riwayat Pendidikan Formal (SD - S3)</h4>
+              <p className="text-xs text-slate-500">Data jenjang sekolah dasar hingga perguruan tinggi</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {employee.formal_education.map((f, i) => (
+              <div key={i} className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-[11px] uppercase px-2 py-0.5 bg-emerald-100 text-emerald-900 rounded border border-emerald-200">
+                    {f.level}
+                  </span>
+                  {f.year && (
+                    <span className="text-[11px] font-mono text-slate-500 font-bold">Lulus: {f.year}</span>
+                  )}
+                </div>
+                <p className="font-bold text-slate-800 text-xs mt-1.5">{f.institution || '-'}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 2. Riwayat Pendidikan Nonformal / Pesantren */}
+      {employee?.nonformal_education && employee.nonformal_education.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
+            <BookOpen className="w-5 h-5 text-amber-700" />
+            <div>
+              <h4 className="font-bold text-slate-900 text-sm">Riwayat Pendidikan / Pelatihan Nonformal & Pesantren</h4>
+              <p className="text-xs text-slate-500">Pondok pesantren, kursus tahsin/tahfidz, sertifikasi, diklat</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {employee.nonformal_education.map((nf, i) => (
+              <div key={i} className="p-4 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <h5 className="font-bold text-slate-900 text-xs">{nf.name}</h5>
+                  {nf.year && (
+                    <span className="text-[11px] font-mono text-amber-900 font-bold bg-amber-100 px-2 py-0.5 rounded">
+                      {nf.year}
+                    </span>
+                  )}
+                </div>
+                {nf.institution && (
+                  <p className="text-xs text-slate-700 font-medium">Instansi: <strong>{nf.institution}</strong></p>
+                )}
+                {nf.notes && (
+                  <p className="text-[11px] text-slate-500 italic">"{nf.notes}"</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 3. Daftar Berkas & Dokumen Ijazah */}
       <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-200">
         <div>
-          <h3 className="text-sm font-bold text-slate-900">Riwayat Pendidikan Formal & Pesantren</h3>
-          <p className="text-xs text-slate-500">Ijazah, jenjang studi, dan institusi pendidikan karyawan</p>
+          <h3 className="text-sm font-bold text-slate-900">Dokumen / Ijazah Pendidikan Terdaftar</h3>
+          <p className="text-xs text-slate-500">Ijazah resmi, nomor seri ijazah, dan transkrip kelulusan</p>
         </div>
         {canEdit && (
           <Button variant="primary" size="sm" leftIcon={<Plus className="w-4 h-4" />} onClick={handleOpenAdd}>
@@ -137,7 +201,7 @@ export const EmployeeEducationTab: React.FC<EmployeeEducationTabProps> = ({ empl
 
       {educationList.length === 0 ? (
         <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500 text-xs">
-          Belum ada riwayat pendidikan yang dicatat.
+          Belum ada arsip ijazah spesifik yang diinput.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
