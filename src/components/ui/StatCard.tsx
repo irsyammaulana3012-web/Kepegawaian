@@ -43,24 +43,28 @@ export const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm shadow-slate-100 transition-all duration-200 ${topBorderStyles[variant]} ${
+      className={`bg-white rounded-2xl p-3.5 sm:p-5 border border-slate-200/80 shadow-sm shadow-slate-100 transition-all duration-200 ${topBorderStyles[variant]} ${
         onClick ? 'cursor-pointer hover:shadow-md hover:-translate-y-0.5' : ''
       }`}
     >
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">{title}</p>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">{value}</p>
-          {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1 truncate">{title}</p>
+          <p className="text-xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-none">{value}</p>
+          {subtitle && <p className="text-[11px] sm:text-xs text-slate-500 mt-1.5 line-clamp-2 sm:line-clamp-none">{subtitle}</p>}
           {trend && (
-            <div className={`flex items-center gap-1 text-xs font-semibold mt-2 ${trend.isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
+            <div className={`flex items-center gap-1 text-[11px] sm:text-xs font-semibold mt-2 ${trend.isPositive ? 'text-emerald-600' : 'text-rose-600'}`}>
               <span>{trend.isPositive ? '↑' : '↓'}</span>
               <span>{trend.value}</span>
             </div>
           )}
         </div>
-        <div className={`p-3 rounded-xl border ${iconBgStyles[variant]} shrink-0 shadow-sm`}>
-          {icon}
+        <div className={`p-2 sm:p-3 rounded-xl border ${iconBgStyles[variant]} shrink-0 shadow-sm`}>
+          {React.isValidElement(icon)
+            ? React.cloneElement(icon as React.ReactElement<any>, {
+                className: 'w-4 h-4 sm:w-6 sm:h-6'
+              })
+            : icon}
         </div>
       </div>
     </div>

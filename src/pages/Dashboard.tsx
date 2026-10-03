@@ -66,27 +66,28 @@ export const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="space-y-5 sm:space-y-8 animate-in fade-in duration-300">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 p-6 sm:p-8 text-white shadow-xl shadow-emerald-950/20 border border-emerald-700/50">
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-950 p-4 sm:p-8 text-white shadow-xl shadow-emerald-950/20 border border-emerald-700/50">
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-700/60 border border-emerald-500/30 text-emerald-200 text-xs font-semibold mb-3">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-700/60 border border-emerald-500/30 text-emerald-200 text-[11px] sm:text-xs font-semibold mb-2 sm:mb-3">
               <span>🕌</span>
-              <span>Sistem Informasi Terintegrasi Pesantren</span>
+              <span className="truncate">Sistem Informasi Terintegrasi Pesantren</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight">
               Selamat Datang di SIMKA Al-Qur'aniyyah
             </h2>
-            <p className="mt-2 text-emerald-100/90 text-sm max-w-2xl leading-relaxed">
+            <p className="mt-1.5 sm:mt-2 text-emerald-100/90 text-xs sm:text-sm max-w-2xl leading-relaxed">
               Pusat database seluruh karyawan, guru, dan tenaga kependidikan. Dilengkapi sistem <strong className="text-amber-300 underline underline-offset-4 font-semibold">1 Karyawan = Multiple Penugasan</strong> lintas unit, jabatan, dan amanah pesantren.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-col sm:flex-row w-full md:w-auto items-stretch sm:items-center gap-2.5 sm:gap-3 pt-2 md:pt-0 border-t md:border-t-0 border-emerald-700/40">
             <Button
               variant="gold"
               size="md"
+              className="w-full sm:w-auto justify-center text-xs sm:text-sm"
               leftIcon={<UserPlus className="w-4 h-4" />}
               onClick={() => navigate('/employees/new')}
             >
@@ -95,7 +96,7 @@ export const Dashboard: React.FC = () => {
             <Button
               variant="outline"
               size="md"
-              className="bg-white/10 hover:bg-white/20 text-white border-emerald-600/50"
+              className="w-full sm:w-auto justify-center bg-white/10 hover:bg-white/20 text-white border-emerald-600/50 text-xs sm:text-sm"
               leftIcon={<FileSpreadsheet className="w-4 h-4" />}
               onClick={() => navigate('/import-export')}
             >
@@ -110,19 +111,19 @@ export const Dashboard: React.FC = () => {
 
       {/* Contract Expiration Warning Banner (if any) */}
       {stats.expiring_contracts.length > 0 && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-4 sm:p-5 text-amber-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="p-2.5 rounded-xl bg-amber-100 text-amber-700 shrink-0">
-              <AlertTriangle className="w-5 h-5" />
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 p-3.5 sm:p-5 text-amber-900 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-start gap-2.5 sm:gap-3">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-amber-100 text-amber-700 shrink-0 mt-0.5 sm:mt-0">
+              <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-amber-950 flex items-center gap-2">
+              <h4 className="text-xs sm:text-sm font-bold text-amber-950 flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span>Pemberitahuan: {stats.expiring_contracts.length} Karyawan Kontrak Akan Berakhir</span>
                 <span className="text-[10px] bg-amber-200 text-amber-900 font-bold px-2 py-0.5 rounded-full">
                   ≤ 90 Hari
                 </span>
               </h4>
-              <p className="text-xs text-amber-800/90 mt-0.5">
+              <p className="text-[11px] sm:text-xs text-amber-800/90 mt-0.5">
                 Terdapat kontrak kerja staf/guru yang perlu segera ditinjau atau diperpanjang masa berlakunya.
               </p>
             </div>
@@ -130,7 +131,7 @@ export const Dashboard: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            className="border-amber-300 text-amber-900 hover:bg-amber-100 shrink-0 bg-white"
+            className="w-full sm:w-auto justify-center border-amber-300 text-amber-900 hover:bg-amber-100 shrink-0 bg-white text-xs"
             onClick={() => navigate('/contracts')}
             rightIcon={<ArrowRight className="w-3.5 h-3.5" />}
           >
@@ -141,14 +142,14 @@ export const Dashboard: React.FC = () => {
 
       {/* CORE METRICS: EMPLOYEE & MULTIPLE ASSIGNMENT STATS */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-emerald-700" />
-            <span>Ringkasan Eksekutif Kepegawaian & Penugasan</span>
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h3 className="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-emerald-700 shrink-0" />
+            <span>Ringkasan Kepegawaian & Penugasan</span>
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           <StatCard
             title="Total Karyawan"
             value={stats.total_employees}
@@ -159,7 +160,7 @@ export const Dashboard: React.FC = () => {
           />
 
           <StatCard
-            title="Total Penugasan Aktif"
+            title="Penugasan Aktif"
             value={stats.total_active_assignments}
             subtitle="Seluruh SK & Amanah Aktif"
             icon={<Briefcase className="w-6 h-6" />}
@@ -168,18 +169,18 @@ export const Dashboard: React.FC = () => {
           />
 
           <StatCard
-            title="Karyawan Multi-Unit"
+            title="Multi-Unit"
             value={stats.multi_unit_employees}
-            subtitle="Bertugas di > 1 Unit Sekolah"
+            subtitle="Bertugas di > 1 Unit"
             icon={<Building2 className="w-6 h-6" />}
             variant="purple"
             onClick={() => navigate('/assignments')}
           />
 
           <StatCard
-            title="Karyawan Multi-Penugasan"
+            title="Multi-Penugasan"
             value={stats.multi_assignment_employees}
-            subtitle="Memegang > 1 Jabatan/Tugas"
+            subtitle="Memegang > 1 Jabatan"
             icon={<Layers className="w-6 h-6" />}
             variant="blue"
             onClick={() => navigate('/assignments')}
@@ -188,30 +189,30 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {/* Secondary Metrics Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase">Tenaga Guru</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{stats.total_teachers}</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-4">
+        <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
+          <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase truncate">Tenaga Guru</p>
+          <p className="text-base sm:text-xl font-bold text-slate-900 mt-0.5 sm:mt-1">{stats.total_teachers}</p>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase">Staff / Tenaga Kependidikan</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">{stats.total_staff}</p>
+        <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
+          <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase truncate">Staff / Tendik</p>
+          <p className="text-base sm:text-xl font-bold text-slate-900 mt-0.5 sm:mt-1">{stats.total_staff}</p>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase">Pegawai Tetap</p>
-          <p className="text-xl font-bold text-emerald-700 mt-1">{stats.permanent_employees}</p>
+        <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
+          <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase truncate">Pegawai Tetap</p>
+          <p className="text-base sm:text-xl font-bold text-emerald-700 mt-0.5 sm:mt-1">{stats.permanent_employees}</p>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase">Pegawai Kontrak</p>
-          <p className="text-xl font-bold text-amber-700 mt-1">{stats.contract_employees}</p>
+        <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
+          <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase truncate">Pegawai Kontrak</p>
+          <p className="text-base sm:text-xl font-bold text-amber-700 mt-0.5 sm:mt-1">{stats.contract_employees}</p>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase">Honorer</p>
-          <p className="text-xl font-bold text-blue-700 mt-1">{stats.honorary_employees}</p>
+        <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
+          <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase truncate">Honorer</p>
+          <p className="text-base sm:text-xl font-bold text-blue-700 mt-0.5 sm:mt-1">{stats.honorary_employees}</p>
         </div>
-        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
-          <p className="text-[11px] font-semibold text-slate-500 uppercase">Laki-laki / Perempuan</p>
-          <p className="text-xl font-bold text-slate-900 mt-1">
+        <div className="p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm text-center">
+          <p className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase truncate">L / P</p>
+          <p className="text-base sm:text-xl font-bold text-slate-900 mt-0.5 sm:mt-1">
             {stats.gender_distribution.male} : {stats.gender_distribution.female}
           </p>
         </div>

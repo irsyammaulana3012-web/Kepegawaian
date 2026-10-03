@@ -21,31 +21,32 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSidebar }) => {
   ];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 sm:px-6 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white/95 px-3 sm:px-6 backdrop-blur-md">
       {/* Left: Mobile Menu & Title */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 mr-2">
         <button
           onClick={onOpenSidebar}
-          className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition"
+          className="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition shrink-0"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <div>
-          <h1 className="text-sm sm:text-base font-extrabold text-emerald-950 flex items-center gap-2">
-            <span>Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah</span>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-xs sm:text-base font-extrabold text-emerald-950 flex items-center gap-1.5 leading-tight">
+            <span className="sm:hidden font-black text-emerald-900 truncate">SIMKA Al-Qur'aniyyah</span>
+            <span className="hidden sm:inline truncate">Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah</span>
           </h1>
-          <p className="text-[11px] text-slate-500 hidden sm:block">
+          <p className="text-[11px] text-slate-500 hidden md:block truncate mt-0.5">
             Sistem Informasi Manajemen Database Pusat Karyawan & Multi-Penugasan
           </p>
         </div>
       </div>
 
       {/* Right: Role Switcher, Database Status, User Profile & Logout */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Database Mode Status */}
-        <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-700">
+        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-medium text-slate-700">
           <Database className="w-3.5 h-3.5 text-emerald-600" />
-          <span>{isConfigured ? 'Supabase Live' : 'Local / Offline DB'}</span>
+          <span>{isConfigured ? 'Supabase Live' : 'Local DB'}</span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
 
@@ -53,11 +54,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenSidebar }) => {
         <div className="relative">
           <button
             onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200 bg-amber-50/70 text-amber-900 text-xs font-semibold hover:bg-amber-100 transition shadow-sm"
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-xl border border-amber-200 bg-amber-50/70 text-amber-900 text-xs font-semibold hover:bg-amber-100 transition shadow-sm"
           >
-            <Shield className="w-3.5 h-3.5 text-amber-600" />
-            <span className="capitalize">{role.replace('_', ' ')}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-amber-700" />
+            <Shield className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span className="capitalize text-[11px] sm:text-xs max-w-[70px] sm:max-w-none truncate">{role.replace('_', ' ')}</span>
+            <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-700 shrink-0" />
           </button>
 
           {isRoleDropdownOpen && (
