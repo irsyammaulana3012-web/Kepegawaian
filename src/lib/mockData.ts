@@ -901,6 +901,175 @@ export const initialOfficialLetters: OfficialLetter[] = [
     signer_title: 'Ketua Umum',
     status: 'diterbitkan',
     created_at: '2024-07-11T08:00:00Z'
+  },
+  {
+    id: 'ltr-2',
+    letter_number: '052 /SK/YASPIQ/VIII/2024',
+    template_id: 'tpl-1',
+    type: 'sk_pengangkatan',
+    title: 'SK Pengangkatan Guru Tetap Sdr. Ahmad Fauzi, S.Pd.',
+    employee_id: 'emp-2',
+    employee_name: 'Ahmad Fauzi, S.Pd.',
+    employee_email: 'ahmad.fauzi@alquraniyyah.sch.id',
+    employee_nik: '3201012345670001',
+    employee_nirg_nirk: 'NRIG : G-SDIT-2019-002',
+    employee_position: 'Guru PAI & Tahfidz',
+    employee_unit: 'SD IT Al-Qur\'aniyyah',
+    employee_gender: 'Laki-laki',
+    employee_birth_info: 'Sukabumi, 15-09-1988',
+    employee_education_level: 'S1',
+    subject: 'PENGANGKATAN SDR. AHMAD FAUZI, S.PD. NRIG : G-SDIT-2019-002 MENJADI GURU TETAP (GT) SD IT AL-QUR\'ANIYYAH TAHUN AJARAN 2024-2025',
+    header_title: 'KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    considering: [
+      'Bahwa dalam rangka menjaga kelancaran kegiatan belajar mengajar dan pembinaan hafalan Al-Qur\'an santri/siswa SD IT Al-Qur\'aniyyah, dipandang perlu mengangkat Guru PAI & Tahfidz yang kompeten dan berakhlakul karimah.',
+      'Bahwa saudara Ahmad Fauzi, S.Pd. telah memenuhi standar kualifikasi pendidik dan pengasuh santri di lingkungan Yayasan.'
+    ],
+    in_view: [
+      'Undang-Undang RI Nomor 20 Tahun 2003 Tentang Sistem Pendidikan Nasional.',
+      'Peraturan YASPIQ Nomor 3 Tahun 2008 Tentang Kepegawaian Yayasan.'
+    ],
+    observing: [
+      'Rekomendasi Kepala Sekolah SD IT Al-Qur\'aniyyah dan Direktur Pendidikan Pesantren.'
+    ],
+    deciding: {
+      'Pertama': 'Mengangkat Sdr. :\n1. Nama : Ahmad Fauzi, S.Pd.\n2. Tempat/Tgl. Lahir : Sukabumi, 15-09-1988\n3. Pendidikan : S1 Pendidikan Agama Islam\n4. Ditugaskan dalam jabatan : Guru PAI & Pembina Tahfidz\n5. Pada Unit : SD IT Al-Qur\'aniyyah',
+      'Kedua': 'Keputusan ini berlaku TMT 01 Agustus 2024 sampai dengan 31 Juli 2025;',
+      'Ketiga': 'Kepada yang bersangkutan diberikan hak gaji, honorarium, dan tunjangan sesuai ketentuan Yayasan.'
+    },
+    effective_date: '2024-08-01',
+    end_date: '2025-07-31',
+    issued_date: '2024-08-01',
+    issued_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    status: 'diterbitkan',
+    created_at: '2024-08-01T09:00:00Z'
+  },
+  {
+    id: 'ltr-3',
+    letter_number: '012 /SP-1/YASPIQ/IX/2024',
+    template_id: 'tpl-2',
+    type: 'sp_peringatan',
+    title: 'Surat Peringatan Pertama (SP-1) Sdr. M. Rizky Pratama, S.Si.',
+    employee_id: 'emp-5',
+    employee_name: 'M. Rizky Pratama, S.Si.',
+    employee_email: 'rizky.pratama@alquraniyyah.sch.id',
+    employee_nik: '3201015678900001',
+    employee_nirg_nirk: 'NIRK : K-YAS-2023-012',
+    employee_position: 'Staf Laboratorium & Sarpras',
+    employee_unit: 'Unit Sarana & Logistik',
+    employee_gender: 'Laki-laki',
+    employee_birth_info: 'Depok, 12-06-1993',
+    employee_education_level: 'S1',
+    subject: 'SURAT PERINGATAN PERTAMA (SP-1) ATAS KELALAIAN KEDISIPLINAN DAN REKAPITULASI PRESENSI KERJA',
+    header_title: 'SURAT PERINGATAN PERTAMA (SP-1) YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    considering: [
+      'Bahwa seluruh karyawan dan staf kepegawaian wajib mematuhi jam kerja dan tata tertib kepegawaian Yayasan.',
+      'Bahwa Sdr. M. Rizky Pratama, S.Si. telah terbukti melakukan keterlambatan dan ketidakhadiran tanpa keterangan sah selama 3 hari berturut-turut pada bulan Agustus 2024.'
+    ],
+    in_view: [
+      'Peraturan YASPIQ Nomor 3 Tahun 2008 Tentang Kepegawaian.',
+      'Peraturan YASPIQ Nomor 4 Tahun 2008 Tentang Tata Tertib Kepegawaian & Kedisiplinan Kerja.'
+    ],
+    observing: [
+      'Laporan Absensi Presensi Harian dari Kepala Unit Sarana & Logistik.'
+    ],
+    deciding: {
+      'Pertama': 'Menerbitkan Surat Peringatan Pertama (SP-1) kepada Sdr. M. Rizky Pratama, S.Si. (Staf Laboratorium & Sarpras);',
+      'Kedua': 'Meminta yang bersangkutan untuk segera memperbaiki disiplin kehadiran dan menjalankan tugas dengan penuh tanggung jawab;',
+      'Ketiga': 'Masa berlaku SP-1 ini adalah selama 3 (tiga) bulan sejak tanggal diterbitkan.'
+    },
+    effective_date: '2024-09-01',
+    issued_date: '2024-09-01',
+    issued_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    status: 'diterbitkan',
+    created_at: '2024-09-01T10:00:00Z'
+  },
+  {
+    id: 'ltr-4',
+    letter_number: '088 /SKP/YASPIQ/VII/2024',
+    template_id: 'tpl-1',
+    type: 'sk_penugasan',
+    title: 'SK Penugasan Multi-Unit Ustadzah Fatimah Zahra, S.Ag., M.Pd.',
+    employee_id: 'emp-3',
+    employee_name: 'Ustadzah Fatimah Zahra, S.Ag., M.Pd.',
+    employee_email: 'fatimah.zahra@alquraniyyah.sch.id',
+    employee_nik: '3201013456780001',
+    employee_nirg_nirk: 'NRIG : G-SMA-2018-005',
+    employee_position: 'Guru PAI & Pembina Halaqah Tahfidz',
+    employee_unit: 'SMA IT & LPBQ Al-Qur\'aniyyah',
+    employee_gender: 'Perempuan',
+    employee_birth_info: 'Bandung, 20-03-1990',
+    employee_education_level: 'S2',
+    subject: 'PENUGASAN MULTI-UNIT SEBAGAI GURU PAI SMA IT DAN PEMBINA HALAQAH TAHFIDZ LPBQ PESANTREN AL-QUR\'ANIYYAH TAHUN 2024/2025',
+    header_title: 'KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    considering: [
+      'Bahwa dalam rangka mengoptimalkan kompetensi keilmuan Al-Qur\'an dan pengasuhan santri putri, dipandang perlu memberikan amanah penugasan di lebih dari satu unit lembaga.',
+      'Bahwa Ustadzah Fatimah Zahra, S.Ag., M.Pd. memiliki integritas dan dedikasi tinggi dalam bidang Al-Qur\'an dan Pendidikan Islam.'
+    ],
+    in_view: [
+      'Statuta Pondok Pesantren Al-Qur\'aniyyah Bab II Pasal 12.',
+      'Peraturan Kepegawaian YASPIQ Mengenai Multi-Penugasan Lintas Unit.'
+    ],
+    observing: [
+      'Rekomendasi Rapat Pimpinan (Rapim) Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah.'
+    ],
+    deciding: {
+      'Pertama': 'Menugaskan Ustadzah Fatimah Zahra, S.Ag., M.Pd. dalam amanah :\n1. Tugas Utama : Guru PAI di SMA IT Al-Qur\'aniyyah\n2. Tugas Tambahan : Pembina Halaqah Tahfidz di LPBQ Pesantren',
+      'Kedua': 'SK Penugasan ini berlaku mulai TMT 15 Juli 2024 s/d 14 Juli 2025;',
+      'Ketiga': 'Kepadanya diberikan tunjangan jabatan & penugasan sesuai ketentuan yang berlaku.'
+    },
+    effective_date: '2024-07-15',
+    end_date: '2025-07-14',
+    issued_date: '2024-07-15',
+    issued_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    status: 'diterbitkan',
+    created_at: '2024-07-15T08:30:00Z'
+  },
+  {
+    id: 'ltr-5',
+    letter_number: '015 /SKET/YASPIQ/I/2025',
+    template_id: 'tpl-1',
+    type: 'surat_keterangan',
+    title: 'Surat Keterangan Kerja Sdri. Siti Rahmawati, S.Kom.',
+    employee_id: 'emp-4',
+    employee_name: 'Siti Rahmawati, S.Kom.',
+    employee_email: 'rahma.tu@alquraniyyah.sch.id',
+    employee_nik: '3201014567890001',
+    employee_nirg_nirk: 'NIRK : K-TU-2024-004',
+    employee_position: 'Staf Tata Usaha & Kesiswaan',
+    employee_unit: 'SMP IT Al-Qur\'aniyyah',
+    employee_gender: 'Perempuan',
+    employee_birth_info: 'Jakarta, 28-11-1995',
+    employee_education_level: 'S1',
+    subject: 'SURAT KETERANGAN PENGALAMAN KERJA / BEKERJA AKTIF SEBAGAI STAF TATA USAHA SMP IT AL-QUR\'ANIYYAH',
+    header_title: 'SURAT KETERANGAN KERJA YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    considering: [
+      'Bahwa yang bersangkutan adalah benar karyawan aktif di lingkungan Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah.',
+      'Bahwa surat keterangan ini diterbitkan atas permintaan yang bersangkutan untuk keperluan pengurusan administrasi kepegawaian / pendidikan.'
+    ],
+    in_view: [
+      'Peraturan YASPIQ Nomor 3 Tahun 2008 Tentang Kepegawaian.'
+    ],
+    observing: [
+      'Data Induk Kepegawaian SIMKA Al-Qur\'aniyyah.'
+    ],
+    deciding: {
+      'Pertama': 'Menerangkan bahwa Sdri. Siti Rahmawati, S.Kom. adalah benar Karyawan Aktif yang bertugas sebagai Staf Tata Usaha & Kesiswaan di SMP IT Al-Qur\'aniyyah sejak 01 Juli 2024 sampai dengan saat ini;',
+      'Kedua': 'Selama bertugas yang bersangkutan menunjukkan loyalitas, integritas, dan dedikasi yang sangat baik;',
+      'Ketiga': 'Demikian Surat Keterangan Kerja ini dibuat untuk dapat dipergunakan sebagaimana mestinya.'
+    },
+    effective_date: '2025-01-10',
+    issued_date: '2025-01-10',
+    issued_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    status: 'diterbitkan',
+    created_at: '2025-01-10T09:00:00Z'
   }
 ];
 
