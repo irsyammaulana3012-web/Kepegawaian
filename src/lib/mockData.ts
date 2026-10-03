@@ -762,3 +762,145 @@ export const initialUsers: UserProfile[] = [
     created_at: '2023-01-01T00:00:00Z'
   }
 ];
+
+export const initialLetterKopSettings = {
+  header_line1: 'YAYASAN PENDIDIKAN ISLAM',
+  header_line2: 'PONDOK PESANTREN AL-QUR\'ANIYYAH',
+  address: 'Jl. Pesantren Al-Qur\'aniyyah No. 12, Cipayung, Tangerang Selatan / Megamendung, Bogor',
+  contact: 'Telp: (021) 7458000 | Email: yayasan@alquraniyyah.sch.id | Website: alquraniyyah.sch.id',
+  default_city: 'Tangerang Selatan',
+  default_signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+  default_signer_title: 'Ketua Umum'
+};
+
+import { LetterTemplate, OfficialLetter, LetterKopSettings } from '../types';
+
+export const initialLetterTemplates: LetterTemplate[] = [
+  {
+    id: 'tpl-1',
+    code: 'SK-GT',
+    title: 'SK Pengangkatan Guru Tetap / Kontrak (Format Resmi YASPIQ)',
+    type: 'sk_pengangkatan',
+    subject_template: 'PENGANGKATAN SDR. {nama} {nirg_nirk} MENJADI GURU TETAP (GT) YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH TAHUN PEMBELAJARAN 2024-2025',
+    header_title: 'KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    considering_text: [
+      'Bahwa untuk meningkatkan mutu pendidikan dan tercapainya tujuan pembelajaran di Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah, maka dipandang perlu untuk mengangkat Guru yang amanah, professional, loyal, berdedikasi dan berkualitas.',
+      'Bahwa untuk melaksanakan hal tersebut dengan baik, perlu ditetapkan dengan Keputusan Ketua Umum Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah.'
+    ],
+    in_view_text: [
+      'Undang-Undang Republik Indonesia Nomor 28 Tahun 2004 Tentang Perubahan atas Undang-Undang Nomor 16 TAHUN 2001 Tentang Yayasan.',
+      'Undang-Undang Republik Indonesia Nomor 20 Tahun 2003 Tentang Sistem Pendidikan Nasional.',
+      'Undang-Undang Republik Indonesia Nomor 13 Tahun 2003 Tentang Ketenagakerjaan.',
+      'Akta Pendirian YASPIQ Nomor 05 Tanggal 06 November 2001 Notaris Ruwin Diara, SH.',
+      'Akta Perubahan YASPIQ Nomor 19 Tanggal 27 November 2008 Notaris Syaifuddin Arief, SH, MH.',
+      'Anggaran Dasar (AD) YASPIQ BAB III Pasal 4 Tentang Maksud dan Tujuan Yayasan.',
+      'Anggaran Rumah Tangga (ART) YASPIQ BAB II Tentang fungsi, Tugas, dan Wewenang.',
+      'Peraturan YASPIQ Nomor 3 Tahun 2008 Tentang Kepegawaian YASPIQ.',
+      'Peraturan YASPIQ Nomor 4 tahun 2008 Tentang Tata Tertib Guru/Asatidzah YASPIQ.',
+      'Statuta Sekolah Bab II Pasal 12 tentang kedudukan, tugas, dan wewenang unsur organisasi sekolah.'
+    ],
+    observing_text: [
+      'Hasil penilaian kinerja oleh atasan langsung yang bersangkutan, direkomendasikan untuk diperpanjang sebagai Guru Tetap (GT) Yayasan.'
+    ],
+    deciding_text: {
+      'Pertama': 'Mengangkat Sdr. :\n1. Nama : {nama}\n2. Tempat/Tgl. Lahir : {tempat_tgl_lahir}\n3. Pendidikan : {pendidikan}\n4. Ditugaskan dalam jabatan : {jabatan}\n5. Pada Unit : {unit}',
+      'Kedua': 'Keputusan ini berlaku terhitung mulai tanggal {tmt_mulai} sampai dengan tanggal {tmt_selesai};',
+      'Ketiga': 'Kepadanya diberikan imbalan/ jasa sesuai dengan kemampuan dan peraturan Yayasan;',
+      'Keempat': 'Pengangkatan sebagai Guru Tetap (GT) Yayasan Pendidikan Islam Pondok Pesantren AL-Qur\'aniyyah berdasarkan Penilaian Kinerja, Kebutuhan dan Kemampuan Yayasan;',
+      'Kelima': 'Uraian tugas, tanggung jawab dan wewenang sesuai dengan uraian tugas, tanggung jawab dan wewenang pada struktur organisasi Unit Kelembagaan Yayasan dan peraturan / ketentuan lainnya yang berlaku;',
+      'Keenam': 'Jika kemudian hari terdapat kekeliruan dalam penetapan ini, maka akan diadakan perubahan dan pembetulan seperlunya;',
+      'Ketujuh': 'Keputusan ini disampaikan kepada yang bersangkutan untuk dimaklumi dan diindahkan.'
+    },
+    footer_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    is_default: true
+  },
+  {
+    id: 'tpl-2',
+    code: 'SP-1',
+    title: 'Surat Peringatan Pertama (SP-1)',
+    type: 'sp_peringatan',
+    subject_template: 'SURAT PERINGATAN PERTAMA (SP-1) UNTUK SDR. {nama}',
+    header_title: 'SURAT PERINGATAN PERTAMA (SP-1) YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    considering_text: [
+      'Bahwa Kedisiplinan dan kepatuhan terhadap peraturan yayasan adalah kewajiban seluruh guru dan karyawan.',
+      'Bahwa saudara {nama} telah melakukan tindakan/kelalaian yang tidak sesuai dengan tata tertib kepegawaian.'
+    ],
+    in_view_text: [
+      'Peraturan Kepegawaian YASPIQ Nomor 3 Tahun 2008.',
+      'Peraturan YASPIQ Nomor 4 tahun 2008 Tentang Tata Tertib Guru/Asatidzah & Karyawan YASPIQ.'
+    ],
+    observing_text: [
+      'Hasil evaluasi kehadiran dan Laporan Kedisiplinan dari Atasan Langsung / Kepala Unit.'
+    ],
+    deciding_text: {
+      'Pertama': 'Memberikan Surat Peringatan Pertama (SP-1) kepada Sdr/Sdri {nama} (Jabatan: {jabatan}, Unit: {unit});',
+      'Kedua': 'Meminta yang bersangkutan untuk segera melakukan perbaikan kinerja dan kedisiplinan kerja secara sungguh-sungguh;',
+      'Ketiga': 'Jika dalam kurun waktu 3 (tiga) bulan ke depan tidak ada perubahan, maka Yayasan akan menerbitkan Surat Peringatan berikutnya (SP-2) atau tindakan tegas sesuai aturan kepegawaian.'
+    },
+    footer_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    is_default: true
+  }
+];
+
+export const initialOfficialLetters: OfficialLetter[] = [
+  {
+    id: 'ltr-1',
+    letter_number: '047 /SK/YASPIQ/VII/2024',
+    template_id: 'tpl-1',
+    type: 'sk_pengangkatan',
+    title: 'SK Pengangkatan Guru Tetap Sdr. Irsyam Maulana, SE',
+    employee_id: 'emp-2',
+    employee_name: 'Irsyam Maulana, SE',
+    employee_email: 'irsyam.maulana@alquraniyyah.sch.id',
+    employee_nik: '3201012345670001',
+    employee_nirg_nirk: 'NRIG : E-0047-1415',
+    employee_position: 'Guru',
+    employee_unit: 'SMP IT AL-Qur\'aniyyah',
+    employee_gender: 'Laki-laki',
+    employee_birth_info: 'Jakarta, 30-12-1988',
+    employee_education_level: 'S1',
+    subject: 'PENGANGKATAN SDR. IRSYAM MAULANA, SE NRIG : E-0047-1415 MENJADI GURU TETAP (GT) YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH TAHUN PEMBELAJARAN 2024-2025',
+    header_title: 'KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    considering: [
+      'Bahwa untuk meningkatkan mutu pendidikan dan tercapainya tujuan pembelajaran di Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah, maka dipandang perlu untuk mengangkat Guru yang amanah, professional, loyal, berdedikasi dan berkualitas.',
+      'Bahwa untuk melaksanakan hal tersebut dengan baik, perlu ditetapkan dengan Keputusan Ketua Umum Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah.'
+    ],
+    in_view: [
+      'Undang-Undang Republik Indonesia Nomor 28 Tahun 2004 Tentang Perubahan atas Undang-Undang Nomor 16 TAHUN 2001 Tentang Yayasan.',
+      'Undang-Undang Republik Indonesia Nomor 20 Tahun 2003 Tentang Sistem Pendidikan Nasional.',
+      'Undang-Undang Republik Indonesia Nomor 13 Tahun 2003 Tentang Ketenagakerjaan.',
+      'Akta Pendirian YASPIQ Nomor 05 Tanggal 06 November 2001 Notaris Ruwin Diara, SH.',
+      'Akta Perubahan YASPIQ Nomor 19 Tanggal 27 November 2008 Notaris Syaifuddin Arief, SH, MH.',
+      'Anggaran Dasar (AD) YASPIQ BAB III Pasal 4 Tentang Maksud dan Tujuan Yayasan.',
+      'Anggaran Rumah Tangga (ART) YASPIQ BAB II Tentang fungsi, Tugas, dan Wewenang.',
+      'Peraturan YASPIQ Nomor 3 Tahun 2008 Tentang Kepegawaian YASPIQ.',
+      'Peraturan YASPIQ Nomor 4 tahun 2008 Tentang Tata Tertib Guru/Asatidzah YASPIQ.',
+      'Statuta Sekolah Bab II Pasal 12 tentang kedudukan, tugas, dan wewenang unsur organisasi sekolah.'
+    ],
+    observing: [
+      'Hasil penilaian kinerja oleh atasan langsung yang bersangkutan, direkomendasikan untuk diperpanjang sebagai Guru Tetap (GT) Yayasan.'
+    ],
+    deciding: {
+      'Pertama': 'Mengangkat Sdr. :\n1. Nama : Irsyam Maulana, SE\n2. Tempat/Tgl. Lahir : Jakarta, 30-12-1988\n3. Pendidikan : S1\n4. Ditugaskan dalam jabatan : Guru\n5. Pada Unit : SMP IT AL-Qur\'aniyyah',
+      'Kedua': 'Keputusan ini berlaku terhitung mulai tanggal ditetapkan surat ini sampai dengan tanggal 30 Juni 2025;',
+      'Ketiga': 'Kepadanya diberikan imbalan/ jasa sesuai dengan kemampuan dan peraturan Yayasan;',
+      'Keempat': 'Pengangkatan sebagai Guru Tetap (GT) Yayasan Pendidikan Islam Pondok Pesantren AL-Qur\'aniyyah berdasarkan Penilaian Kinerja, Kebutuhan dan Kemampuan Yayasan;',
+      'Kelima': 'Uraian tugas, tanggung jawab dan wewenang sesuai dengan uraian tugas, tanggung jawab dan wewenang pada struktur organisasi Unit Kelembagaan Yayasan dan peraturan / ketentuan lainnya yang berlaku;',
+      'Keenam': 'Jika kemudian hari terdapat kekeliruan dalam penetapan ini, maka akan diadakan perubahan dan pembetulan seperlunya;',
+      'Ketujuh': 'Keputusan ini disampaikan kepada yang bersangkutan untuk dimaklumi dan diindahkan.'
+    },
+    effective_date: '2024-07-11',
+    end_date: '2025-06-30',
+    issued_date: '2024-07-11',
+    issued_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    status: 'diterbitkan',
+    created_at: '2024-07-11T08:00:00Z'
+  }
+];
+

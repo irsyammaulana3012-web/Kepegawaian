@@ -355,8 +355,66 @@ CREATE POLICY "Anon full training" ON employee_training FOR ALL TO anon USING (t
 CREATE POLICY "Anon full attendance" ON employee_attendance FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon full leave" ON employee_leave FOR ALL TO anon USING (true) WITH CHECK (true);
 CREATE POLICY "Anon full notes" ON employee_notes FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY "Anon full audit" ON audit_logs FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY "Anon full users" ON user_profiles FOR ALL TO anon USING (true) WITH CHECK (true);
+-- 11. OFFICIAL LETTERS & SK PENYURATAN
+CREATE TABLE IF NOT EXISTS letter_templates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    code VARCHAR(50) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    subject_template TEXT,
+    header_title TEXT,
+    considering_text JSONB,
+    in_view_text JSONB,
+    observing_text JSONB,
+    deciding_text JSONB,
+    footer_city VARCHAR(100),
+    signer_name VARCHAR(255),
+    signer_title VARCHAR(255),
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS official_letters (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    letter_number VARCHAR(100) NOT NULL,
+    template_id UUID REFERENCES letter_templates(id) ON DELETE SET NULL,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    employee_id UUID REFERENCES employees(id) ON DELETE CASCADE,
+    employee_name VARCHAR(255) NOT NULL,
+    employee_email VARCHAR(255),
+    employee_nik VARCHAR(50),
+    employee_nirg_nirk VARCHAR(50),
+    employee_position VARCHAR(255),
+    employee_unit VARCHAR(255),
+    employee_gender VARCHAR(20),
+    employee_birth_info VARCHAR(255),
+    employee_education_level VARCHAR(50),
+    subject TEXT NOT NULL,
+    header_title TEXT NOT NULL,
+    considering JSONB,
+    in_view JSONB,
+    observing JSONB,
+    deciding JSONB,
+    effective_date DATE NOT NULL,
+    end_date DATE,
+    issued_date DATE NOT NULL,
+    issued_city VARCHAR(100),
+    signer_name VARCHAR(255) NOT NULL,
+    signer_title VARCHAR(255) NOT NULL,
+    status VARCHAR(50) DEFAULT 'diterbitkan',
+    sent_at TIMESTAMP WITH TIME ZONE,
+    pdf_url TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE letter_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE official_letters ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anon full official_letters" ON official_letters FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full letter_templates" ON letter_templates FOR ALL TO anon USING (true) WITH CHECK (true);
+
 
 -- 15. SEED DATA - INITIAL MASTER DATA & SAMPLE DEMO
 INSERT INTO units (code, name, description, sort_order) VALUES

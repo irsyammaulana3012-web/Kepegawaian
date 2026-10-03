@@ -14,7 +14,10 @@ import {
   initialLeave,
   initialNotes,
   initialAuditLogs,
-  initialUsers
+  initialUsers,
+  initialOfficialLetters,
+  initialLetterTemplates,
+  initialLetterKopSettings
 } from '../lib/mockData';
 import {
   Unit,
@@ -32,7 +35,10 @@ import {
   EmployeeLeave,
   EmployeeNote,
   AuditLog,
-  UserProfile
+  UserProfile,
+  OfficialLetter,
+  LetterTemplate,
+  LetterKopSettings
 } from '../types';
 import { supabase, isConfigured } from '../lib/supabase';
 
@@ -54,7 +60,10 @@ const STORAGE_KEYS = {
   NOTES: 'simka_notes',
   AUDIT: 'simka_audit',
   USERS: 'simka_users',
-  CURRENT_USER: 'simka_current_user'
+  CURRENT_USER: 'simka_current_user',
+  OFFICIAL_LETTERS: 'simka_official_letters',
+  LETTER_TEMPLATES: 'simka_letter_templates',
+  KOP_SETTINGS: 'simka_kop_settings'
 };
 
 function getItem<T>(key: string, initialData: T): T {
@@ -368,6 +377,38 @@ class StorageStore {
     }
   }
 
+  // Official Letters
+  getOfficialLetters(): OfficialLetter[] { return getItem<OfficialLetter[]>(STORAGE_KEYS.OFFICIAL_LETTERS, initialOfficialLetters); }
+  setOfficialLetters(letters: OfficialLetter[]): void {
+    setItem(STORAGE_KEYS.OFFICIAL_LETTERS, letters);
+    if (isConfigured) {
+      if (letters.length === 0) {
+        supabase.from('official_letters').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('official_letters').upsert(cleanForDb(letters)).then();
+      }
+    }
+  }
+
+  // Letter Templates
+  getLetterTemplates(): LetterTemplate[] { return getItem<LetterTemplate[]>(STORAGE_KEYS.LETTER_TEMPLATES, initialLetterTemplates); }
+  setLetterTemplates(templates: LetterTemplate[]): void {
+    setItem(STORAGE_KEYS.LETTER_TEMPLATES, templates);
+    if (isConfigured) {
+      if (templates.length === 0) {
+        supabase.from('letter_templates').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('letter_templates').upsert(cleanForDb(templates)).then();
+      }
+    }
+  }
+
+  // Kop Settings
+  getLetterKopSettings(): LetterKopSettings { return getItem<LetterKopSettings>(STORAGE_KEYS.KOP_SETTINGS, initialLetterKopSettings); }
+  setLetterKopSettings(settings: LetterKopSettings): void {
+    setItem(STORAGE_KEYS.KOP_SETTINGS, settings);
+  }
+
   // Audit Logs
   getAuditLogs(): AuditLog[] { return getItem<AuditLog[]>(STORAGE_KEYS.AUDIT, initialAuditLogs); }
   setAuditLogs(logs: AuditLog[]): void {
@@ -416,6 +457,7 @@ class StorageStore {
     this.setLeave([]);
     this.setNotes([]);
     this.setAuditLogs([]);
+    this.setOfficialLetters([]);
   }
 
   // Clear all data including master data (100% clean slate)
@@ -434,6 +476,8 @@ class StorageStore {
     this.setLeave([]);
     this.setNotes([]);
     this.setAuditLogs([]);
+    this.setOfficialLetters([]);
+    this.setLetterTemplates([]);
   }
 
   // Load pesantren demo/sample data
@@ -454,6 +498,9 @@ class StorageStore {
     this.setNotes(initialNotes);
     this.setAuditLogs(initialAuditLogs);
     this.setUsers(initialUsers);
+    this.setOfficialLetters(initialOfficialLetters);
+    this.setLetterTemplates(initialLetterTemplates);
+    this.setLetterKopSettings(initialLetterKopSettings);
   }
 }
 

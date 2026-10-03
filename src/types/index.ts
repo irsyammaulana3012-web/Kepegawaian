@@ -411,3 +411,80 @@ export interface ExcelImportPreview {
   }[];
   errors: { row: number; message: string; data: any }[];
 }
+
+// -----------------------------------------------------------------------------
+// OFFICIAL LETTERS & SK PENYURATAN TYPES
+// -----------------------------------------------------------------------------
+
+export type LetterType = 'sk_pengangkatan' | 'sp_peringatan' | 'sk_penugasan' | 'surat_keterangan' | 'custom';
+
+export type LetterStatus = 'draft' | 'diterbitkan' | 'terkirim';
+
+export interface LetterTemplate {
+  id: string;
+  code: string;
+  title: string;
+  type: LetterType;
+  subject_template: string;
+  header_title: string; // e.g. "KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR'ANIYYAH"
+  considering_text: string[]; // Menimbang
+  in_view_text: string[];     // Mengingat
+  observing_text: string[];   // Memperhatikan
+  deciding_text: Record<string, string>; // Memutuskan (Pertama, Kedua, ...)
+  footer_city: string;
+  signer_name: string;
+  signer_title: string;
+  is_default?: boolean;
+  created_at?: string;
+}
+
+export interface OfficialLetter {
+  id: string;
+  letter_number: string; // e.g. "047 /SK/YASPIQ/VII/2024"
+  template_id?: string;
+  type: LetterType;
+  title: string;
+  employee_id: string;
+  employee_name: string;
+  employee_email?: string;
+  employee_nik?: string;
+  employee_nirg_nirk?: string;
+  employee_position?: string;
+  employee_unit?: string;
+  employee_gender?: string;
+  employee_birth_info?: string;
+  employee_education_level?: string;
+  
+  subject: string;
+  header_title: string;
+  considering: string[];
+  in_view: string[];
+  observing: string[];
+  deciding: Record<string, string>;
+  
+  effective_date: string; // Tanggal Berlaku (TMT)
+  end_date?: string;       // Tanggal Berakhir
+  issued_date: string;    // Tanggal Penetapan
+  issued_city: string;    // Kota Penetapan (Tangerang Selatan / Bogor)
+  signer_name: string;    // e.g. "Dr. KH. M. Sobron Zayyan, SQ., MA"
+  signer_title: string;   // e.g. "Ketua Umum"
+  
+  status: LetterStatus;
+  sent_at?: string;
+  pdf_url?: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface LetterKopSettings {
+  header_line1: string; // "YAYASAN PENDIDIKAN ISLAM"
+  header_line2: string; // "PONDOK PESANTREN AL-QUR'ANIYYAH"
+  address: string;      // "Jl. Pesantren Al-Qur'aniyyah No. 12, Cipayung, Megamendung, Bogor"
+  contact: string;      // "Telp: (0251) 8240000 | Email: yayasan@alquraniyyah.sch.id"
+  logo_url?: string;
+  stamp_url?: string;
+  default_city: string; // "Tangerang Selatan"
+  default_signer_name: string; // "Dr. KH. M. Sobron Zayyan, SQ., MA"
+  default_signer_title: string; // "Ketua Umum"
+}
+

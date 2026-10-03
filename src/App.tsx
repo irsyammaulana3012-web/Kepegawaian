@@ -26,6 +26,7 @@ import { LeaveList } from './pages/leave/LeaveList';
 import { ExpiringContracts } from './pages/contracts/ExpiringContracts';
 import { AuditLogList } from './pages/audit/AuditLogList';
 import { UserManagement } from './pages/users/UserManagement';
+import { LettersIndex } from './pages/letters/LettersIndex';
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { Login } from './pages/auth/Login';
 import { ForgotPassword } from './pages/auth/ForgotPassword';
@@ -92,7 +93,8 @@ export const App: React.FC = () => {
               {/* Import & Export */}
               <Route path="import-export" element={<ImportExportIndex />} />
 
-              {/* Kepegawaian */}
+              {/* Kepegawaian & Penyuratan */}
+              <Route path="letters" element={<LettersIndex />} />
               <Route path="attendance" element={<AttendanceList />} />
               <Route path="attendance/generator" element={<AutoAttendanceGenerator />} />
               <Route path="leave" element={<LeaveList />} />
