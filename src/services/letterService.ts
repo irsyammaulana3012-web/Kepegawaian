@@ -185,6 +185,59 @@ export const letterService = {
     return data;
   },
 
+  async saveMultipleLetters(items: Partial<OfficialLetter>[]): Promise<OfficialLetter[]> {
+    const list = store.getOfficialLetters();
+    const now = new Date().toISOString();
+    const createdList: OfficialLetter[] = [];
+
+    items.forEach((data, index) => {
+      const saved: OfficialLetter = {
+        id: `ltr-${Date.now()}-${index}`,
+        letter_number: data.letter_number || `LTR-${Date.now()}-${index}`,
+        template_id: data.template_id,
+        type: data.type || 'sk_pengangkatan',
+        title: data.title || 'Surat Resmi',
+        employee_id: data.employee_id || '',
+        employee_name: data.employee_name || '',
+        employee_email: data.employee_email,
+        employee_nik: data.employee_nik,
+        employee_nirg_nirk: data.employee_nirg_nirk,
+        employee_position: data.employee_position,
+        employee_unit: data.employee_unit,
+        employee_gender: data.employee_gender,
+        employee_birth_info: data.employee_birth_info,
+        employee_education_level: data.employee_education_level,
+        subject: data.subject || '',
+        header_title: data.header_title || "KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR'ANIYYAH",
+        considering: data.considering || [],
+        in_view: data.in_view || [],
+        observing: data.observing || [],
+        deciding: data.deciding || {},
+        effective_date: data.effective_date || new Date().toISOString().split('T')[0],
+        end_date: data.end_date,
+        issued_date: data.issued_date || new Date().toISOString().split('T')[0],
+        issued_city: data.issued_city || 'Tangerang Selatan',
+        signer_name: data.signer_name || 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+        signer_title: data.signer_title || 'Ketua Umum',
+        status: data.status || 'diterbitkan',
+        created_at: now
+      };
+      list.unshift(saved);
+      createdList.push(saved);
+    });
+
+    store.setOfficialLetters(list);
+    await auditService.log('CREATE', 'documents', `bulk-${Date.now()}`, { entity: 'OfficialLetter', count: createdList.length });
+    return createdList;
+  },
+
+  async deleteMultipleLetters(ids: string[]): Promise<void> {
+    const setIds = new Set(ids);
+    const list = store.getOfficialLetters().filter(l => !setIds.has(l.id));
+    store.setOfficialLetters(list);
+    await auditService.log('DELETE', 'documents', `bulk-del-${Date.now()}`, { entity: 'OfficialLetter', count: ids.length });
+  },
+
   // Prepare Gmail / Email Mailto Link
   sendViaGmail(letter: OfficialLetter): void {
     const to = letter.employee_email || '';
@@ -203,6 +256,30 @@ export const letterService = {
     bodyText += `${letter.signer_name} (${letter.signer_title})`;
 
     const mailtoUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${subject}&body=${encodeURIComponent(bodyText)}`;
+    window.open(mailtoUrl, '_blank');
+  },
+
+  // Send Bulk Email via Gmail
+  sendBulkViaGmail(letters: OfficialLetter[]): void {
+    const emails = letters.map(l => l.employee_email).filter(Boolean);
+    if (emails.length === 0) {
+      alert('Tidak ada alamat email karyawan yang terdaftar dari surat terpilih.');
+      return;
+    }
+    const bcc = encodeURIComponent(emails.join(','));
+    const subject = encodeURIComponent(`[SIMKA YASPIQ] Surat Keputusan & Dokumen Penyuratan Resmi Yayasan`);
+    let bodyText = `Assalamu'alaikum Wr. Wb.\n\n`;
+    bodyText += `Kepada Yth. Bapak/Ibu Guru & Karyawan Terlampir,\n\n`;
+    bodyText += `Dengan ini kami sampaikan penerbitan Surat Keputusan / Dokumen Penyuratan Resmi dari Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah.\n\n`;
+    bodyText += `Rincian Surat Terbit:\n`;
+    letters.forEach((l, idx) => {
+      bodyText += `${idx + 1}. ${l.employee_name} - ${l.title} (${l.letter_number})\n`;
+    });
+    bodyText += `\nMohon untuk dapat memeriksa dan mengunduh berkas lengkap melalui portal SIMKA Al-Qur'aniyyah.\n\n`;
+    bodyText += `Wassalamu'alaikum Wr. Wb.\n\n`;
+    bodyText += `Hormat Kami,\nYayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah`;
+
+    const mailtoUrl = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${bcc}&su=${subject}&body=${encodeURIComponent(bodyText)}`;
     window.open(mailtoUrl, '_blank');
   }
 };

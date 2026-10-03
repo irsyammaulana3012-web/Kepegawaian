@@ -481,6 +481,9 @@ export interface LetterKopSettings {
   header_line2: string; // "PONDOK PESANTREN AL-QUR'ANIYYAH"
   address: string;      // "Jl. Pesantren Al-Qur'aniyyah No. 12, Cipayung, Megamendung, Bogor"
   contact: string;      // "Telp: (0251) 8240000 | Email: yayasan@alquraniyyah.sch.id"
+  kop_image_url?: string; // Gambar Kop Surat yang diupload (Base64/URL)
+  hide_kop_on_print?: boolean; // Sembunyikan Kop saat dicetak di kertas berkop fisik
+  print_top_margin_cm?: number; // Jarak margin atas saat cetak tanpa kop (dalam cm)
   logo_url?: string;
   stamp_url?: string;
   default_city: string; // "Tangerang Selatan"

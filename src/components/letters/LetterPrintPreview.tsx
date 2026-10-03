@@ -4,27 +4,65 @@ import { OfficialLetter, LetterKopSettings } from '../../types';
 interface LetterPrintPreviewProps {
   letter: OfficialLetter;
   kopSettings?: LetterKopSettings;
+  hideKopOnPrintOverride?: boolean;
+  isBulkPrint?: boolean;
 }
 
-export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({ letter, kopSettings }) => {
+export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
+  letter,
+  kopSettings,
+  hideKopOnPrintOverride,
+  isBulkPrint = false
+}) => {
   const line1 = kopSettings?.header_line1 || 'YAYASAN PENDIDIKAN ISLAM';
   const line2 = kopSettings?.header_line2 || "PONDOK PESANTREN AL-QUR'ANIYYAH";
   const address = kopSettings?.address || "Jl. Pesantren Al-Qur'aniyyah No. 12, Cipayung, Tangerang Selatan / Megamendung, Bogor";
   const contact = kopSettings?.contact || "Telp: (021) 7458000 | Email: yayasan@alquraniyyah.sch.id";
+
+  // Determine whether to hide Kop when printing onto physical paper
+  const shouldHideKopOnPrint = hideKopOnPrintOverride !== undefined
+    ? hideKopOnPrintOverride
+    : (kopSettings?.hide_kop_on_print ?? true);
+
+  const printMarginCm = kopSettings?.print_top_margin_cm || 3.5;
 
   const formattedIssuedDate = letter.issued_date
     ? new Date(letter.issued_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
     : '';
 
   return (
-    <div className="bg-white text-slate-900 font-serif leading-relaxed p-6 sm:p-10 max-w-[210mm] mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full print:bg-transparent" id="official-letter-paper">
-      {/* 1. KOP SURAT YAYASAN */}
-      <div className="text-center border-b-2 border-slate-900 pb-3 mb-6 relative">
-        <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">{line1}</h3>
-        <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase mt-0.5">{line2}</h1>
-        <p className="text-[11px] text-slate-600 font-sans mt-1">{address}</p>
-        <p className="text-[10px] text-slate-500 font-sans">{contact}</p>
+    <div
+      className={`bg-white text-slate-900 font-serif leading-relaxed p-6 sm:p-10 max-w-[210mm] mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full print:bg-transparent relative ${
+        isBulkPrint ? 'print:break-after-page page-break-after-always mb-8 print:mb-0' : ''
+      }`}
+    >
+      {/* 1. KOP SURAT YAYASAN (GAMBAR ATAU TEKS) */}
+      <div className={`mb-6 border-b-2 border-slate-900 pb-3 relative ${shouldHideKopOnPrint ? 'print:hidden' : ''}`}>
+        {kopSettings?.kop_image_url ? (
+          <div className="w-full flex items-center justify-center">
+            <img
+              src={kopSettings.kop_image_url}
+              alt="Kop Surat Resmi"
+              className="max-h-36 w-auto object-contain mx-auto"
+            />
+          </div>
+        ) : (
+          <div className="text-center">
+            <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">{line1}</h3>
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase mt-0.5">{line2}</h1>
+            <p className="text-[11px] text-slate-600 font-sans mt-1">{address}</p>
+            <p className="text-[10px] text-slate-500 font-sans">{contact}</p>
+          </div>
+        )}
       </div>
+
+      {/* Spacer margin atas saat cetak di kertas fisik berpemberat Kop */}
+      {shouldHideKopOnPrint && (
+        <div
+          className="hidden print:block"
+          style={{ height: `${printMarginCm}cm` }}
+        />
+      )}
 
       {/* 2. NOMOR SURAT & JUDUL */}
       <div className="text-center mb-6">

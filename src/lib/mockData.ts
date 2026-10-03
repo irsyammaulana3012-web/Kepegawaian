@@ -768,6 +768,9 @@ export const initialLetterKopSettings = {
   header_line2: 'PONDOK PESANTREN AL-QUR\'ANIYYAH',
   address: 'Jl. Pesantren Al-Qur\'aniyyah No. 12, Cipayung, Tangerang Selatan / Megamendung, Bogor',
   contact: 'Telp: (021) 7458000 | Email: yayasan@alquraniyyah.sch.id | Website: alquraniyyah.sch.id',
+  kop_image_url: '',
+  hide_kop_on_print: true,
+  print_top_margin_cm: 3.5,
   default_city: 'Tangerang Selatan',
   default_signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
   default_signer_title: 'Ketua Umum'
