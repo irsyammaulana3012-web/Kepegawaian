@@ -16,20 +16,52 @@ export interface EmployeeFilterOptions {
   limit?: number;
 }
 
+// Helper to extract maximum sequence number and format pattern for auto-incrementing IDs
+function getNextSequenceValue(values: (string | undefined)[], defaultPrefix: string): string {
+  let maxNum = 0;
+  let prefix = defaultPrefix;
+  let padLength = 3;
+
+  values.forEach(v => {
+    if (!v || typeof v !== 'string') return;
+    const trimmed = v.trim();
+    if (!trimmed) return;
+
+    // Pattern: Matches any string ending with a sequence of numbers (e.g. G-SMP-2019-001, K-YAS-2021-008, NIRG-005, YPA-0001)
+    const match = trimmed.match(/^(.*?)(\d+)$/);
+    if (match) {
+      const p = match[1];
+      const digits = match[2];
+      const num = parseInt(digits, 10);
+      if (!isNaN(num) && num > maxNum) {
+        maxNum = num;
+        prefix = p || defaultPrefix;
+        padLength = Math.max(digits.length, 3);
+      }
+    }
+  });
+
+  const nextNum = maxNum + 1;
+  return `${prefix}${String(nextNum).padStart(padLength, '0')}`;
+}
+
 export const employeeService = {
   // Generate next automatic ID: YPA-0001, YPA-0002, etc.
   async getNextEmployeeNumber(): Promise<string> {
     const employees = store.getEmployees();
-    let maxNum = 0;
-    employees.forEach(e => {
-      const match = e.employee_number.match(/YPA-(\d+)/);
-      if (match) {
-        const num = parseInt(match[1], 10);
-        if (num > maxNum) maxNum = num;
-      }
-    });
-    const next = maxNum + 1;
-    return `YPA-${String(next).padStart(4, '0')}`;
+    return getNextSequenceValue(employees.map(e => e.employee_number), 'YPA-');
+  },
+
+  // Generate next automatic NIRG (Nomor Induk Registrasi Guru)
+  async getNextNirg(): Promise<string> {
+    const employees = store.getEmployees();
+    return getNextSequenceValue(employees.map(e => e.nirg), 'NIRG-');
+  },
+
+  // Generate next automatic NIRK (Nomor Induk Registrasi Karyawan)
+  async getNextNirk(): Promise<string> {
+    const employees = store.getEmployees();
+    return getNextSequenceValue(employees.map(e => e.nirk), 'NIRK-');
   },
 
   // Calculate completeness percentage (0 - 100%)

@@ -190,9 +190,15 @@ export const EmployeeForm: React.FC = () => {
             setNonformalList(emp.nonformal_education);
           }
         } else {
-          // Next auto ID
-          const nextId = await employeeService.getNextEmployeeNumber();
+          // Next auto ID, NIRG, and NIRK
+          const [nextId, nextNirg, nextNirk] = await Promise.all([
+            employeeService.getNextEmployeeNumber(),
+            employeeService.getNextNirg(),
+            employeeService.getNextNirk()
+          ]);
           setEmployeeNumber(nextId);
+          setNirg(nextNirg);
+          setNirk(nextNirk);
           if (u.length > 0) setInitialUnitId(u[0].id);
           if (p.length > 0) setInitialPositionId(p[0].id);
         }
