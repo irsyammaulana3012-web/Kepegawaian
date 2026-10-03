@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+import { GraduationCap, BookOpen, Plus, Edit2, Trash2 } from 'lucide-react';
 import { Employee, EmployeeEducation } from '../../types';
 import { educationService } from '../../services/educationService';
 import { employeeService } from '../../services/employeeService';

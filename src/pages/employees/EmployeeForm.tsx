@@ -878,7 +878,7 @@ export const EmployeeForm: React.FC = () => {
       <Card
         title="5. Riwayat Pendidikan & Pelatihan Nonformal"
         subtitle="Pondok pesantren, kursus tahfidz/tahsin, pelatihan metodologi guru, diklat, dsb."
-        headerAction={
+        action={
           <Button
             type="button"
             variant="outline"

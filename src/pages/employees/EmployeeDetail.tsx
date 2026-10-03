@@ -20,7 +20,8 @@ import {
   Sparkles,
   ShieldCheck,
   CheckCircle2,
-  Printer
+  Printer,
+  CreditCard
 } from 'lucide-react';
 import { Employee } from '../../types';
 import { employeeService } from '../../services/employeeService';
