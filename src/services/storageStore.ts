@@ -34,6 +34,7 @@ import {
   AuditLog,
   UserProfile
 } from '../types';
+import { supabase, isConfigured } from '../lib/supabase';
 
 // Keys for localStorage
 const STORAGE_KEYS = {
@@ -59,7 +60,11 @@ const STORAGE_KEYS = {
 function getItem<T>(key: string, initialData: T): T {
   try {
     const data = localStorage.getItem(key);
+    const isSynced = localStorage.getItem('simka_synced_with_supabase') === 'true';
     if (!data) {
+      if (isSynced && Array.isArray(initialData)) {
+        return [] as unknown as T;
+      }
       localStorage.setItem(key, JSON.stringify(initialData));
       return initialData;
     }
@@ -78,130 +83,313 @@ function setItem<T>(key: string, data: T): void {
   }
 }
 
+function cleanForDb(obj: any): any {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(cleanForDb);
+  
+  const cleaned: Record<string, any> = {};
+  const ignoredKeys = new Set([
+    'assignments',
+    'primary_assignment',
+    'assignment_count',
+    'units_list',
+    'positions_list',
+    'data_completeness_pct',
+    'unit_name',
+    'department_name',
+    'position_name',
+    'task_name',
+    'employee_name',
+    'employee_number'
+  ]);
+
+  for (const [key, val] of Object.entries(obj)) {
+    if (ignoredKeys.has(key)) continue;
+    if (val !== undefined) {
+      cleaned[key] = val;
+    }
+  }
+  return cleaned;
+}
+
 class StorageStore {
-  // Master Data
-  getUnits(): Unit[] {
-    return getItem<Unit[]>(STORAGE_KEYS.UNITS, initialUnits);
+  public syncPromise: Promise<void> | null = null;
+
+  constructor() {
+    if (isConfigured) {
+      this.syncPromise = this.initSupabaseSync();
+    }
   }
+
+  public async initSupabaseSync(): Promise<void> {
+    if (!isConfigured) return;
+
+    try {
+      const [
+        { data: units },
+        { data: departments },
+        { data: positions },
+        { data: tasks },
+        { data: employees },
+        { data: assignments },
+        { data: education },
+        { data: history },
+        { data: documents },
+        { data: training },
+        { data: attendance },
+        { data: leave },
+        { data: notes },
+        { data: auditLogs }
+      ] = await Promise.all([
+        supabase.from('units').select('*'),
+        supabase.from('departments').select('*'),
+        supabase.from('positions').select('*'),
+        supabase.from('tasks').select('*'),
+        supabase.from('employees').select('*'),
+        supabase.from('employee_assignments').select('*'),
+        supabase.from('employee_education').select('*'),
+        supabase.from('employee_position_history').select('*'),
+        supabase.from('employee_documents').select('*'),
+        supabase.from('employee_training').select('*'),
+        supabase.from('employee_attendance').select('*'),
+        supabase.from('employee_leave').select('*'),
+        supabase.from('employee_notes').select('*'),
+        supabase.from('audit_logs').select('*')
+      ]);
+
+      localStorage.setItem('simka_synced_with_supabase', 'true');
+
+      if (units !== null) this.setUnitsLocal(units);
+      if (departments !== null) this.setDepartmentsLocal(departments);
+      if (positions !== null) this.setPositionsLocal(positions);
+      if (tasks !== null) this.setTasksLocal(tasks);
+      if (employees !== null) this.setEmployeesLocal(employees);
+      if (assignments !== null) this.setAssignmentsLocal(assignments);
+      if (education !== null) this.setEducationLocal(education);
+      if (history !== null) this.setHistoryLocal(history);
+      if (documents !== null) this.setDocumentsLocal(documents);
+      if (training !== null) this.setTrainingLocal(training);
+      if (attendance !== null) this.setAttendanceLocal(attendance);
+      if (leave !== null) this.setLeaveLocal(leave);
+      if (notes !== null) this.setNotesLocal(notes);
+      if (auditLogs !== null) this.setAuditLogsLocal(auditLogs);
+    } catch (err) {
+      console.error('Error syncing with Supabase:', err);
+    }
+  }
+
+  // Master Data Local Setters
+  private setUnitsLocal(units: Unit[]): void { setItem(STORAGE_KEYS.UNITS, units); }
+  private setDepartmentsLocal(deps: Department[]): void { setItem(STORAGE_KEYS.DEPARTMENTS, deps); }
+  private setPositionsLocal(positions: Position[]): void { setItem(STORAGE_KEYS.POSITIONS, positions); }
+  private setTasksLocal(tasks: Task[]): void { setItem(STORAGE_KEYS.TASKS, tasks); }
+  
+  // Transactional Local Setters
+  private setEmployeesLocal(employees: Employee[]): void { setItem(STORAGE_KEYS.EMPLOYEES, employees); }
+  private setAssignmentsLocal(assignments: EmployeeAssignment[]): void { setItem(STORAGE_KEYS.ASSIGNMENTS, assignments); }
+  private setEducationLocal(edu: EmployeeEducation[]): void { setItem(STORAGE_KEYS.EDUCATION, edu); }
+  private setHistoryLocal(his: EmployeePositionHistory[]): void { setItem(STORAGE_KEYS.HISTORY, his); }
+  private setDocumentsLocal(docs: EmployeeDocument[]): void { setItem(STORAGE_KEYS.DOCUMENTS, docs); }
+  private setTrainingLocal(training: EmployeeTraining[]): void { setItem(STORAGE_KEYS.TRAINING, training); }
+  private setAttendanceLocal(att: EmployeeAttendance[]): void { setItem(STORAGE_KEYS.ATTENDANCE, att); }
+  private setLeaveLocal(leave: EmployeeLeave[]): void { setItem(STORAGE_KEYS.LEAVE, leave); }
+  private setNotesLocal(notes: EmployeeNote[]): void { setItem(STORAGE_KEYS.NOTES, notes); }
+  private setAuditLogsLocal(logs: AuditLog[]): void { setItem(STORAGE_KEYS.AUDIT, logs); }
+
+  // Master Data Getters & Setters
+  getUnits(): Unit[] { return getItem<Unit[]>(STORAGE_KEYS.UNITS, initialUnits); }
   setUnits(units: Unit[]): void {
-    setItem(STORAGE_KEYS.UNITS, units);
+    this.setUnitsLocal(units);
+    if (isConfigured) {
+      if (units.length === 0) {
+        supabase.from('units').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('units').upsert(cleanForDb(units)).then();
+      }
+    }
   }
 
-  getDepartments(): Department[] {
-    return getItem<Department[]>(STORAGE_KEYS.DEPARTMENTS, initialDepartments);
-  }
+  getDepartments(): Department[] { return getItem<Department[]>(STORAGE_KEYS.DEPARTMENTS, initialDepartments); }
   setDepartments(deps: Department[]): void {
-    setItem(STORAGE_KEYS.DEPARTMENTS, deps);
+    this.setDepartmentsLocal(deps);
+    if (isConfigured) {
+      if (deps.length === 0) {
+        supabase.from('departments').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('departments').upsert(cleanForDb(deps)).then();
+      }
+    }
   }
 
-  getPositions(): Position[] {
-    return getItem<Position[]>(STORAGE_KEYS.POSITIONS, initialPositions);
-  }
+  getPositions(): Position[] { return getItem<Position[]>(STORAGE_KEYS.POSITIONS, initialPositions); }
   setPositions(positions: Position[]): void {
-    setItem(STORAGE_KEYS.POSITIONS, positions);
+    this.setPositionsLocal(positions);
+    if (isConfigured) {
+      if (positions.length === 0) {
+        supabase.from('positions').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('positions').upsert(cleanForDb(positions)).then();
+      }
+    }
   }
 
-  getTasks(): Task[] {
-    return getItem<Task[]>(STORAGE_KEYS.TASKS, initialTasks);
-  }
+  getTasks(): Task[] { return getItem<Task[]>(STORAGE_KEYS.TASKS, initialTasks); }
   setTasks(tasks: Task[]): void {
-    setItem(STORAGE_KEYS.TASKS, tasks);
+    this.setTasksLocal(tasks);
+    if (isConfigured) {
+      if (tasks.length === 0) {
+        supabase.from('tasks').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('tasks').upsert(cleanForDb(tasks)).then();
+      }
+    }
   }
 
   // Employees
-  getEmployees(): Employee[] {
-    return getItem<Employee[]>(STORAGE_KEYS.EMPLOYEES, initialEmployees);
-  }
+  getEmployees(): Employee[] { return getItem<Employee[]>(STORAGE_KEYS.EMPLOYEES, initialEmployees); }
   setEmployees(employees: Employee[]): void {
-    setItem(STORAGE_KEYS.EMPLOYEES, employees);
+    this.setEmployeesLocal(employees);
+    if (isConfigured) {
+      if (employees.length === 0) {
+        supabase.from('employees').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employees').upsert(cleanForDb(employees)).then();
+      }
+    }
   }
 
   // Assignments
-  getAssignments(): EmployeeAssignment[] {
-    return getItem<EmployeeAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, initialAssignments);
-  }
+  getAssignments(): EmployeeAssignment[] { return getItem<EmployeeAssignment[]>(STORAGE_KEYS.ASSIGNMENTS, initialAssignments); }
   setAssignments(assignments: EmployeeAssignment[]): void {
-    setItem(STORAGE_KEYS.ASSIGNMENTS, assignments);
+    this.setAssignmentsLocal(assignments);
+    if (isConfigured) {
+      if (assignments.length === 0) {
+        supabase.from('employee_assignments').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_assignments').upsert(cleanForDb(assignments)).then();
+      }
+    }
   }
 
   // Education
-  getEducation(): EmployeeEducation[] {
-    return getItem<EmployeeEducation[]>(STORAGE_KEYS.EDUCATION, initialEducation);
-  }
+  getEducation(): EmployeeEducation[] { return getItem<EmployeeEducation[]>(STORAGE_KEYS.EDUCATION, initialEducation); }
   setEducation(edu: EmployeeEducation[]): void {
-    setItem(STORAGE_KEYS.EDUCATION, edu);
+    this.setEducationLocal(edu);
+    if (isConfigured) {
+      if (edu.length === 0) {
+        supabase.from('employee_education').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_education').upsert(cleanForDb(edu)).then();
+      }
+    }
   }
 
   // Position History
-  getHistory(): EmployeePositionHistory[] {
-    return getItem<EmployeePositionHistory[]>(STORAGE_KEYS.HISTORY, initialPositionHistory);
-  }
+  getHistory(): EmployeePositionHistory[] { return getItem<EmployeePositionHistory[]>(STORAGE_KEYS.HISTORY, initialPositionHistory); }
   setHistory(his: EmployeePositionHistory[]): void {
-    setItem(STORAGE_KEYS.HISTORY, his);
+    this.setHistoryLocal(his);
+    if (isConfigured) {
+      if (his.length === 0) {
+        supabase.from('employee_position_history').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_position_history').upsert(cleanForDb(his)).then();
+      }
+    }
   }
 
   // Documents
-  getDocuments(): EmployeeDocument[] {
-    return getItem<EmployeeDocument[]>(STORAGE_KEYS.DOCUMENTS, initialDocuments);
-  }
+  getDocuments(): EmployeeDocument[] { return getItem<EmployeeDocument[]>(STORAGE_KEYS.DOCUMENTS, initialDocuments); }
   setDocuments(docs: EmployeeDocument[]): void {
-    setItem(STORAGE_KEYS.DOCUMENTS, docs);
+    this.setDocumentsLocal(docs);
+    if (isConfigured) {
+      if (docs.length === 0) {
+        supabase.from('employee_documents').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_documents').upsert(cleanForDb(docs)).then();
+      }
+    }
   }
 
   // Document Types Definition
-  getDocumentTypes(): DocumentTypeDefinition[] {
-    return getItem<DocumentTypeDefinition[]>(STORAGE_KEYS.DOC_TYPES, initialDocumentTypes);
-  }
+  getDocumentTypes(): DocumentTypeDefinition[] { return getItem<DocumentTypeDefinition[]>(STORAGE_KEYS.DOC_TYPES, initialDocumentTypes); }
   setDocumentTypes(types: DocumentTypeDefinition[]): void {
     setItem(STORAGE_KEYS.DOC_TYPES, types);
   }
 
   // Training
-  getTraining(): EmployeeTraining[] {
-    return getItem<EmployeeTraining[]>(STORAGE_KEYS.TRAINING, initialTraining);
-  }
+  getTraining(): EmployeeTraining[] { return getItem<EmployeeTraining[]>(STORAGE_KEYS.TRAINING, initialTraining); }
   setTraining(training: EmployeeTraining[]): void {
-    setItem(STORAGE_KEYS.TRAINING, training);
+    this.setTrainingLocal(training);
+    if (isConfigured) {
+      if (training.length === 0) {
+        supabase.from('employee_training').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_training').upsert(cleanForDb(training)).then();
+      }
+    }
   }
 
   // Attendance
-  getAttendance(): EmployeeAttendance[] {
-    return getItem<EmployeeAttendance[]>(STORAGE_KEYS.ATTENDANCE, initialAttendance);
-  }
+  getAttendance(): EmployeeAttendance[] { return getItem<EmployeeAttendance[]>(STORAGE_KEYS.ATTENDANCE, initialAttendance); }
   setAttendance(att: EmployeeAttendance[]): void {
-    setItem(STORAGE_KEYS.ATTENDANCE, att);
+    this.setAttendanceLocal(att);
+    if (isConfigured) {
+      if (att.length === 0) {
+        supabase.from('employee_attendance').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_attendance').upsert(cleanForDb(att)).then();
+      }
+    }
   }
 
   // Leave
-  getLeave(): EmployeeLeave[] {
-    return getItem<EmployeeLeave[]>(STORAGE_KEYS.LEAVE, initialLeave);
-  }
+  getLeave(): EmployeeLeave[] { return getItem<EmployeeLeave[]>(STORAGE_KEYS.LEAVE, initialLeave); }
   setLeave(leave: EmployeeLeave[]): void {
-    setItem(STORAGE_KEYS.LEAVE, leave);
+    this.setLeaveLocal(leave);
+    if (isConfigured) {
+      if (leave.length === 0) {
+        supabase.from('employee_leave').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_leave').upsert(cleanForDb(leave)).then();
+      }
+    }
   }
 
   // Notes
-  getNotes(): EmployeeNote[] {
-    return getItem<EmployeeNote[]>(STORAGE_KEYS.NOTES, initialNotes);
-  }
+  getNotes(): EmployeeNote[] { return getItem<EmployeeNote[]>(STORAGE_KEYS.NOTES, initialNotes); }
   setNotes(notes: EmployeeNote[]): void {
-    setItem(STORAGE_KEYS.NOTES, notes);
+    this.setNotesLocal(notes);
+    if (isConfigured) {
+      if (notes.length === 0) {
+        supabase.from('employee_notes').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('employee_notes').upsert(cleanForDb(notes)).then();
+      }
+    }
   }
 
   // Audit Logs
-  getAuditLogs(): AuditLog[] {
-    return getItem<AuditLog[]>(STORAGE_KEYS.AUDIT, initialAuditLogs);
-  }
+  getAuditLogs(): AuditLog[] { return getItem<AuditLog[]>(STORAGE_KEYS.AUDIT, initialAuditLogs); }
   setAuditLogs(logs: AuditLog[]): void {
-    setItem(STORAGE_KEYS.AUDIT, logs);
+    this.setAuditLogsLocal(logs);
+    if (isConfigured) {
+      if (logs.length === 0) {
+        supabase.from('audit_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('audit_logs').upsert(cleanForDb(logs)).then();
+      }
+    }
   }
 
   // Users
-  getUsers(): UserProfile[] {
-    return getItem<UserProfile[]>(STORAGE_KEYS.USERS, initialUsers);
-  }
+  getUsers(): UserProfile[] { return getItem<UserProfile[]>(STORAGE_KEYS.USERS, initialUsers); }
   setUsers(users: UserProfile[]): void {
     setItem(STORAGE_KEYS.USERS, users);
+    if (isConfigured) {
+      if (users.length > 0) {
+        supabase.from('user_profiles').upsert(cleanForDb(users)).then();
+      }
+    }
   }
 
   getCurrentUser(): UserProfile | null {

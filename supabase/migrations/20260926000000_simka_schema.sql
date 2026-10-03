@@ -341,12 +341,22 @@ CREATE POLICY "Allow full access to notes for staff" ON employee_notes FOR ALL T
 CREATE POLICY "Allow write audit logs" ON audit_logs FOR INSERT TO authenticated WITH CHECK (true);
 CREATE POLICY "Allow read audit logs" ON audit_logs FOR SELECT TO authenticated USING (true);
 
--- Also allow public select if anon key demo read is required
-CREATE POLICY "Anon read units" ON units FOR SELECT TO anon USING (true);
-CREATE POLICY "Anon read positions" ON positions FOR SELECT TO anon USING (true);
-CREATE POLICY "Anon read tasks" ON tasks FOR SELECT TO anon USING (true);
-CREATE POLICY "Anon read employees" ON employees FOR SELECT TO anon USING (true);
-CREATE POLICY "Anon read assignments" ON employee_assignments FOR SELECT TO anon USING (true);
+-- Allow anon/public full access for app operations
+CREATE POLICY "Anon full units" ON units FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full departments" ON departments FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full positions" ON positions FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full tasks" ON tasks FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full employees" ON employees FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full assignments" ON employee_assignments FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full education" ON employee_education FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full history" ON employee_position_history FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full documents" ON employee_documents FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full training" ON employee_training FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full attendance" ON employee_attendance FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full leave" ON employee_leave FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full notes" ON employee_notes FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full audit" ON audit_logs FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY "Anon full users" ON user_profiles FOR ALL TO anon USING (true) WITH CHECK (true);
 
 -- 15. SEED DATA - INITIAL MASTER DATA & SAMPLE DEMO
 INSERT INTO units (code, name, description, sort_order) VALUES

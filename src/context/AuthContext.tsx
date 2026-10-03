@@ -31,6 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initAuth = async () => {
       try {
         if (isConfigured) {
+          await store.initSupabaseSync();
           const { data: { session } } = await supabase.auth.getSession();
           if (session?.user) {
             // Fetch profile from supabase or fallback
