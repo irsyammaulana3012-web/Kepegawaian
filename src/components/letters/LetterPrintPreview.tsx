@@ -25,11 +25,10 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
     : (kopSettings?.hide_kop_on_print ?? true);
 
   const printMarginCm = kopSettings?.print_top_margin_cm || 3.5;
-  const kopMode = kopSettings?.kop_image_mode || 'full_page';
-  const kopTopPaddingCm = Math.max(kopSettings?.kop_top_padding_cm ?? 6.5, 6.5);
+  const kopTopPaddingCm = Math.max(kopSettings?.kop_top_padding_cm ?? 5.5, 5.5);
   const kopImageUrl = kopSettings?.kop_image_url || '/kop_yayasan.jpg';
 
-  const hasKopImage = Boolean(kopImageUrl);
+  const hasKopImage = Boolean(kopImageUrl && kopImageUrl.trim() !== '');
   const formattedIssuedDate = letter.issued_date
     ? new Date(letter.issued_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
     : '';
@@ -43,39 +42,40 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
       }`}
     >
       {/* 1. FULL PAGE A4 BACKGROUND KOP IMAGE */}
-      {hasKopImage && kopMode === 'full_page' && (
+      {hasKopImage && (
         <div
           className={`absolute inset-0 z-0 pointer-events-none ${
-            shouldHideKopOnPrint ? 'print:hidden' : ''
+            shouldHideKopOnPrint ? 'print-hide-kop print:hidden' : ''
           }`}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100%',
+            height: '100%',
+            zIndex: 0
+          }}
         >
           <img
             src={kopImageUrl}
             alt="Kop Surat A4 Background"
             className="w-full h-full object-fill block"
+            style={{ width: '100%', height: '100%', objectFit: 'fill' }}
           />
         </div>
       )}
 
-      {/* 2. HEADER ONLY KOP IMAGE OR TEXT KOP HEADER */}
-      {(!hasKopImage || kopMode === 'header_only') && (
+      {/* 2. TEXT KOP HEADER (ONLY WHEN NO IMAGE KOP IS PRESENT) */}
+      {!hasKopImage && (
         <div className={`mb-6 border-b-2 border-slate-900 pb-3 relative z-10 ${shouldHideKopOnPrint ? 'print:hidden' : ''}`}>
-          {hasKopImage ? (
-            <div className="w-full flex items-center justify-center">
-              <img
-                src={kopImageUrl}
-                alt="Kop Surat Header"
-                className="max-h-36 w-auto object-contain mx-auto"
-              />
-            </div>
-          ) : (
-            <div className="text-center">
-              <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">{line1}</h3>
-              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase mt-0.5">{line2}</h1>
-              <p className="text-[11px] text-slate-600 font-sans mt-1">{address}</p>
-              <p className="text-[10px] text-slate-500 font-sans">{contact}</p>
-            </div>
-          )}
+          <div className="text-center">
+            <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">{line1}</h3>
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase mt-0.5">{line2}</h1>
+            <p className="text-[11px] text-slate-600 font-sans mt-1">{address}</p>
+            <p className="text-[10px] text-slate-500 font-sans">{contact}</p>
+          </div>
         </div>
       )}
 
@@ -91,9 +91,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
       <div
         className="relative z-10"
         style={{
-          paddingTop: hasKopImage && kopMode === 'full_page'
-            ? `${kopTopPaddingCm}cm`
-            : undefined
+          paddingTop: hasKopImage ? `${kopTopPaddingCm}cm` : undefined
         }}
       >
         {/* NOMOR SURAT & JUDUL */}
