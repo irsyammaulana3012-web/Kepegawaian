@@ -10,26 +10,53 @@
 
 /* Print Specific Rules */
 @media print {
-  header, aside, footer, button, .no-print {
+  nav, aside, header, footer, button, .no-print,
+  .fixed.inset-0,
+  [role="dialog"] > div > div:first-child {
     display: none !important;
+  }
+
+  body, html {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
   }
 
   main {
     padding: 0 !important;
+    margin: 0 !important;
     max-width: 100% !important;
   }
 
-  body {
-    background: white !important;
-    color: black !important;
+  [role="dialog"],
+  [role="dialog"] > div,
+  [role="dialog"] > div > div {
+    position: static !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl {
     box-shadow: none !important;
   }
 
-  .border {
-    border-color: #cbd5e1 !important;
+  .page-break-after {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .avoid-page-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 }
 
