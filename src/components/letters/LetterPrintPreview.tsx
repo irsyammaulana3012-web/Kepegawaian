@@ -26,9 +26,10 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
 
   const printMarginCm = kopSettings?.print_top_margin_cm || 3.5;
   const kopMode = kopSettings?.kop_image_mode || 'full_page';
-  const kopTopPaddingCm = kopSettings?.kop_top_padding_cm ?? 4.2;
+  const kopTopPaddingCm = kopSettings?.kop_top_padding_cm ?? 4.8;
+  const kopImageUrl = kopSettings?.kop_image_url || '/kop_yayasan.jpg';
 
-  const hasKopImage = Boolean(kopSettings?.kop_image_url);
+  const hasKopImage = Boolean(kopImageUrl);
   const formattedIssuedDate = letter.issued_date
     ? new Date(letter.issued_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
     : '';
@@ -47,7 +48,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
           }`}
         >
           <img
-            src={kopSettings!.kop_image_url}
+            src={kopImageUrl}
             alt="Kop Surat A4 Background"
             className="w-full h-full object-fill block"
           />
@@ -60,7 +61,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
           {hasKopImage ? (
             <div className="w-full flex items-center justify-center">
               <img
-                src={kopSettings!.kop_image_url}
+                src={kopImageUrl}
                 alt="Kop Surat Header"
                 className="max-h-36 w-auto object-contain mx-auto"
               />
