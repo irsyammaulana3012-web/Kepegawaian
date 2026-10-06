@@ -1,4 +1,4 @@
-import { OfficialLetter, LetterTemplate, LetterKopSettings, LetterType } from '../types';
+import { OfficialLetter, LetterTemplate, LetterKopSettings, LetterType, LetterKopTemplate, LetterDeliveryLog } from '../types';
 import { store } from './storageStore';
 import { auditService } from './auditService';
 
@@ -175,7 +175,7 @@ export const letterService = {
     store.setLetterTemplates(list);
   },
 
-  // Kop Settings Management
+  // Kop Settings & Kop Templates Management
   async getKopSettings(): Promise<LetterKopSettings> {
     return store.getLetterKopSettings();
   },
@@ -185,6 +185,80 @@ export const letterService = {
     return data;
   },
 
+  async getKopTemplates(): Promise<LetterKopTemplate[]> {
+    return store.getKopTemplates();
+  },
+
+  async saveKopTemplate(data: Partial<LetterKopTemplate>): Promise<LetterKopTemplate> {
+    const list = store.getKopTemplates();
+    let saved: LetterKopTemplate;
+
+    if (data.id) {
+      const idx = list.findIndex(k => k.id === data.id);
+      if (idx === -1) throw new Error('Template KOP tidak ditemukan');
+      saved = { ...list[idx], ...data } as LetterKopTemplate;
+      list[idx] = saved;
+    } else {
+      saved = {
+        id: `kop-tpl-${Date.now()}`,
+        name: data.name || 'Template KOP Baru',
+        unit_id: data.unit_id,
+        header_line1: data.header_line1 || 'YAYASAN PENDIDIKAN ISLAM',
+        header_line2: data.header_line2 || "PONDOK PESANTREN AL-QUR'ANIYYAH",
+        address: data.address || "Jl. Pesantren Al-Qur'aniyyah No. 12, Cipayung",
+        contact: data.contact || "Telp: (021) 7458000 | Email: yayasan@alquraniyyah.sch.id",
+        kop_image_url: data.kop_image_url || '',
+        kop_image_mode: data.kop_image_mode || 'full_page',
+        kop_top_padding_cm: data.kop_top_padding_cm ?? 4.2,
+        print_top_margin_cm: data.print_top_margin_cm ?? 3.5,
+        is_default: data.is_default ?? false,
+        created_at: new Date().toISOString()
+      };
+      list.push(saved);
+    }
+
+    store.setKopTemplates(list);
+    return saved;
+  },
+
+  async deleteKopTemplate(id: string): Promise<void> {
+    const list = store.getKopTemplates().filter(k => k.id !== id);
+    store.setKopTemplates(list);
+  },
+
+  // Delivery Logs
+  async getDeliveryLogs(): Promise<LetterDeliveryLog[]> {
+    return store.getDeliveryLogs();
+  },
+
+  async addDeliveryLogs(items: Partial<LetterDeliveryLog>[]): Promise<LetterDeliveryLog[]> {
+    const list = store.getDeliveryLogs();
+    const createdLogs: LetterDeliveryLog[] = [];
+    const now = new Date().toISOString();
+
+    items.forEach((item, index) => {
+      const logItem: LetterDeliveryLog = {
+        id: `log-del-${Date.now()}-${index}`,
+        letter_id: item.letter_id || '',
+        letter_number: item.letter_number || '',
+        letter_title: item.letter_title || '',
+        employee_id: item.employee_id || '',
+        employee_name: item.employee_name || '',
+        channel: item.channel || 'email',
+        recipient_address: item.recipient_address || '',
+        status: item.status || 'sent',
+        sent_at: item.sent_at || now,
+        error_message: item.error_message
+      };
+      list.unshift(logItem);
+      createdLogs.push(logItem);
+    });
+
+    store.setDeliveryLogs(list);
+    return createdLogs;
+  },
+
+  // Save Multiple Official Letters
   async saveMultipleLetters(items: Partial<OfficialLetter>[]): Promise<OfficialLetter[]> {
     const list = store.getOfficialLetters();
     const now = new Date().toISOString();
@@ -257,6 +331,25 @@ export const letterService = {
 
     const mailtoUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${subject}&body=${encodeURIComponent(bodyText)}`;
     window.open(mailtoUrl, '_blank');
+  },
+
+  // Send via WhatsApp Click-to-Chat Link
+  sendViaWhatsApp(phone: string, letter: OfficialLetter): void {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const formattedPhone = cleanPhone.startsWith('0') ? '62' + cleanPhone.slice(1) : cleanPhone;
+
+    let msg = `*Assalamu'alaikum Wr. Wb.*\n\n`;
+    msg += `Yth. Bapak/Ibu *${letter.employee_name}*,\n\n`;
+    msg += `Berikut disampaikan penerbitan dokumen resmi Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah:\n\n`;
+    msg += `*Nomor Surat*: ${letter.letter_number}\n`;
+    msg += `*Perihal*: ${letter.title}\n`;
+    msg += `*Unit/Jabatan*: ${letter.employee_unit || '-'} (${letter.employee_position || '-'})\n`;
+    msg += `*Tanggal*: ${new Date(letter.issued_date).toLocaleDateString('id-ID', { dateStyle: 'long' })}\n\n`;
+    msg += `Mohon dapat memeriksa dokumen lengkap melalui Portal SIMKA Al-Qur'aniyyah.\n\n`;
+    msg += `_Wassalamu'alaikum Wr. Wb._\n*Sekretariat Yayasan Al-Qur'aniyyah*`;
+
+    const waUrl = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, '_blank');
   },
 
   // Send Bulk Email via Gmail

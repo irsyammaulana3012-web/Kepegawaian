@@ -482,6 +482,8 @@ export interface LetterKopSettings {
   address: string;      // "Jl. Pesantren Al-Qur'aniyyah No. 12, Cipayung, Megamendung, Bogor"
   contact: string;      // "Telp: (0251) 8240000 | Email: yayasan@alquraniyyah.sch.id"
   kop_image_url?: string; // Gambar Kop Surat yang diupload (Base64/URL)
+  kop_image_mode?: 'full_page' | 'header_only'; // Background 1 Halaman A4 penuh atau Header saja
+  kop_top_padding_cm?: number; // Jarak posisi teks dari atas halaman saat Kop Gambar digunakan (dalam cm)
   hide_kop_on_print?: boolean; // Sembunyikan Kop saat dicetak di kertas berkop fisik
   print_top_margin_cm?: number; // Jarak margin atas saat cetak tanpa kop (dalam cm)
   logo_url?: string;
@@ -490,4 +492,35 @@ export interface LetterKopSettings {
   default_signer_name: string; // "Dr. KH. M. Sobron Zayyan, SQ., MA"
   default_signer_title: string; // "Ketua Umum"
 }
+
+export interface LetterKopTemplate {
+  id: string;
+  name: string; // e.g. "KOP Yayasan", "KOP SD IT", "KOP SMP IT", "KOP SMA IT"
+  unit_id?: string;
+  header_line1: string;
+  header_line2: string;
+  address: string;
+  contact: string;
+  kop_image_url?: string;
+  kop_image_mode?: 'full_page' | 'header_only';
+  kop_top_padding_cm?: number;
+  print_top_margin_cm?: number;
+  is_default?: boolean;
+  created_at?: string;
+}
+
+export interface LetterDeliveryLog {
+  id: string;
+  letter_id: string;
+  letter_number: string;
+  letter_title: string;
+  employee_id: string;
+  employee_name: string;
+  channel: 'whatsapp' | 'email';
+  recipient_address: string; // whatsapp phone or email address
+  status: 'sent' | 'pending' | 'failed' | 'skipped';
+  sent_at: string;
+  error_message?: string;
+}
+
 

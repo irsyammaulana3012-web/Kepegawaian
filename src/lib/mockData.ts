@@ -1072,7 +1072,82 @@ export const initialOfficialLetters: OfficialLetter[] = [
     signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
     signer_title: 'Ketua Umum',
     status: 'diterbitkan',
-    created_at: '2025-01-10T09:00:00Z'
+    created_at: '2025-01-10T08:30:00Z'
   }
 ];
+
+import { LetterKopTemplate, LetterDeliveryLog } from '../types';
+
+export const initialKopTemplates: LetterKopTemplate[] = [
+  {
+    id: 'kop-tpl-1',
+    name: 'KOP Yayasan Al-Qur\'aniyyah',
+    unit_id: 'u-1',
+    header_line1: 'YAYASAN PENDIDIKAN ISLAM',
+    header_line2: 'PONDOK PESANTREN AL-QUR\'ANIYYAH',
+    address: 'Jl. Pesantren Al-Qur\'aniyyah No. 12, Cipayung, Tangerang Selatan / Megamendung, Bogor',
+    contact: 'Telp: (021) 7458000 | Email: yayasan@alquraniyyah.sch.id | Website: alquraniyyah.sch.id',
+    kop_image_url: '',
+    kop_image_mode: 'full_page',
+    kop_top_padding_cm: 4.2,
+    print_top_margin_cm: 3.5,
+    is_default: true
+  },
+  {
+    id: 'kop-tpl-2',
+    name: 'KOP SMP IT Al-Qur\'aniyyah',
+    unit_id: 'u-4',
+    header_line1: 'YAYASAN PENDIDIKAN ISLAM AL-QUR\'ANIYYAH',
+    header_line2: 'SMP ISLAM TERPADU AL-QUR\'ANIYYAH',
+    address: 'Jl. Pesantren Al-Qur\'aniyyah No. 12, Cipayung, Tangerang Selatan',
+    contact: 'Telp: (021) 7458001 | Email: smpit@alquraniyyah.sch.id',
+    kop_image_url: '',
+    kop_image_mode: 'full_page',
+    kop_top_padding_cm: 4.2,
+    print_top_margin_cm: 3.5,
+    is_default: false
+  },
+  {
+    id: 'kop-tpl-3',
+    name: 'KOP SMA IT Al-Qur\'aniyyah',
+    unit_id: 'u-5',
+    header_line1: 'YAYASAN PENDIDIKAN ISLAM AL-QUR\'ANIYYAH',
+    header_line2: 'SMA ISLAM TERPADU AL-QUR\'ANIYYAH',
+    address: 'Jl. Pesantren Al-Qur\'aniyyah No. 12, Cipayung, Tangerang Selatan',
+    contact: 'Telp: (021) 7458002 | Email: smait@alquraniyyah.sch.id',
+    kop_image_url: '',
+    kop_image_mode: 'full_page',
+    kop_top_padding_cm: 4.2,
+    print_top_margin_cm: 3.5,
+    is_default: false
+  }
+];
+
+export const initialDeliveryLogs: LetterDeliveryLog[] = [
+  {
+    id: 'log-del-1',
+    letter_id: 'ltr-1',
+    letter_number: '047 /SK/YASPIQ/VII/2024',
+    letter_title: 'SK Pengangkatan Guru Tetap Sdr. Irsyam Maulana, SE',
+    employee_id: 'emp-2',
+    employee_name: 'Irsyam Maulana, SE',
+    channel: 'email',
+    recipient_address: 'irsyam.maulana@alquraniyyah.sch.id',
+    status: 'sent',
+    sent_at: '2026-09-26T14:30:00Z'
+  },
+  {
+    id: 'log-del-2',
+    letter_id: 'ltr-2',
+    letter_number: '052 /SK/YASPIQ/VIII/2024',
+    letter_title: 'SK Pengangkatan Guru Tetap Sdr. Ahmad Fauzi, S.Pd.',
+    employee_id: 'emp-2',
+    employee_name: 'Ahmad Fauzi, S.Pd.',
+    channel: 'whatsapp',
+    recipient_address: '081234567890',
+    status: 'sent',
+    sent_at: '2026-09-26T15:10:00Z'
+  }
+];
+
 

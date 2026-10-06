@@ -17,7 +17,9 @@ import {
   initialUsers,
   initialOfficialLetters,
   initialLetterTemplates,
-  initialLetterKopSettings
+  initialLetterKopSettings,
+  initialKopTemplates,
+  initialDeliveryLogs
 } from '../lib/mockData';
 import {
   Unit,
@@ -38,7 +40,9 @@ import {
   UserProfile,
   OfficialLetter,
   LetterTemplate,
-  LetterKopSettings
+  LetterKopSettings,
+  LetterKopTemplate,
+  LetterDeliveryLog
 } from '../types';
 import { supabase, isConfigured } from '../lib/supabase';
 
@@ -63,7 +67,9 @@ const STORAGE_KEYS = {
   CURRENT_USER: 'simka_current_user',
   OFFICIAL_LETTERS: 'simka_official_letters',
   LETTER_TEMPLATES: 'simka_letter_templates',
-  KOP_SETTINGS: 'simka_kop_settings'
+  KOP_SETTINGS: 'simka_kop_settings',
+  KOP_TEMPLATES: 'simka_kop_templates',
+  DELIVERY_LOGS: 'simka_delivery_logs'
 };
 
 function getItem<T>(key: string, initialData: T): T {
@@ -407,6 +413,32 @@ class StorageStore {
   getLetterKopSettings(): LetterKopSettings { return getItem<LetterKopSettings>(STORAGE_KEYS.KOP_SETTINGS, initialLetterKopSettings); }
   setLetterKopSettings(settings: LetterKopSettings): void {
     setItem(STORAGE_KEYS.KOP_SETTINGS, settings);
+  }
+
+  // Kop Templates
+  getKopTemplates(): LetterKopTemplate[] { return getItem<LetterKopTemplate[]>(STORAGE_KEYS.KOP_TEMPLATES, initialKopTemplates); }
+  setKopTemplates(templates: LetterKopTemplate[]): void {
+    setItem(STORAGE_KEYS.KOP_TEMPLATES, templates);
+    if (isConfigured) {
+      if (templates.length === 0) {
+        supabase.from('letter_kop_templates').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('letter_kop_templates').upsert(cleanForDb(templates)).then();
+      }
+    }
+  }
+
+  // Delivery Logs
+  getDeliveryLogs(): LetterDeliveryLog[] { return getItem<LetterDeliveryLog[]>(STORAGE_KEYS.DELIVERY_LOGS, initialDeliveryLogs); }
+  setDeliveryLogs(logs: LetterDeliveryLog[]): void {
+    setItem(STORAGE_KEYS.DELIVERY_LOGS, logs);
+    if (isConfigured) {
+      if (logs.length === 0) {
+        supabase.from('letter_delivery_logs').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+      } else {
+        supabase.from('letter_delivery_logs').upsert(cleanForDb(logs)).then();
+      }
+    }
   }
 
   // Audit Logs
