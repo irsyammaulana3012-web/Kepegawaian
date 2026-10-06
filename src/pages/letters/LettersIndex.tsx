@@ -80,7 +80,7 @@ export const LettersIndex: React.FC = () => {
   const [bulkPrintLetters, setBulkPrintLetters] = useState<OfficialLetter[]>([]);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<OfficialLetter | null>(null);
-  const [modalPrintMode, setModalPrintMode] = useState<'physical' | 'digital'>('physical');
+  const [modalPrintMode, setModalPrintMode] = useState<'physical' | 'digital'>('digital');
 
   // =========================================================================
   // SINGLE INTEGRATED FLOW STATES FOR "BUAT SURAT"
@@ -646,6 +646,7 @@ export const LettersIndex: React.FC = () => {
   const handlePrintSingle = (letter: OfficialLetter) => {
     setPreviewLetter(letter);
     setBulkPrintLetters([letter]);
+    setModalPrintMode('digital');
     setIsPreviewOpen(true);
   };
 
@@ -655,6 +656,7 @@ export const LettersIndex: React.FC = () => {
     if (selected.length === 0) return;
     setPreviewLetter(null);
     setBulkPrintLetters(selected);
+    setModalPrintMode('digital');
     setIsPreviewOpen(true);
   };
 

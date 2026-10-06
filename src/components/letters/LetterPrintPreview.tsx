@@ -89,7 +89,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
       <div
         className="relative z-10"
         style={{
-          paddingTop: hasKopImage && kopMode === 'full_page' && !shouldHideKopOnPrint
+          paddingTop: hasKopImage && kopMode === 'full_page'
             ? `${kopTopPaddingCm}cm`
             : undefined
         }}
