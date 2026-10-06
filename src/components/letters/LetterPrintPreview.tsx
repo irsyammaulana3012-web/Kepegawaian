@@ -42,11 +42,9 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
       }`}
     >
       {/* 1. FULL PAGE A4 BACKGROUND KOP IMAGE */}
-      {hasKopImage && (
+      {hasKopImage && !shouldHideKopOnPrint && (
         <div
-          className={`absolute inset-0 z-0 pointer-events-none ${
-            shouldHideKopOnPrint ? 'print-hide-kop print:hidden' : ''
-          }`}
+          className="absolute inset-0 z-0 pointer-events-none print-hide-kop"
           style={{
             position: 'absolute',
             top: 0,
@@ -68,8 +66,8 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
       )}
 
       {/* 2. TEXT KOP HEADER (ONLY WHEN NO IMAGE KOP IS PRESENT) */}
-      {!hasKopImage && (
-        <div className={`mb-6 border-b-2 border-slate-900 pb-3 relative z-10 ${shouldHideKopOnPrint ? 'print:hidden' : ''}`}>
+      {!hasKopImage && !shouldHideKopOnPrint && (
+        <div className="mb-6 border-b-2 border-slate-900 pb-3 relative z-10">
           <div className="text-center">
             <h3 className="text-sm font-bold tracking-widest uppercase text-slate-800">{line1}</h3>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase mt-0.5">{line2}</h1>
@@ -79,19 +77,13 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
         </div>
       )}
 
-      {/* Spacer margin atas saat cetak di kertas fisik berpemberat Kop */}
-      {shouldHideKopOnPrint && (
-        <div
-          className="hidden print:block"
-          style={{ height: `${printMarginCm}cm` }}
-        />
-      )}
-
       {/* 3. LETTER CONTENT LAYERED ON TOP OF BACKGROUND */}
       <div
         className="relative z-10"
         style={{
-          paddingTop: hasKopImage ? `${kopTopPaddingCm}cm` : undefined
+          paddingTop: hasKopImage && !shouldHideKopOnPrint
+            ? `${kopTopPaddingCm}cm`
+            : `${printMarginCm}cm`
         }}
       >
         {/* NOMOR SURAT & JUDUL */}
