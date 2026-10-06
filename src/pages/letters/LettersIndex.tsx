@@ -135,7 +135,22 @@ export const LettersIndex: React.FC = () => {
   const [kopTplTopPaddingCm, setKopTplTopPaddingCm] = useState(4.2);
   const [kopTplPrintTopMarginCm, setKopTplPrintTopMarginCm] = useState(3.5);
 
-  // Load All Master & Store Data
+  // =========================================================================
+  // TAB TEMPLATE SURAT STATES & MODAL
+  // =========================================================================
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
+  const [editingTemplateId, setEditingTemplateId] = useState<string | null>(null);
+  const [modalTplCode, setModalTplCode] = useState('');
+  const [modalTplTitle, setModalTplTitle] = useState('');
+  const [modalTplType, setModalTplType] = useState<LetterType>('sk_pengangkatan');
+  const [modalTplHeaderTitle, setModalTplHeaderTitle] = useState("KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR'ANIYYAH");
+  const [modalTplSubjectTemplate, setModalTplSubjectTemplate] = useState('');
+  const [modalTplConsidering, setModalTplConsidering] = useState<string[]>(['']);
+  const [modalTplInView, setModalTplInView] = useState<string[]>(['']);
+  const [modalTplDeciding, setModalTplDeciding] = useState<[string, string][]>([['Pertama', '']]);
+  const [modalTplCity, setModalTplCity] = useState('Tangerang Selatan');
+  const [modalTplSignerName, setModalTplSignerName] = useState('Dr. KH. M. Sobron Zayyan, SQ., MA');
+  const [modalTplSignerTitle, setModalTplSignerTitle] = useState('Ketua Umum');
   const loadData = async () => {
     try {
       setIsLoading(true);
@@ -508,6 +523,120 @@ export const LettersIndex: React.FC = () => {
       await loadData();
     } catch (err: any) {
       error('Gagal menyimpan Template KOP: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // =========================================================================
+  // TEMPLATE SURAT CRUD HANDLERS
+  // =========================================================================
+  const handleOpenNewTemplateModal = () => {
+    setEditingTemplateId(null);
+    setModalTplCode(`TPL-${Date.now().toString().slice(-4)}`);
+    setModalTplTitle('');
+    setModalTplType('sk_pengangkatan');
+    setModalTplHeaderTitle("KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR'ANIYYAH");
+    setModalTplSubjectTemplate('');
+    setModalTplConsidering(['']);
+    setModalTplInView(['']);
+    setModalTplDeciding([['Pertama', '']]);
+    setModalTplCity('Tangerang Selatan');
+    setModalTplSignerName('Dr. KH. M. Sobron Zayyan, SQ., MA');
+    setModalTplSignerTitle('Ketua Umum');
+    setIsTemplateModalOpen(true);
+  };
+
+  const handleOpenEditTemplateModal = (tpl: LetterTemplate) => {
+    setEditingTemplateId(tpl.id);
+    setModalTplCode(tpl.code);
+    setModalTplTitle(tpl.title);
+    setModalTplType(tpl.type);
+    setModalTplHeaderTitle(tpl.header_title);
+    setModalTplSubjectTemplate(tpl.subject_template || '');
+    setModalTplConsidering(tpl.considering_text.length > 0 ? [...tpl.considering_text] : ['']);
+    setModalTplInView(tpl.in_view_text.length > 0 ? [...tpl.in_view_text] : ['']);
+    setModalTplDeciding(Object.entries(tpl.deciding_text || {}));
+    setModalTplCity(tpl.footer_city || 'Tangerang Selatan');
+    setModalTplSignerName(tpl.signer_name || 'Dr. KH. M. Sobron Zayyan, SQ., MA');
+    setModalTplSignerTitle(tpl.signer_title || 'Ketua Umum');
+    setIsTemplateModalOpen(true);
+  };
+
+  const handleDuplicateTemplate = async (tpl: LetterTemplate) => {
+    try {
+      setIsLoading(true);
+      await letterService.saveTemplate({
+        code: `${tpl.code}-COPY`,
+        title: `${tpl.title} (Salinan)`,
+        type: tpl.type,
+        header_title: tpl.header_title,
+        subject_template: tpl.subject_template,
+        considering_text: [...tpl.considering_text],
+        in_view_text: [...tpl.in_view_text],
+        observing_text: [...tpl.observing_text],
+        deciding_text: { ...tpl.deciding_text },
+        footer_city: tpl.footer_city,
+        signer_name: tpl.signer_name,
+        signer_title: tpl.signer_title
+      });
+      success('Berhasil menduplikasi Template Surat');
+      await loadData();
+    } catch (err: any) {
+      error('Gagal menduplikasi template: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus template surat ini?')) return;
+    try {
+      setIsLoading(true);
+      await letterService.deleteTemplate(id);
+      success('Berhasil menghapus Template Surat');
+      await loadData();
+    } catch (err: any) {
+      error('Gagal menghapus template: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveTemplateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!modalTplTitle || !modalTplCode) {
+      error('Kode dan Judul Template Surat wajib diisi');
+      return;
+    }
+    try {
+      setIsLoading(true);
+      const decidingObj: Record<string, string> = {};
+      modalTplDeciding.forEach(([k, v]) => {
+        if (k.trim()) decidingObj[k.trim()] = v;
+      });
+
+      await letterService.saveTemplate({
+        id: editingTemplateId || undefined,
+        code: modalTplCode,
+        title: modalTplTitle,
+        type: modalTplType,
+        header_title: modalTplHeaderTitle,
+        subject_template: modalTplSubjectTemplate,
+        considering_text: modalTplConsidering.filter(Boolean),
+        in_view_text: modalTplInView.filter(Boolean),
+        observing_text: [],
+        deciding_text: decidingObj,
+        footer_city: modalTplCity,
+        signer_name: modalTplSignerName,
+        signer_title: modalTplSignerTitle
+      });
+
+      success('Berhasil menyimpan Template Surat');
+      setIsTemplateModalOpen(false);
+      await loadData();
+    } catch (err: any) {
+      error('Gagal menyimpan template: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -1550,8 +1679,21 @@ export const LettersIndex: React.FC = () => {
       {/* TAB 3: TEMPLATE SURAT */}
       {activeTab === 'templates' && (
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-800">Daftar Format Template Surat YASPIQ (Supabase Persisted)</h3>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900">Format Template Surat Resmi YASPIQ</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Kelola format standar SK, Surat Tugas, Surat Peringatan, dan Surat Keterangan (Tersimpan di Supabase).
+              </p>
+            </div>
+            <Button
+              variant="primary"
+              size="md"
+              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={handleOpenNewTemplateModal}
+            >
+              Buat Template Surat
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1559,11 +1701,35 @@ export const LettersIndex: React.FC = () => {
               <Card key={tpl.id} title={tpl.title} subtitle={`Kode: ${tpl.code} • Type: ${tpl.type}`}>
                 <div className="space-y-2 text-xs text-slate-600">
                   <p><strong>Judul Kop:</strong> {tpl.header_title}</p>
-                  <p><strong>Total Poin Menimbang:</strong> {tpl.considering_text.length} Poin</p>
-                  <p><strong>Total Poin Mengingat:</strong> {tpl.in_view_text.length} Poin</p>
+                  <p><strong>Total Poin Menimbang:</strong> {tpl.considering_text?.length || 0} Poin</p>
+                  <p><strong>Total Poin Mengingat:</strong> {tpl.in_view_text?.length || 0} Poin</p>
                   <p><strong>Penandatangan:</strong> {tpl.signer_name} ({tpl.signer_title})</p>
                 </div>
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditTemplateModal(tpl)}
+                      className="px-2.5 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center gap-1"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDuplicateTemplate(tpl)}
+                      className="px-2.5 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center gap-1"
+                    >
+                      <Copy className="w-3.5 h-3.5" /> Duplikat
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTemplate(tpl.id)}
+                      className="px-2.5 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg flex items-center gap-1"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Hapus
+                    </button>
+                  </div>
+
                   <Button
                     variant="primary"
                     size="sm"
@@ -1573,7 +1739,7 @@ export const LettersIndex: React.FC = () => {
                       setActiveTab('buat');
                     }}
                   >
-                    Gunakan Template Ini di "Buat Surat"
+                    Gunakan di "Buat Surat"
                   </Button>
                 </div>
               </Card>
@@ -1877,6 +2043,191 @@ export const LettersIndex: React.FC = () => {
         confirmText={`Hapus ${selectedLetterIds.length} Surat`}
         type="danger"
       />
+
+      {/* MODAL BUAT / EDIT TEMPLATE SURAT */}
+      <Modal
+        isOpen={isTemplateModalOpen}
+        onClose={() => setIsTemplateModalOpen(false)}
+        title={editingTemplateId ? "Edit Template Surat" : "Buat Template Surat Baru"}
+        maxWidth="lg"
+      >
+        <form onSubmit={handleSaveTemplateSubmit} className="space-y-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block font-bold text-slate-800 mb-1">Kode Template *</label>
+              <Input
+                value={modalTplCode}
+                onChange={e => setModalTplCode(e.target.value)}
+                placeholder="SK-GT-2026"
+                required
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="block font-bold text-slate-800 mb-1">Judul Template *</label>
+              <Input
+                value={modalTplTitle}
+                onChange={e => setModalTplTitle(e.target.value)}
+                placeholder="SK Pengangkatan Guru Tetap"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block font-bold text-slate-800 mb-1">Jenis Surat</label>
+              <Select
+                value={modalTplType}
+                onChange={e => setModalTplType(e.target.value as LetterType)}
+                options={[
+                  { value: 'sk_pengangkatan', label: 'SK Pengangkatan' },
+                  { value: 'sk_penugasan', label: 'SK Penugasan' },
+                  { value: 'surat_tugas', label: 'Surat Tugas' },
+                  { value: 'sp_peringatan', label: 'Surat Peringatan (SP)' },
+                  { value: 'surat_keterangan', label: 'Surat Keterangan' }
+                ]}
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-slate-800 mb-1">Kota Penetapan</label>
+              <Input
+                value={modalTplCity}
+                onChange={e => setModalTplCity(e.target.value)}
+                placeholder="Tangerang Selatan"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-bold text-slate-800 mb-1">Header Title Kop</label>
+            <Input
+              value={modalTplHeaderTitle}
+              onChange={e => setModalTplHeaderTitle(e.target.value)}
+              placeholder="KEPUTUSAN KETUA UMUM YAYASAN..."
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-slate-800 mb-1">Template Perihal (Format Tag {'{nama}'}, {'{unit_penugasan}'})</label>
+            <Input
+              value={modalTplSubjectTemplate}
+              onChange={e => setModalTplSubjectTemplate(e.target.value)}
+              placeholder="PENGANGKATAN SDR. {nama} MENJADI GURU TETAP..."
+            />
+          </div>
+
+          {/* Menimbang */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="font-bold text-slate-800">Menimbang (Dasar Alasan)</label>
+              <button
+                type="button"
+                onClick={() => setModalTplConsidering(prev => [...prev, ''])}
+                className="text-[11px] font-bold text-emerald-800 hover:underline"
+              >
+                + Tambah Poin
+              </button>
+            </div>
+            {modalTplConsidering.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="font-bold text-slate-400 text-xs w-4">{idx + 1}.</span>
+                <input
+                  type="text"
+                  value={item}
+                  onChange={e => {
+                    const copy = [...modalTplConsidering];
+                    copy[idx] = e.target.value;
+                    setModalTplConsidering(copy);
+                  }}
+                  className="w-full text-xs p-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-700"
+                  placeholder="Isi poin menimbang..."
+                />
+                <button
+                  type="button"
+                  onClick={() => setModalTplConsidering(prev => prev.filter((_, i) => i !== idx))}
+                  className="p-1.5 text-rose-600 hover:bg-rose-50 rounded"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Mengingat */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="font-bold text-slate-800">Mengingat (Landasan Hukum)</label>
+              <button
+                type="button"
+                onClick={() => setModalTplInView(prev => [...prev, ''])}
+                className="text-[11px] font-bold text-emerald-800 hover:underline"
+              >
+                + Tambah Poin
+              </button>
+            </div>
+            {modalTplInView.map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="font-bold text-slate-400 text-xs w-4">{idx + 1}.</span>
+                <input
+                  type="text"
+                  value={item}
+                  onChange={e => {
+                    const copy = [...modalTplInView];
+                    copy[idx] = e.target.value;
+                    setModalTplInView(copy);
+                  }}
+                  className="w-full text-xs p-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-700"
+                  placeholder="Isi poin mengingat..."
+                />
+                <button
+                  type="button"
+                  onClick={() => setModalTplInView(prev => prev.filter((_, i) => i !== idx))}
+                  className="p-1.5 text-rose-600 hover:bg-rose-50 rounded"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Penandatangan */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200">
+            <div>
+              <label className="block font-bold text-slate-800 mb-1">Nama Penandatangan</label>
+              <Input
+                value={modalTplSignerName}
+                onChange={e => setModalTplSignerName(e.target.value)}
+                placeholder="Dr. KH. M. Sobron Zayyan, SQ., MA"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-slate-800 mb-1">Jabatan Penandatangan</label>
+              <Input
+                value={modalTplSignerTitle}
+                onChange={e => setModalTplSignerTitle(e.target.value)}
+                placeholder="Ketua Umum"
+              />
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsTemplateModalOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={isLoading}
+            >
+              Simpan Template
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

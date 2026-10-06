@@ -75,15 +75,16 @@ const STORAGE_KEYS = {
 function getItem<T>(key: string, initialData: T): T {
   try {
     const data = localStorage.getItem(key);
-    const isSynced = localStorage.getItem('simka_synced_with_supabase') === 'true';
     if (!data) {
-      if (isSynced && Array.isArray(initialData)) {
-        return [] as unknown as T;
-      }
       localStorage.setItem(key, JSON.stringify(initialData));
       return initialData;
     }
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    if (Array.isArray(initialData) && Array.isArray(parsed) && parsed.length === 0 && (initialData as any[]).length > 0) {
+      localStorage.setItem(key, JSON.stringify(initialData));
+      return initialData;
+    }
+    return parsed;
   } catch (err) {
     console.error(`Error reading ${key} from storage:`, err);
     return initialData;
