@@ -26,7 +26,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
 
   const printMarginCm = kopSettings?.print_top_margin_cm || 3.5;
   const kopMode = kopSettings?.kop_image_mode || 'full_page';
-  const kopTopPaddingCm = kopSettings?.kop_top_padding_cm ?? 5.8;
+  const kopTopPaddingCm = Math.max(kopSettings?.kop_top_padding_cm ?? 6.5, 6.5);
   const kopImageUrl = kopSettings?.kop_image_url || '/kop_yayasan.jpg';
 
   const hasKopImage = Boolean(kopImageUrl);
@@ -36,7 +36,9 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
 
   return (
     <div
-      className={`bg-white text-slate-900 font-serif leading-relaxed p-6 sm:p-12 max-w-[210mm] min-h-[297mm] h-auto mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full print:bg-transparent relative overflow-visible ${
+      className={`printable-area bg-white text-slate-900 font-serif leading-relaxed p-6 sm:p-12 max-w-[210mm] min-h-[297mm] h-auto mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full print:bg-transparent relative overflow-visible ${
+        shouldHideKopOnPrint ? 'print-hide-kop' : ''
+      } ${
         isBulkPrint ? 'print:break-after-page page-break-after-always mb-8 print:mb-0' : ''
       }`}
     >

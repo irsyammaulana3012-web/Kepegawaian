@@ -2124,7 +2124,10 @@ export const LettersIndex: React.FC = () => {
                 <div className="flex bg-white p-1 rounded-xl border border-slate-300 text-xs font-bold">
                   <button
                     type="button"
-                    onClick={() => setModalPrintMode('physical')}
+                    onClick={() => {
+                      setModalPrintMode('physical');
+                      setTimeout(() => window.print(), 100);
+                    }}
                     className={`px-3 py-1.5 rounded-lg transition ${
                       modalPrintMode === 'physical'
                         ? 'bg-amber-800 text-white shadow-sm'
@@ -2135,7 +2138,10 @@ export const LettersIndex: React.FC = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setModalPrintMode('digital')}
+                    onClick={() => {
+                      setModalPrintMode('digital');
+                      setTimeout(() => window.print(), 100);
+                    }}
                     className={`px-3 py-1.5 rounded-lg transition ${
                       modalPrintMode === 'digital'
                         ? 'bg-emerald-800 text-white shadow-sm'
@@ -2152,7 +2158,7 @@ export const LettersIndex: React.FC = () => {
                   leftIcon={<Printer className="w-4 h-4" />}
                   onClick={() => window.print()}
                 >
-                  Print ({bulkPrintLetters.length} Surat)
+                  Cetak / Save PDF ({bulkPrintLetters.length} Surat)
                 </Button>
               </div>
             </div>
