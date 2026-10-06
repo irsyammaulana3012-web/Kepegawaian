@@ -763,12 +763,14 @@ export const initialUsers: UserProfile[] = [
   }
 ];
 
-export const initialLetterKopSettings = {
+export const initialLetterKopSettings: LetterKopSettings = {
   header_line1: 'YAYASAN PENDIDIKAN ISLAM',
   header_line2: 'PONDOK PESANTREN AL-QUR\'ANIYYAH',
-  address: 'Jl. Pesantren Al-Qur\'aniyyah No. 12, Cipayung, Tangerang Selatan / Megamendung, Bogor',
-  contact: 'Telp: (021) 7458000 | Email: yayasan@alquraniyyah.sch.id | Website: alquraniyyah.sch.id',
-  kop_image_url: '',
+  address: 'Jl. Panti Asuhan Ceger No.6 Jurangmangu Timur Pondok Aren Tangerang Selatan 15222',
+  contact: 'Telp. (021) 7319421 / 73440835 | Hp. 08158968401 / 0811916942',
+  kop_image_url: '/kop_yayasan.jpg',
+  kop_image_mode: 'full_page',
+  kop_top_padding_cm: 4.8,
   hide_kop_on_print: true,
   print_top_margin_cm: 3.5,
   default_city: 'Tangerang Selatan',
@@ -1081,15 +1083,15 @@ import { LetterKopTemplate, LetterDeliveryLog } from '../types';
 export const initialKopTemplates: LetterKopTemplate[] = [
   {
     id: 'kop-tpl-1',
-    name: 'KOP Yayasan Al-Qur\'aniyyah',
+    name: 'KOP Resmi Yayasan Al-Qur\'aniyyah (Background A4)',
     unit_id: 'u-1',
     header_line1: 'YAYASAN PENDIDIKAN ISLAM',
     header_line2: 'PONDOK PESANTREN AL-QUR\'ANIYYAH',
-    address: 'Jl. Pesantren Al-Qur\'aniyyah No. 12, Cipayung, Tangerang Selatan / Megamendung, Bogor',
-    contact: 'Telp: (021) 7458000 | Email: yayasan@alquraniyyah.sch.id | Website: alquraniyyah.sch.id',
-    kop_image_url: '',
+    address: 'Jl. Panti Asuhan Ceger No.6 Jurangmangu Timur Pondok Aren Tangerang Selatan 15222',
+    contact: 'Telp. (021) 7319421 / 73440835 | Hp. 08158968401 / 0811916942',
+    kop_image_url: '/kop_yayasan.jpg',
     kop_image_mode: 'full_page',
-    kop_top_padding_cm: 4.2,
+    kop_top_padding_cm: 4.8,
     print_top_margin_cm: 3.5,
     is_default: true
   },
