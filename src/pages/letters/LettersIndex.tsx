@@ -750,6 +750,44 @@ export const LettersIndex: React.FC = () => {
     setIsPreviewOpen(true);
   };
 
+  // Preview / Print helper for current wizard draft letters in Step 4
+  const handlePreviewCurrentWizardLetters = (mode: 'digital' | 'physical' = 'digital') => {
+    const currentDraftLetters: OfficialLetter[] = selectedEmployeeIds.map((empId, idx) => {
+      const emp = employees.find(e => e.id === empId) || employees[0];
+      const seqNum = String(idx + 1).padStart(3, '0');
+      return {
+        id: `draft-${empId}-${idx}`,
+        letter_number: letterNumber || `${seqNum} /SK/YASPIQ/X/2026`,
+        type: letterType,
+        title: letterTitle || 'Surat Resmi',
+        employee_id: empId,
+        employee_name: emp.full_name,
+        employee_email: emp.email,
+        employee_nik: emp.nik,
+        employee_nirg_nirk: emp.nirg || emp.nirk || '',
+        employee_position: emp.primary_assignment?.position_name || '',
+        employee_unit: emp.primary_assignment?.unit_name || '',
+        subject: replacePlaceholders(letterSubject, emp, letterNumber),
+        header_title: headerTitle,
+        considering: consideringList.map(c => replacePlaceholders(c, emp, letterNumber)).filter(Boolean),
+        in_view: inViewList.map(v => replacePlaceholders(v, emp, letterNumber)).filter(Boolean),
+        observing: observingList.map(o => replacePlaceholders(o, emp, letterNumber)).filter(Boolean),
+        deciding: Object.fromEntries(decidingEntries.map(([k, v]) => [k, replacePlaceholders(v, emp, letterNumber)])),
+        effective_date: effectiveDate,
+        issued_date: issuedDate,
+        issued_city: issuedCity,
+        signer_name: signerName,
+        signer_title: signerTitle,
+        status: 'draft',
+        created_at: new Date().toISOString()
+      };
+    });
+
+    setBulkPrintLetters(currentDraftLetters);
+    setModalPrintMode(mode);
+    setIsPreviewOpen(true);
+  };
+
   // Archive Multi-Select Helpers
   const toggleSelectArchiveLetter = (id: string) => {
     setSelectedLetterIds(prev =>
@@ -1743,7 +1781,37 @@ export const LettersIndex: React.FC = () => {
                   )}
                 </div>
 
-                <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+                {/* Print & PDF Options */}
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                  <h4 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <Printer className="w-4 h-4 text-slate-700" />
+                    <span>Pilihan Cetak & Download PDF:</span>
+                  </h4>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      leftIcon={<Printer className="w-4 h-4" />}
+                      onClick={() => handlePreviewCurrentWizardLetters('digital')}
+                    >
+                      Cetak / Download PDF (Lengkap Berkop A4)
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      leftIcon={<Printer className="w-4 h-4" />}
+                      onClick={() => handlePreviewCurrentWizardLetters('physical')}
+                    >
+                      Print (Isi Surat Saja - Tanpa Kop)
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3">
                   <Button
                     variant="outline"
                     size="md"
@@ -1752,15 +1820,27 @@ export const LettersIndex: React.FC = () => {
                     Kembali Edit Data
                   </Button>
 
-                  <Button
-                    variant="primary"
-                    size="md"
-                    isLoading={isLoading}
-                    leftIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
-                    onClick={handlePublishLetters}
-                  >
-                    Terbitkan & Kirim {selectedEmployeeIds.length} Surat
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="gold"
+                      size="md"
+                      leftIcon={<Printer className="w-4 h-4" />}
+                      onClick={() => handlePreviewCurrentWizardLetters('digital')}
+                    >
+                      🖨️ Cetak / Preview Surat
+                    </Button>
+
+                    <Button
+                      variant="primary"
+                      size="md"
+                      isLoading={isLoading}
+                      leftIcon={<Sparkles className="w-4 h-4 text-amber-300" />}
+                      onClick={handlePublishLetters}
+                    >
+                      Terbitkan & Kirim {selectedEmployeeIds.length} Surat
+                    </Button>
+                  </div>
                 </div>
               </div>
             </Card>
