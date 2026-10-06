@@ -45,6 +45,7 @@ import {
 import { letterService } from '../../services/letterService';
 import { employeeService } from '../../services/employeeService';
 import { masterDataService } from '../../services/masterDataService';
+import { store } from '../../services/storageStore';
 import { useToast } from '../../context/ToastContext';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -499,30 +500,119 @@ export const LettersIndex: React.FC = () => {
     }
   };
 
+  // Handle Kop Image Upload from File Input
+  const handleKopImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 8 * 1024 * 1024) {
+        error('Ukuran file gambar KOP maksimal 8MB');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (uploadEvent) => {
+        const result = uploadEvent.target?.result as string;
+        setKopTplImageUrl(result);
+        success('Gambar KOP A4 berhasil diunggah');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Save Kop Template in Tab 4
   const handleSaveKopTemplate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!kopTplName) {
+      error('Nama Template KOP wajib diisi');
+      return;
+    }
     try {
       setIsLoading(true);
-      await letterService.saveKopTemplate({
+      const saved = await letterService.saveKopTemplate({
         id: editingKopTplId || undefined,
-        name: kopTplName || 'Template KOP Baru',
-        unit_id: kopTplUnitId || undefined,
-        header_line1: kopTplHeader1,
-        header_line2: kopTplHeader2,
-        address: kopTplAddress,
-        contact: kopTplContact,
-        kop_image_url: kopTplImageUrl,
-        kop_image_mode: kopTplImageMode,
-        kop_top_padding_cm: kopTplTopPaddingCm,
-        print_top_margin_cm: kopTplPrintTopMarginCm
+        name: kopTplName,
+        header_line1: 'YAYASAN PENDIDIKAN ISLAM',
+        header_line2: 'PONDOK PESANTREN AL-QUR\'ANIYYAH',
+        address: 'Jl. Panti Asuhan Ceger No.6 Jurangmangu Timur Pondok Aren Tangerang Selatan 15222',
+        contact: 'Telp. (021) 7319421 / 73440835',
+        kop_image_url: kopTplImageUrl || '/kop_yayasan.jpg',
+        kop_image_mode: 'full_page',
+        kop_top_padding_cm: kopTplTopPaddingCm || 5.8,
+        print_top_margin_cm: 3.5
       });
-      success('Berhasil menyimpan Template KOP Surat');
+
+      // If editing default Kop or single Kop, update active Kop Settings too
+      if (saved.is_default || kopTemplates.length <= 1) {
+        await letterService.saveKopSettings({
+          header_line1: saved.header_line1,
+          header_line2: saved.header_line2,
+          address: saved.address,
+          contact: saved.contact,
+          kop_image_url: saved.kop_image_url || '/kop_yayasan.jpg',
+          kop_image_mode: 'full_page',
+          kop_top_padding_cm: saved.kop_top_padding_cm || 5.8,
+          hide_kop_on_print: true,
+          print_top_margin_cm: 3.5,
+          default_city: 'Tangerang Selatan',
+          default_signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+          default_signer_title: 'Ketua Umum'
+        });
+      }
+
+      success('Berhasil menyimpan Template KOP Gambar A4');
       setEditingKopTplId(null);
       setKopTplName('');
+      setKopTplImageUrl('');
       await loadData();
     } catch (err: any) {
       error('Gagal menyimpan Template KOP: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Set active default Kop template
+  const handleSetDefaultKop = async (kt: LetterKopTemplate) => {
+    try {
+      setIsLoading(true);
+      const updated = kopTemplates.map(item => ({
+        ...item,
+        is_default: item.id === kt.id
+      }));
+      await store.setKopTemplates(updated);
+      await letterService.saveKopSettings({
+        header_line1: kt.header_line1,
+        header_line2: kt.header_line2,
+        address: kt.address,
+        contact: kt.contact,
+        kop_image_url: kt.kop_image_url || '/kop_yayasan.jpg',
+        kop_image_mode: 'full_page',
+        kop_top_padding_cm: kt.kop_top_padding_cm || 5.8,
+        hide_kop_on_print: true,
+        print_top_margin_cm: 3.5,
+        default_city: 'Tangerang Selatan',
+        default_signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+        default_signer_title: 'Ketua Umum'
+      });
+      success(`Berhasil menjadikan ${kt.name} sebagai KOP Default`);
+      await loadData();
+    } catch (err: any) {
+      error('Gagal mengubah KOP default: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Delete Kop template
+  const handleDeleteKopTemplate = async (id: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus Template KOP ini?')) return;
+    try {
+      setIsLoading(true);
+      const filtered = kopTemplates.filter(k => k.id !== id);
+      await store.setKopTemplates(filtered);
+      success('Berhasil menghapus Template KOP');
+      await loadData();
+    } catch (err: any) {
+      error('Gagal menghapus KOP: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -1750,89 +1840,167 @@ export const LettersIndex: React.FC = () => {
         </div>
       )}
 
-      {/* TAB 4: TEMPLATE KOP (A4 PORTRAIT) */}
+      {/* TAB 4: TEMPLATE KOP (FORMAT GAMBAR A4) */}
       {activeTab === 'kop' && (
         <div className="space-y-6">
-          <Card title="Manajemen Template KOP (KOP Yayasan, KOP SD, KOP SMP, KOP SMA, dll)">
+          <Card title="Manajemen Template KOP Gambar A4">
             <div className="space-y-6 text-xs">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl">
+                <p className="font-bold text-emerald-900 text-sm">
+                  Kelola File Gambar KOP Format A4
+                </p>
+                <p className="text-emerald-800 text-xs mt-1">
+                  KOP berupa file gambar 1 halaman A4 penuh (JPG/PNG). Gambar KOP ini akan otomatis dijadikan background seluruh lembar surat saat di-convert ke PDF.
+                </p>
+              </div>
+
+              {/* Grid Template KOP Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {kopTemplates.map(kt => (
                   <div
                     key={kt.id}
                     className={`p-4 rounded-2xl border-2 bg-white transition flex flex-col justify-between ${
-                      kt.is_default ? 'border-emerald-600 shadow-sm' : 'border-slate-200'
+                      kt.is_default ? 'border-emerald-600 shadow-md ring-2 ring-emerald-500/20' : 'border-slate-200'
                     }`}
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-3">
                         <span className="font-bold text-slate-900 text-sm">{kt.name}</span>
                         {kt.is_default && <Badge variant="emerald" size="sm">Default</Badge>}
                       </div>
-                      <p className="text-slate-700 font-bold text-xs">{kt.header_line1}</p>
-                      <p className="text-slate-900 font-black text-xs">{kt.header_line2}</p>
-                      <p className="text-slate-500 text-[11px] mt-1 line-clamp-2">{kt.address}</p>
+
+                      {/* Image Thumbnail Preview */}
+                      <div className="w-full aspect-[1/1.41] bg-slate-100 rounded-xl overflow-hidden border border-slate-300 relative mb-3 group">
+                        <img
+                          src={kt.kop_image_url || '/kop_yayasan.jpg'}
+                          alt={kt.name}
+                          className="w-full h-full object-fill"
+                        />
+                        <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center p-2 text-center text-white text-[10px] font-bold">
+                          KOP A4 Background ({kt.kop_top_padding_cm || 5.8}cm Top Margin)
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          setEditingKopTplId(kt.id);
-                          setKopTplName(kt.name);
-                          setKopTplHeader1(kt.header_line1);
-                          setKopTplHeader2(kt.header_line2);
-                          setKopTplAddress(kt.address);
-                          setKopTplContact(kt.contact);
-                          setKopTplImageUrl(kt.kop_image_url || '');
-                        }}
-                      >
-                        Edit KOP
-                      </Button>
+                    <div className="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
+                      {!kt.is_default ? (
+                        <button
+                          type="button"
+                          onClick={() => handleSetDefaultKop(kt)}
+                          className="text-[11px] font-bold text-emerald-700 hover:underline"
+                        >
+                          ✓ Jadikan Default
+                        </button>
+                      ) : (
+                        <span className="text-[11px] font-bold text-emerald-800">KOP Aktif Utama</span>
+                      )}
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingKopTplId(kt.id);
+                            setKopTplName(kt.name);
+                            setKopTplImageUrl(kt.kop_image_url || '/kop_yayasan.jpg');
+                            setKopTplTopPaddingCm(kt.kop_top_padding_cm || 5.8);
+                          }}
+                          className="px-2.5 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center gap-1"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" /> Edit
+                        </button>
+
+                        {!kt.is_default && kopTemplates.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteKopTemplate(kt.id)}
+                            className="px-2.5 py-1 text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg flex items-center gap-1"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Hapus
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Edit/Create KOP Form */}
-              <form onSubmit={handleSaveKopTemplate} className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-4 max-w-3xl">
-                <h4 className="font-bold text-slate-900 text-sm border-b border-slate-200 pb-2">
-                  {editingKopTplId ? 'Edit Template KOP' : 'Buat Template KOP Baru'}
-                </h4>
+              {/* Upload/Edit KOP Form */}
+              <form onSubmit={handleSaveKopTemplate} className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4 max-w-2xl">
+                <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+                  <h4 className="font-bold text-slate-900 text-sm">
+                    {editingKopTplId ? `Edit Gambar KOP: ${kopTplName}` : '+ Upload Template KOP Gambar A4 Baru'}
+                  </h4>
+                  {editingKopTplId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingKopTplId(null);
+                        setKopTplName('');
+                        setKopTplImageUrl('');
+                      }}
+                      className="text-xs font-bold text-slate-500 hover:underline"
+                    >
+                      Batal Edit
+                    </button>
+                  )}
+                </div>
 
-                <Input
-                  label="Nama Template KOP"
-                  value={kopTplName}
-                  onChange={e => setKopTplName(e.target.value)}
-                  placeholder="KOP SMP IT Al-Qur'aniyyah"
-                />
+                <div>
+                  <label className="block font-bold text-slate-800 mb-1">Nama Template KOP *</label>
+                  <Input
+                    value={kopTplName}
+                    onChange={e => setKopTplName(e.target.value)}
+                    placeholder="Contoh: KOP SD IT / KOP SMP IT / KOP Yayasan"
+                    required
+                  />
+                </div>
 
-                <Input
-                  label="Baris 1 Kop (Nama Instansi)"
-                  value={kopTplHeader1}
-                  onChange={e => setKopTplHeader1(e.target.value)}
-                  placeholder="YAYASAN PENDIDIKAN ISLAM"
-                />
-                <Input
-                  label="Baris 2 Kop (Nama Lembaga / Unit)"
-                  value={kopTplHeader2}
-                  onChange={e => setKopTplHeader2(e.target.value)}
-                  placeholder="PONDOK PESANTREN AL-QUR'ANIYYAH"
-                />
-                <Input
-                  label="Alamat Lengkap"
-                  value={kopTplAddress}
-                  onChange={e => setKopTplAddress(e.target.value)}
-                />
-                <Input
-                  label="Kontak Telepon & Email"
-                  value={kopTplContact}
-                  onChange={e => setKopTplContact(e.target.value)}
-                />
+                <div>
+                  <label className="block font-bold text-slate-800 mb-1">Upload File Gambar KOP Format A4 (PNG / JPG)</label>
+                  <div className="flex items-center gap-3">
+                    <label className="cursor-pointer px-4 py-2 bg-emerald-800 text-white rounded-xl font-bold text-xs hover:bg-emerald-900 transition flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      <span>Pilih File Gambar KOP A4</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleKopImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+
+                    {kopTplImageUrl && (
+                      <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4" /> Gambar KOP Terpilih
+                      </span>
+                    )}
+                  </div>
+
+                  {kopTplImageUrl && (
+                    <div className="mt-3 p-2 border border-slate-300 rounded-xl bg-white max-w-xs">
+                      <p className="text-[10px] font-bold text-slate-500 mb-1">Preview Gambar KOP A4:</p>
+                      <img src={kopTplImageUrl} alt="KOP Preview" className="w-full h-40 object-contain rounded border border-slate-200" />
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-800 mb-1">Jarak Margin Atas Teks Isi Surat (cm)</label>
+                  <Input
+                    type="number"
+                    step="0.1"
+                    value={kopTplTopPaddingCm}
+                    onChange={e => setKopTplTopPaddingCm(parseFloat(e.target.value) || 5.8)}
+                    placeholder="5.8"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Jarak posisi teks dari atas halaman A4 agar posisi judul & isi surat pas berada di bawah garis KOP (Default: 5.8 cm).
+                  </p>
+                </div>
 
                 <div className="pt-3 border-t border-slate-200 flex gap-2">
                   <Button type="submit" variant="primary" isLoading={isLoading}>
-                    Simpan Template KOP
+                    Simpan Template KOP Gambar A4
                   </Button>
                 </div>
               </form>
