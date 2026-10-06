@@ -25,7 +25,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
     : (kopSettings?.hide_kop_on_print ?? true);
 
   const printMarginCm = kopSettings?.print_top_margin_cm || 3.5;
-  const kopTopPaddingCm = Math.max(kopSettings?.kop_top_padding_cm ?? 5.5, 5.5);
+  const kopTopPaddingCm = Math.max(kopSettings?.kop_top_padding_cm ?? 6.8, 6.8);
   const kopImageUrl = kopSettings?.kop_image_url || '/kop_yayasan.jpg';
 
   const hasKopImage = Boolean(kopImageUrl && kopImageUrl.trim() !== '');
@@ -44,7 +44,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
       {/* 1. FULL PAGE A4 BACKGROUND KOP IMAGE */}
       {hasKopImage && !shouldHideKopOnPrint && (
         <div
-          className="absolute inset-0 z-0 pointer-events-none print-hide-kop"
+          className="absolute inset-0 z-0 pointer-events-none kop-background-wrapper"
           style={{
             position: 'absolute',
             top: 0,

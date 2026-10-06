@@ -413,10 +413,10 @@ class StorageStore {
   // Kop Settings
   getLetterKopSettings(): LetterKopSettings {
     const settings = getItem<LetterKopSettings>(STORAGE_KEYS.KOP_SETTINGS, initialLetterKopSettings);
-    if (!settings.kop_image_url || settings.kop_top_padding_cm! < 5.5) {
+    if (!settings.kop_image_url || settings.kop_top_padding_cm! < 6.8) {
       settings.kop_image_url = '/kop_yayasan.jpg';
       settings.kop_image_mode = 'full_page';
-      settings.kop_top_padding_cm = 5.8;
+      settings.kop_top_padding_cm = 6.8;
       this.setLetterKopSettings(settings);
     }
     return settings;
@@ -428,10 +428,10 @@ class StorageStore {
   // Kop Templates
   getKopTemplates(): LetterKopTemplate[] {
     const list = getItem<LetterKopTemplate[]>(STORAGE_KEYS.KOP_TEMPLATES, initialKopTemplates);
-    if (list.length > 0 && (!list[0].kop_image_url || list[0].kop_top_padding_cm! < 5.5)) {
+    if (list.length > 0 && (!list[0].kop_image_url || list[0].kop_top_padding_cm! < 6.8)) {
       list[0].kop_image_url = '/kop_yayasan.jpg';
       list[0].kop_image_mode = 'full_page';
-      list[0].kop_top_padding_cm = 5.8;
+      list[0].kop_top_padding_cm = 6.8;
       this.setKopTemplates(list);
     }
     return list;

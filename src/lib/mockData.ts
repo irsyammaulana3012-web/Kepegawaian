@@ -1091,7 +1091,7 @@ export const initialKopTemplates: LetterKopTemplate[] = [
     contact: 'Telp. (021) 7319421 / 73440835 | Hp. 08158968401 / 0811916942',
     kop_image_url: '/kop_yayasan.jpg',
     kop_image_mode: 'full_page',
-    kop_top_padding_cm: 5.8,
+    kop_top_padding_cm: 6.8,
     print_top_margin_cm: 3.5,
     is_default: true
   },
