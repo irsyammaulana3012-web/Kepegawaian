@@ -35,7 +35,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
 
   return (
     <div
-      className={`printable-area bg-white text-slate-900 font-serif leading-relaxed p-6 sm:p-12 max-w-[210mm] min-h-[297mm] h-auto mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full print:bg-transparent relative overflow-visible ${
+      className={`printable-area bg-white text-slate-900 font-serif leading-relaxed px-6 sm:px-12 py-6 max-w-[210mm] min-h-[297mm] h-auto mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:bg-transparent relative overflow-visible ${
         shouldHideKopOnPrint ? 'print-hide-kop' : ''
       } ${
         isBulkPrint ? 'print:break-after-page page-break-after-always mb-8 print:mb-0' : ''
@@ -79,7 +79,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
 
       {/* 3. LETTER CONTENT LAYERED ON TOP OF BACKGROUND */}
       <div
-        className="relative z-10"
+        className="relative z-10 break-words"
         style={{
           paddingTop: hasKopImage && !shouldHideKopOnPrint
             ? `${kopTopPaddingCm}cm`
