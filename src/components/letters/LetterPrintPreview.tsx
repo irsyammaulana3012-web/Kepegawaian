@@ -35,11 +35,16 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
 
   return (
     <div
-      className={`printable-area bg-white text-slate-900 font-serif leading-relaxed px-6 sm:px-12 py-6 max-w-[210mm] min-h-[297mm] h-auto mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:bg-transparent relative overflow-visible ${
+      className={`printable-area bg-white text-slate-900 font-serif leading-relaxed py-6 max-w-[210mm] min-h-[297mm] h-auto mx-auto shadow-2xl border border-slate-200 print:shadow-none print:border-none print:bg-transparent relative overflow-visible ${
         shouldHideKopOnPrint ? 'print-hide-kop' : ''
       } ${
         isBulkPrint ? 'print:break-after-page page-break-after-always mb-8 print:mb-0' : ''
       }`}
+      style={{
+        boxSizing: 'border-box',
+        paddingLeft: '2cm',
+        paddingRight: '2cm'
+      }}
     >
       {/* 1. FULL PAGE A4 BACKGROUND KOP IMAGE */}
       {hasKopImage && !shouldHideKopOnPrint && (
