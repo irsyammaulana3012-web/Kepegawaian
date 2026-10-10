@@ -237,12 +237,9 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
                     <p className="font-bold uppercase text-slate-900">Yayasan Pendidikan Islam</p>
                     <p className="font-bold uppercase text-slate-900">Pondok Pesantren Al-Qur'aniyyah</p>
 
-                    {/* Signature & Stamp Space */}
-                    <div className="h-24 my-2 flex items-center justify-center relative">
-                      <div className="w-24 h-24 border-2 border-indigo-700/60 rounded-full flex items-center justify-center text-[9px] font-black text-indigo-800 rotate-[-15deg] opacity-75 shadow-inner p-1 text-center leading-tight uppercase pointer-events-none">
-                        YAYASAN PON-PES AL-QUR'ANIYYAH
-                      </div>
-                      <div className="absolute bottom-2 left-0 right-0 border-b border-slate-900 w-3/4 mx-auto" />
+                    {/* Signature & Stamp Space (Blank space for physical signature & stamp) */}
+                    <div className="h-24 my-2 flex items-end justify-center relative">
+                      <div className="border-b border-slate-900 w-3/4 mx-auto" />
                     </div>
 
                     <p className="font-black text-sm uppercase underline text-slate-900">
