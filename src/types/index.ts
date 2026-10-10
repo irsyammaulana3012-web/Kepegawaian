@@ -431,6 +431,8 @@ export interface LetterTemplate {
   in_view_text: string[];     // Mengingat
   observing_text: string[];   // Memperhatikan
   deciding_text: Record<string, string>; // Memutuskan (Pertama, Kedua, ...)
+  body_format?: 'structured' | 'freeform';
+  freeform_content?: string;  // Teks Bebas Format Word (seperti surat di Word)
   footer_city: string;
   signer_name: string;
   signer_title: string;
@@ -461,6 +463,8 @@ export interface OfficialLetter {
   in_view: string[];
   observing: string[];
   deciding: Record<string, string>;
+  body_format?: 'structured' | 'freeform';
+  freeform_content?: string;  // Teks Bebas Format Word (seperti surat di Word)
   
   effective_date: string; // Tanggal Berlaku (TMT)
   end_date?: string;       // Tanggal Berakhir

@@ -109,6 +109,11 @@ export const LettersIndex: React.FC = () => {
   const [observingList, setObservingList] = useState<string[]>(['']);
   const [decidingEntries, setDecidingEntries] = useState<[string, string][]>([['Pertama', '']]);
 
+  const [letterBodyFormat, setLetterBodyFormat] = useState<'structured' | 'freeform'>('freeform');
+  const [letterFreeformContent, setLetterFreeformContent] = useState<string>(
+    "SURAT KETERANGAN PENGALAMAN KERJA / BEKERJA AKTIF SEBAGAI\nSTAF TATA USAHA SMP IT AL-QUR'ANIYYAH\n\nBismillahirrahmānirrahīm\n\nDengan selalu bertawakal kepada Allah SWT, Ketua Umum Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah menerangkan bahwa:\n\nNama : {nama}\nNIP / NIRG : {nirg_nirk}\nJabatan : {jabatan}\nUnit Tugas : {unit_penugasan}\n\n1. Bahwa yang bersangkutan adalah benar karyawan aktif di lingkungan Pondok Pesantren Al-Qur'aniyyah.\n2. Surat keterangan ini diterbitkan atas permintaan yang bersangkutan untuk pengurusan administrasi kepegawaian / pendidikan.\n\nDemikian Surat Keterangan Kerja ini dibuat untuk dipergunakan sebagaimana mestinya."
+  );
+
   const [effectiveDate, setEffectiveDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState('');
   const [issuedDate, setIssuedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -133,7 +138,7 @@ export const LettersIndex: React.FC = () => {
   const [kopTplContact, setKopTplContact] = useState('');
   const [kopTplImageUrl, setKopTplImageUrl] = useState('');
   const [kopTplImageMode, setKopTplImageMode] = useState<'full_page' | 'header_only'>('full_page');
-  const [kopTplTopPaddingCm, setKopTplTopPaddingCm] = useState(4.2);
+  const [kopTplTopPaddingCm, setKopTplTopPaddingCm] = useState(5.0);
   const [kopTplPrintTopMarginCm, setKopTplPrintTopMarginCm] = useState(3.5);
 
   // =========================================================================
@@ -149,6 +154,10 @@ export const LettersIndex: React.FC = () => {
   const [modalTplConsidering, setModalTplConsidering] = useState<string[]>(['']);
   const [modalTplInView, setModalTplInView] = useState<string[]>(['']);
   const [modalTplDeciding, setModalTplDeciding] = useState<[string, string][]>([['Pertama', '']]);
+  const [modalTplBodyFormat, setModalTplBodyFormat] = useState<'structured' | 'freeform'>('freeform');
+  const [modalTplFreeformContent, setModalTplFreeformContent] = useState<string>(
+    "SURAT KETERANGAN PENGALAMAN KERJA / BEKERJA AKTIF SEBAGAI\nSTAF TATA USAHA SMP IT AL-QUR'ANIYYAH\n\nBismillahirrahmānirrahīm\n\nDengan selalu bertawakal kepada Allah SWT, Ketua Umum Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah menerangkan bahwa:\n\nNama : {nama}\nNIP / NIRG : {nirg_nirk}\nJabatan : {jabatan}\nUnit Tugas : {unit_penugasan}\n\n1. Bahwa yang bersangkutan adalah benar karyawan aktif di lingkungan Pondok Pesantren Al-Qur'aniyyah.\n2. Surat keterangan ini diterbitkan atas permintaan yang bersangkutan untuk pengurusan administrasi kepegawaian / pendidikan.\n\nDemikian Surat Keterangan Kerja ini dibuat untuk dipergunakan sebagaimana mestinya."
+  );
   const [modalTplCity, setModalTplCity] = useState('Tangerang Selatan');
   const [modalTplSignerName, setModalTplSignerName] = useState('Dr. KH. M. Sobron Zayyan, SQ., MA');
   const [modalTplSignerTitle, setModalTplSignerTitle] = useState('Ketua Umum');
@@ -198,11 +207,15 @@ export const LettersIndex: React.FC = () => {
     setLetterType(tpl.type);
     setHeaderTitle(tpl.header_title);
     setLetterSubject(tpl.subject_template || '');
+    setLetterBodyFormat(tpl.body_format || (tpl.freeform_content ? 'freeform' : 'structured'));
+    if (tpl.freeform_content) {
+      setLetterFreeformContent(tpl.freeform_content);
+    }
     setConsideringList(tpl.considering_text.length > 0 ? [...tpl.considering_text] : ['']);
     setInViewList(tpl.in_view_text.length > 0 ? [...tpl.in_view_text] : ['']);
     setObservingList(tpl.observing_text.length > 0 ? [...tpl.observing_text] : ['']);
 
-    const entries = Object.entries(tpl.deciding_text);
+    const entries = Object.entries(tpl.deciding_text || {});
     setDecidingEntries(entries.length > 0 ? entries.map(([k, v]) => [k, v]) : [['Pertama', '']]);
     setIssuedCity(tpl.footer_city || 'Tangerang Selatan');
     setSignerName(tpl.signer_name || 'Dr. KH. M. Sobron Zayyan, SQ., MA');
@@ -383,6 +396,8 @@ export const LettersIndex: React.FC = () => {
           in_view: inView,
           observing,
           deciding: decidingObj,
+          body_format: letterBodyFormat,
+          freeform_content: letterBodyFormat === 'freeform' ? letterFreeformContent : undefined,
           effective_date: effectiveDate,
           end_date: endDate || undefined,
           issued_date: issuedDate,
@@ -536,7 +551,7 @@ export const LettersIndex: React.FC = () => {
         contact: 'Telp. (021) 7319421 / 73440835',
         kop_image_url: kopTplImageUrl || '/kop_yayasan.jpg',
         kop_image_mode: 'full_page',
-        kop_top_padding_cm: kopTplTopPaddingCm || 5.8,
+        kop_top_padding_cm: kopTplTopPaddingCm || 5.0,
         print_top_margin_cm: 3.5
       });
 
@@ -549,7 +564,7 @@ export const LettersIndex: React.FC = () => {
           contact: saved.contact,
           kop_image_url: saved.kop_image_url || '/kop_yayasan.jpg',
           kop_image_mode: 'full_page',
-          kop_top_padding_cm: saved.kop_top_padding_cm || 5.8,
+          kop_top_padding_cm: saved.kop_top_padding_cm || 5.0,
           hide_kop_on_print: true,
           print_top_margin_cm: 3.5,
           default_city: 'Tangerang Selatan',
@@ -586,7 +601,7 @@ export const LettersIndex: React.FC = () => {
         contact: kt.contact,
         kop_image_url: kt.kop_image_url || '/kop_yayasan.jpg',
         kop_image_mode: 'full_page',
-        kop_top_padding_cm: kt.kop_top_padding_cm || 5.8,
+        kop_top_padding_cm: kt.kop_top_padding_cm || 5.0,
         hide_kop_on_print: true,
         print_top_margin_cm: 3.5,
         default_city: 'Tangerang Selatan',
@@ -625,9 +640,13 @@ export const LettersIndex: React.FC = () => {
     setEditingTemplateId(null);
     setModalTplCode(`TPL-${Date.now().toString().slice(-4)}`);
     setModalTplTitle('');
-    setModalTplType('sk_pengangkatan');
-    setModalTplHeaderTitle("KEPUTUSAN KETUA UMUM YAYASAN PENDIDIKAN ISLAM PONDOK PESANTREN AL-QUR'ANIYYAH");
-    setModalTplSubjectTemplate('');
+    setModalTplType('surat_keterangan');
+    setModalTplHeaderTitle("SURAT KETERANGAN PENGALAMAN KERJA / BEKERJA AKTIF");
+    setModalTplSubjectTemplate('SURAT KETERANGAN PENGALAMAN KERJA SDR. {nama}');
+    setModalTplBodyFormat('freeform');
+    setModalTplFreeformContent(
+      "SURAT KETERANGAN PENGALAMAN KERJA / BEKERJA AKTIF SEBAGAI\nSTAF TATA USAHA SMP IT AL-QUR'ANIYYAH\n\nBismillahirrahmānirrahīm\n\nDengan selalu bertawakal kepada Allah SWT, Ketua Umum Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah menerangkan bahwa:\n\nNama : {nama}\nNIP / NIRG : {nirg_nirk}\nJabatan : {jabatan}\nUnit Tugas : {unit_penugasan}\n\n1. Bahwa yang bersangkutan adalah benar karyawan aktif di lingkungan Pondok Pesantren Al-Qur'aniyyah.\n2. Surat keterangan ini diterbitkan atas permintaan yang bersangkutan untuk pengurusan administrasi kepegawaian / pendidikan.\n\nDemikian Surat Keterangan Kerja ini dibuat untuk dipergunakan sebagaimana mestinya."
+    );
     setModalTplConsidering(['']);
     setModalTplInView(['']);
     setModalTplDeciding([['Pertama', '']]);
@@ -644,6 +663,10 @@ export const LettersIndex: React.FC = () => {
     setModalTplType(tpl.type);
     setModalTplHeaderTitle(tpl.header_title);
     setModalTplSubjectTemplate(tpl.subject_template || '');
+    setModalTplBodyFormat(tpl.body_format || (tpl.freeform_content ? 'freeform' : 'structured'));
+    if (tpl.freeform_content) {
+      setModalTplFreeformContent(tpl.freeform_content);
+    }
     setModalTplConsidering(tpl.considering_text.length > 0 ? [...tpl.considering_text] : ['']);
     setModalTplInView(tpl.in_view_text.length > 0 ? [...tpl.in_view_text] : ['']);
     setModalTplDeciding(Object.entries(tpl.deciding_text || {}));
@@ -666,6 +689,8 @@ export const LettersIndex: React.FC = () => {
         in_view_text: [...tpl.in_view_text],
         observing_text: [...tpl.observing_text],
         deciding_text: { ...tpl.deciding_text },
+        body_format: tpl.body_format,
+        freeform_content: tpl.freeform_content,
         footer_city: tpl.footer_city,
         signer_name: tpl.signer_name,
         signer_title: tpl.signer_title
@@ -717,6 +742,8 @@ export const LettersIndex: React.FC = () => {
         in_view_text: modalTplInView.filter(Boolean),
         observing_text: [],
         deciding_text: decidingObj,
+        body_format: modalTplBodyFormat,
+        freeform_content: modalTplBodyFormat === 'freeform' ? modalTplFreeformContent : undefined,
         footer_city: modalTplCity,
         signer_name: modalTplSignerName,
         signer_title: modalTplSignerTitle
@@ -1524,17 +1551,85 @@ export const LettersIndex: React.FC = () => {
                       placeholder="PENGANGKATAN SDR. {nama} MENJADI GURU TETAP..."
                     />
 
-                    <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] space-y-1">
-                      <p className="font-bold text-amber-900">Tag Placeholder yang Didukung:</p>
-                      <p className="text-amber-800 font-mono">
-                        {'{nama}'}, {'{nik}'}, {'{nip}'}, {'{unit_penugasan}'}, {'{jabatan_penugasan}'}, {'{tugas_penugasan}'}, {'{nomor_surat}'}, {'{tanggal_surat}'}
-                      </p>
+                    <div className="p-3 bg-slate-100 rounded-xl border border-slate-200 space-y-2">
+                      <label className="block font-bold text-slate-800 text-xs">Pilih Format Isi Dokumen Surat:</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setLetterBodyFormat('freeform')}
+                          className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                            letterBodyFormat === 'freeform'
+                              ? 'bg-emerald-800 text-white shadow-sm'
+                              : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                          }`}
+                        >
+                          📝 Mode Kosong Word (Bebas Ketik)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setLetterBodyFormat('structured')}
+                          className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                            letterBodyFormat === 'structured'
+                              ? 'bg-emerald-800 text-white shadow-sm'
+                              : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                          }`}
+                        >
+                          📜 Mode Poin-Poin SK (Konsideran)
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </Card>
 
-                {/* Menimbang & Mengingat */}
-                <Card title="Konsideran (Menimbang & Mengingat)">
+                {/* Freeform Word Editor Canvas vs Structured SK Points */}
+                {letterBodyFormat === 'freeform' && (
+                  <Card title="Editor Isi Surat (Halaman Kosong Bebas Ketik)">
+                    <div className="space-y-3 text-xs">
+                      <div className="flex items-center justify-between">
+                        <label className="font-bold text-slate-800">Tuliskan Isi Surat Bebas Sesuai Keinginan:</label>
+                        <span className="text-[10px] font-bold text-emerald-700">Sisipkan Tag:</span>
+                      </div>
+
+                      {/* Tag Toolbar */}
+                      <div className="flex flex-wrap gap-1 p-2 bg-slate-50 border border-slate-200 rounded-xl text-[10px]">
+                        {[
+                          { tag: '{nama}', label: 'Nama' },
+                          { tag: '{nik}', label: 'NIP/NIK' },
+                          { tag: '{nirg_nirk}', label: 'NIRG/NIRK' },
+                          { tag: '{jabatan}', label: 'Jabatan' },
+                          { tag: '{unit_penugasan}', label: 'Unit' },
+                          { tag: '{nomor_surat}', label: 'No. Surat' },
+                          { tag: '{tanggal_penetapan}', label: 'Tgl Surat' }
+                        ].map(item => (
+                          <button
+                            key={item.tag}
+                            type="button"
+                            onClick={() => setLetterFreeformContent(prev => prev + ' ' + item.tag)}
+                            className="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded font-mono font-bold shadow-xs transition"
+                          >
+                            +{item.tag}
+                          </button>
+                        ))}
+                      </div>
+
+                      <textarea
+                        rows={14}
+                        value={letterFreeformContent}
+                        onChange={e => setLetterFreeformContent(e.target.value)}
+                        className="w-full text-xs font-mono p-3.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-700 leading-relaxed bg-white shadow-inner"
+                        placeholder="Tuliskan isi surat lengkap di sini seperti membuat dokumen di Microsoft Word..."
+                      />
+                      <p className="text-[11px] text-slate-500">
+                        * Teks di atas akan dicetak secara persis di halaman berkop A4. Tag seperti <code className="bg-slate-100 px-1 rounded text-emerald-800">{'{nama}'}</code> akan diganti dengan data pegawai secara otomatis.
+                      </p>
+                    </div>
+                  </Card>
+                )}
+
+                {/* Menimbang & Mengingat (Mode Poin SK Only) */}
+                {letterBodyFormat === 'structured' && (
+                  <>
+                    <Card title="Konsideran (Menimbang & Mengingat)">
                   <div className="space-y-4 text-xs">
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
@@ -1656,27 +1751,29 @@ export const LettersIndex: React.FC = () => {
                         />
                       </div>
                     ))}
-
-                    <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setCreateStep(2)}
-                      >
-                        Kembali
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="primary"
-                        rightIcon={<ArrowRight className="w-4 h-4" />}
-                        onClick={() => setCreateStep(4)}
-                      >
-                        Lanjut: Preview & Terbitkan
-                      </Button>
-                    </div>
                   </div>
                 </Card>
-              </div>
+              </>
+            )}
+
+            <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCreateStep(2)}
+              >
+                Kembali
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                rightIcon={<ArrowRight className="w-4 h-4" />}
+                onClick={() => setCreateStep(4)}
+              >
+                Lanjut: Preview & Terbitkan
+              </Button>
+            </div>
+          </div>
 
               {/* Right Column: Dynamic Preview */}
               <div className="lg:col-span-6 space-y-4">
@@ -1957,7 +2054,7 @@ export const LettersIndex: React.FC = () => {
                           className="w-full h-full object-fill"
                         />
                         <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center p-2 text-center text-white text-[10px] font-bold">
-                          KOP A4 Background ({kt.kop_top_padding_cm || 5.8}cm Top Margin)
+                          KOP A4 Background ({kt.kop_top_padding_cm || 5.0}cm Top Margin)
                         </div>
                       </div>
                     </div>
@@ -1982,7 +2079,7 @@ export const LettersIndex: React.FC = () => {
                             setEditingKopTplId(kt.id);
                             setKopTplName(kt.name);
                             setKopTplImageUrl(kt.kop_image_url || '/kop_yayasan.jpg');
-                            setKopTplTopPaddingCm(kt.kop_top_padding_cm || 5.8);
+                            setKopTplTopPaddingCm(kt.kop_top_padding_cm || 5.0);
                           }}
                           className="px-2.5 py-1 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg flex items-center gap-1"
                         >
@@ -2070,11 +2167,11 @@ export const LettersIndex: React.FC = () => {
                     type="number"
                     step="0.1"
                     value={kopTplTopPaddingCm}
-                    onChange={e => setKopTplTopPaddingCm(parseFloat(e.target.value) || 5.8)}
-                    placeholder="5.8"
+                    onChange={e => setKopTplTopPaddingCm(parseFloat(e.target.value) || 5.0)}
+                    placeholder="5.0"
                   />
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Jarak posisi teks dari atas halaman A4 agar posisi judul & isi surat pas berada di bawah garis KOP (Default: 5.8 cm).
+                    Jarak posisi teks dari atas halaman A4 agar posisi judul & isi surat pas berada di bawah garis KOP (Default: 5.0 cm).
                   </p>
                 </div>
 
@@ -2372,79 +2469,153 @@ export const LettersIndex: React.FC = () => {
             />
           </div>
 
-          {/* Menimbang */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="font-bold text-slate-800">Menimbang (Dasar Alasan)</label>
+          {/* Format Mode Selection Switcher */}
+          <div className="p-3 bg-slate-100 rounded-xl border border-slate-200 space-y-2">
+            <label className="block font-bold text-slate-800 text-xs">Pilih Format Isi Template Surat:</label>
+            <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => setModalTplConsidering(prev => [...prev, ''])}
-                className="text-[11px] font-bold text-emerald-800 hover:underline"
+                onClick={() => setModalTplBodyFormat('freeform')}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                  modalTplBodyFormat === 'freeform'
+                    ? 'bg-emerald-800 text-white shadow-sm'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                }`}
               >
-                + Tambah Poin
+                📝 Mode Kosong Word (Bebas Ketik)
+              </button>
+              <button
+                type="button"
+                onClick={() => setModalTplBodyFormat('structured')}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 ${
+                  modalTplBodyFormat === 'structured'
+                    ? 'bg-emerald-800 text-white shadow-sm'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+                }`}
+              >
+                📜 Mode Poin-Poin SK (Konsideran)
               </button>
             </div>
-            {modalTplConsidering.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <span className="font-bold text-slate-400 text-xs w-4">{idx + 1}.</span>
-                <input
-                  type="text"
-                  value={item}
-                  onChange={e => {
-                    const copy = [...modalTplConsidering];
-                    copy[idx] = e.target.value;
-                    setModalTplConsidering(copy);
-                  }}
-                  className="w-full text-xs p-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-700"
-                  placeholder="Isi poin menimbang..."
-                />
-                <button
-                  type="button"
-                  onClick={() => setModalTplConsidering(prev => prev.filter((_, i) => i !== idx))}
-                  className="p-1.5 text-rose-600 hover:bg-rose-50 rounded"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
           </div>
 
-          {/* Mengingat */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="font-bold text-slate-800">Mengingat (Landasan Hukum)</label>
-              <button
-                type="button"
-                onClick={() => setModalTplInView(prev => [...prev, ''])}
-                className="text-[11px] font-bold text-emerald-800 hover:underline"
-              >
-                + Tambah Poin
-              </button>
-            </div>
-            {modalTplInView.map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <span className="font-bold text-slate-400 text-xs w-4">{idx + 1}.</span>
-                <input
-                  type="text"
-                  value={item}
-                  onChange={e => {
-                    const copy = [...modalTplInView];
-                    copy[idx] = e.target.value;
-                    setModalTplInView(copy);
-                  }}
-                  className="w-full text-xs p-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-700"
-                  placeholder="Isi poin mengingat..."
-                />
-                <button
-                  type="button"
-                  onClick={() => setModalTplInView(prev => prev.filter((_, i) => i !== idx))}
-                  className="p-1.5 text-rose-600 hover:bg-rose-50 rounded"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+          {/* FREEFORM WORD-LIKE EDITOR CANVAS VS STRUCTURED POINTS */}
+          {modalTplBodyFormat === 'freeform' ? (
+            <div className="space-y-3 text-xs pt-1">
+              <div className="flex items-center justify-between">
+                <label className="block font-bold text-slate-800">Draft Isi Template Surat (Halaman Kosong Word):</label>
+                <span className="text-[10px] font-bold text-emerald-700">Sisipkan Tag:</span>
               </div>
-            ))}
-          </div>
+
+              {/* Tag Toolbar */}
+              <div className="flex flex-wrap gap-1 p-2 bg-slate-50 border border-slate-200 rounded-xl text-[10px]">
+                {[
+                  { tag: '{nama}', label: 'Nama' },
+                  { tag: '{nik}', label: 'NIP/NIK' },
+                  { tag: '{nirg_nirk}', label: 'NIRG/NIRK' },
+                  { tag: '{jabatan}', label: 'Jabatan' },
+                  { tag: '{unit_penugasan}', label: 'Unit' },
+                  { tag: '{nomor_surat}', label: 'No. Surat' },
+                  { tag: '{tanggal_penetapan}', label: 'Tgl Surat' }
+                ].map(item => (
+                  <button
+                    key={item.tag}
+                    type="button"
+                    onClick={() => setModalTplFreeformContent(prev => prev + ' ' + item.tag)}
+                    className="px-2 py-1 bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 rounded font-mono font-bold shadow-xs transition"
+                  >
+                    +{item.tag}
+                  </button>
+                ))}
+              </div>
+
+              <textarea
+                rows={12}
+                value={modalTplFreeformContent}
+                onChange={e => setModalTplFreeformContent(e.target.value)}
+                className="w-full text-xs font-mono p-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-700 leading-relaxed bg-white shadow-inner"
+                placeholder="Tuliskan template isi surat secara bebas di sini seperti membuat dokumen di Microsoft Word..."
+              />
+              <p className="text-[11px] text-slate-500">
+                Gunakan tag format seperti <code className="bg-slate-100 px-1 rounded text-emerald-800">{'{nama}'}</code> atau <code className="bg-slate-100 px-1 rounded text-emerald-800">{'{jabatan}'}</code> yang akan otomatis terisi data penerima saat surat dibuat.
+              </p>
+            </div>
+          ) : (
+            <>
+              {/* Menimbang */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-slate-800">Menimbang (Dasar Alasan)</label>
+                  <button
+                    type="button"
+                    onClick={() => setModalTplConsidering(prev => [...prev, ''])}
+                    className="text-[11px] font-bold text-emerald-800 hover:underline"
+                  >
+                    + Tambah Poin
+                  </button>
+                </div>
+                {modalTplConsidering.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="font-bold text-slate-400 text-xs w-4">{idx + 1}.</span>
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={e => {
+                        const copy = [...modalTplConsidering];
+                        copy[idx] = e.target.value;
+                        setModalTplConsidering(copy);
+                      }}
+                      className="w-full text-xs p-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-700"
+                      placeholder="Isi poin menimbang..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setModalTplConsidering(prev => prev.filter((_, i) => i !== idx))}
+                      className="p-1.5 text-rose-600 hover:bg-rose-50 rounded"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mengingat */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-slate-800">Mengingat (Landasan Hukum)</label>
+                  <button
+                    type="button"
+                    onClick={() => setModalTplInView(prev => [...prev, ''])}
+                    className="text-[11px] font-bold text-emerald-800 hover:underline"
+                  >
+                    + Tambah Poin
+                  </button>
+                </div>
+                {modalTplInView.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-2">
+                    <span className="font-bold text-slate-400 text-xs w-4">{idx + 1}.</span>
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={e => {
+                        const copy = [...modalTplInView];
+                        copy[idx] = e.target.value;
+                        setModalTplInView(copy);
+                      }}
+                      className="w-full text-xs p-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-1 focus:ring-emerald-700"
+                      placeholder="Isi poin mengingat..."
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setModalTplInView(prev => prev.filter((_, i) => i !== idx))}
+                      className="p-1.5 text-rose-600 hover:bg-rose-50 rounded"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
 
           {/* Penandatangan */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200">

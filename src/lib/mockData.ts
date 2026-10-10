@@ -848,6 +848,39 @@ export const initialLetterTemplates: LetterTemplate[] = [
     signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
     signer_title: 'Ketua Umum',
     is_default: true
+  },
+  {
+    id: 'tpl-3',
+    code: 'SKET-KERJA',
+    title: 'Surat Keterangan Pengalaman Kerja (Format Kosong Word)',
+    type: 'surat_keterangan',
+    subject_template: 'SURAT KETERANGAN PENGALAMAN KERJA SDR. {nama}',
+    header_title: 'SURAT KETERANGAN PENGALAMAN KERJA / BEKERJA AKTIF',
+    considering_text: [],
+    in_view_text: [],
+    observing_text: [],
+    deciding_text: {},
+    body_format: 'freeform',
+    freeform_content: `SURAT KETERANGAN PENGALAMAN KERJA / BEKERJA AKTIF
+STAF TATA USAHA / GURU {unit_penugasan}
+
+Bismillahirrahmānirrahīm
+
+Dengan selalu bertawakal kepada Allah SWT, Ketua Umum Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah menerangkan bahwa:
+
+Nama : {nama}
+NIK / NIP : {nik}
+Jabatan : {jabatan}
+Unit Tugas : {unit_penugasan}
+
+1. Bahwa yang bersangkutan adalah benar karyawan aktif di lingkungan Pondok Pesantren Al-Qur'aniyyah.
+2. Surat keterangan ini diterbitkan atas permintaan yang bersangkutan untuk pengurusan administrasi kepegawaian / pendidikan.
+
+Demikian Surat Keterangan Kerja ini dibuat untuk dipergunakan sebagaimana mestinya.`,
+    footer_city: 'Tangerang Selatan',
+    signer_name: 'Dr. KH. M. Sobron Zayyan, SQ., MA',
+    signer_title: 'Ketua Umum',
+    is_default: false
   }
 ];
 
@@ -1091,7 +1124,7 @@ export const initialKopTemplates: LetterKopTemplate[] = [
     contact: 'Telp. (021) 7319421 / 73440835 | Hp. 08158968401 / 0811916942',
     kop_image_url: '/kop_yayasan.jpg',
     kop_image_mode: 'full_page',
-    kop_top_padding_cm: 6.8,
+    kop_top_padding_cm: 5.0,
     print_top_margin_cm: 3.5,
     is_default: true
   },

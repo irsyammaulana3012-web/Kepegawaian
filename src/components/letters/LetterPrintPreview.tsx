@@ -25,7 +25,7 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
     : (kopSettings?.hide_kop_on_print ?? true);
 
   const printMarginCm = kopSettings?.print_top_margin_cm || 3.5;
-  const kopTopPaddingCm = Math.max(kopSettings?.kop_top_padding_cm ?? 6.8, 6.8);
+  const kopTopPaddingCm = kopSettings?.kop_top_padding_cm ?? 5.0;
   const kopImageUrl = kopSettings?.kop_image_url || '/kop_yayasan.jpg';
 
   const hasKopImage = Boolean(kopImageUrl && kopImageUrl.trim() !== '');
@@ -86,105 +86,126 @@ export const LetterPrintPreview: React.FC<LetterPrintPreviewProps> = ({
             : `${printMarginCm}cm`
         }}
       >
-        {/* NOMOR SURAT & JUDUL */}
-        <div className="text-center mb-6">
-          <h2 className="text-base sm:text-lg font-black uppercase text-slate-900 tracking-wide underline underline-offset-4">
-            {letter.header_title || 'KEPUTUSAN KETUA UMUM'}
-          </h2>
-          <p className="text-xs font-bold text-slate-800 mt-1 uppercase tracking-wider">
-            NOMOR : {letter.letter_number}
-          </p>
-
-          <div className="mt-4 max-w-xl mx-auto">
-            <p className="text-xs font-bold text-slate-900 uppercase">TENTANG</p>
-            <p className="text-xs sm:text-sm font-black uppercase text-slate-900 leading-snug mt-1 border-t border-b border-slate-300 py-1.5 px-3">
-              {letter.subject}
-            </p>
+        {/* FREEFORM WORD-LIKE CONTENT VS STRUCTURED POINTS */}
+        {Boolean(letter.freeform_content && letter.freeform_content.trim() !== '') ? (
+          <div className="text-xs leading-relaxed text-justify space-y-3 mb-8 whitespace-pre-line font-serif text-slate-900">
+            {(letter.freeform_content || '')
+              .replace(/{nama}/gi, letter.employee_name || '')
+              .replace(/{nik}/gi, letter.employee_nik || '')
+              .replace(/{nirg_nirk}/gi, letter.employee_nirg_nirk || '')
+              .replace(/{jabatan}/gi, letter.employee_position || '')
+              .replace(/{unit_penugasan}/gi, letter.employee_unit || '')
+              .replace(/{nomor_surat}/gi, letter.letter_number || '')
+              .replace(/{tanggal_penetapan}/gi, formattedIssuedDate || '')
+              .replace(/{kota_penetapan}/gi, letter.issued_city || '')
+              .replace(/{tanggal_tmt}/gi, letter.effective_date || '')
+              .replace(/{pendidikan}/gi, letter.employee_education_level || '')
+              .replace(/{tempat_tanggal_lahir}/gi, letter.employee_birth_info || '')
+            }
           </div>
-        </div>
+        ) : (
+          <>
+            {/* NOMOR SURAT & JUDUL */}
+            <div className="text-center mb-6">
+              <h2 className="text-base sm:text-lg font-black uppercase text-slate-900 tracking-wide underline underline-offset-4">
+                {letter.header_title || 'KEPUTUSAN KETUA UMUM'}
+              </h2>
+              <p className="text-xs font-bold text-slate-800 mt-1 uppercase tracking-wider">
+                NOMOR : {letter.letter_number}
+              </p>
 
-        {/* BISMILLAH & OPENING */}
-        <div className="mb-4">
-          <p className="italic font-semibold text-xs sm:text-sm text-center mb-2">Bismillahirrahmānirrahīm</p>
-          <p className="text-xs leading-relaxed text-justify">
-            Dengan selalu bertawakal kepada Allah SWT, {letter.signer_title || 'Ketua Umum'} Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah :
-          </p>
-        </div>
-
-        {/* MENIMBANG, MENGINGAT, MEMPERHATIKAN */}
-        <div className="space-y-3 text-xs text-justify mb-6">
-          {/* Menimbang */}
-          {letter.considering && letter.considering.length > 0 && (
-            <div className="grid grid-cols-12 gap-2">
-              <div className="col-span-3 font-bold">Menimbang</div>
-              <div className="col-span-1 text-center font-bold">:</div>
-              <div className="col-span-8 space-y-1">
-                {letter.considering.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-1.5">
-                    <span className="font-bold">{idx + 1}.</span>
-                    <span>{item}</span>
-                  </div>
-                ))}
+              <div className="mt-4 max-w-xl mx-auto">
+                <p className="text-xs font-bold text-slate-900 uppercase">TENTANG</p>
+                <p className="text-xs sm:text-sm font-black uppercase text-slate-900 leading-snug mt-1 border-t border-b border-slate-300 py-1.5 px-3">
+                  {letter.subject}
+                </p>
               </div>
             </div>
-          )}
 
-          {/* Mengingat */}
-          {letter.in_view && letter.in_view.length > 0 && (
-            <div className="grid grid-cols-12 gap-2">
-              <div className="col-span-3 font-bold">Mengingat</div>
-              <div className="col-span-1 text-center font-bold">:</div>
-              <div className="col-span-8 space-y-1">
-                {letter.in_view.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-1.5">
-                    <span className="font-bold">{idx + 1}.</span>
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
+            {/* BISMILLAH & OPENING */}
+            <div className="mb-4">
+              <p className="italic font-semibold text-xs sm:text-sm text-center mb-2">Bismillahirrahmānirrahīm</p>
+              <p className="text-xs leading-relaxed text-justify">
+                Dengan selalu bertawakal kepada Allah SWT, {letter.signer_title || 'Ketua Umum'} Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah :
+              </p>
             </div>
-          )}
 
-          {/* Memperhatikan */}
-          {letter.observing && letter.observing.length > 0 && (
-            <div className="grid grid-cols-12 gap-2">
-              <div className="col-span-3 font-bold">Memperhatikan</div>
-              <div className="col-span-1 text-center font-bold">:</div>
-              <div className="col-span-8 space-y-1">
-                {letter.observing.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-1.5">
-                    <span className="font-bold">{idx + 1 > 1 ? `${idx + 1}.` : ''}</span>
-                    <span>{item}</span>
+            {/* MENIMBANG, MENGINGAT, MEMPERHATIKAN */}
+            <div className="space-y-3 text-xs text-justify mb-6">
+              {/* Menimbang */}
+              {letter.considering && letter.considering.length > 0 && (
+                <div className="grid grid-cols-12 gap-2">
+                  <div className="col-span-3 font-bold">Menimbang</div>
+                  <div className="col-span-1 text-center font-bold">:</div>
+                  <div className="col-span-8 space-y-1">
+                    {letter.considering.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-1.5">
+                        <span className="font-bold">{idx + 1}.</span>
+                        <span>{item}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* PAGE BREAK MARKER FOR PRINT */}
-        <div className="text-center my-6">
-          <h3 className="text-base font-black uppercase text-slate-900 tracking-widest underline underline-offset-4">
-            MEMUTUSKAN
-          </h3>
-        </div>
-
-        {/* MEMUTUSKAN / MENETAPKAN */}
-        {letter.deciding && Object.keys(letter.deciding).length > 0 && (
-          <div className="space-y-3 text-xs text-justify mb-8">
-            {Object.entries(letter.deciding).map(([key, val], idx) => (
-              <div key={key} className="grid grid-cols-12 gap-2">
-                <div className="col-span-3 font-bold">
-                  {idx === 0 ? 'Menetapkan :' : ''}
                 </div>
-                <div className="col-span-2 font-bold">{key}</div>
-                <div className="col-span-1 text-center font-bold">:</div>
-                <div className="col-span-6 whitespace-pre-line leading-relaxed">
-                  {val}
+              )}
+
+              {/* Mengingat */}
+              {letter.in_view && letter.in_view.length > 0 && (
+                <div className="grid grid-cols-12 gap-2">
+                  <div className="col-span-3 font-bold">Mengingat</div>
+                  <div className="col-span-1 text-center font-bold">:</div>
+                  <div className="col-span-8 space-y-1">
+                    {letter.in_view.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-1.5">
+                        <span className="font-bold">{idx + 1}.</span>
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {/* Memperhatikan */}
+              {letter.observing && letter.observing.length > 0 && (
+                <div className="grid grid-cols-12 gap-2">
+                  <div className="col-span-3 font-bold">Memperhatikan</div>
+                  <div className="col-span-1 text-center font-bold">:</div>
+                  <div className="col-span-8 space-y-1">
+                    {letter.observing.map((item, idx) => (
+                      <div key={idx} className="flex items-start gap-1.5">
+                        <span className="font-bold">{idx + 1 > 1 ? `${idx + 1}.` : ''}</span>
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* PAGE BREAK MARKER FOR PRINT */}
+            <div className="text-center my-6">
+              <h3 className="text-base font-black uppercase text-slate-900 tracking-widest underline underline-offset-4">
+                MEMUTUSKAN
+              </h3>
+            </div>
+
+            {/* MEMUTUSKAN / MENETAPKAN */}
+            {letter.deciding && Object.keys(letter.deciding).length > 0 && (
+              <div className="space-y-3 text-xs text-justify mb-8">
+                {Object.entries(letter.deciding).map(([key, val], idx) => (
+                  <div key={key} className="grid grid-cols-12 gap-2">
+                    <div className="col-span-3 font-bold">
+                      {idx === 0 ? 'Menetapkan :' : ''}
+                    </div>
+                    <div className="col-span-2 font-bold">{key}</div>
+                    <div className="col-span-1 text-center font-bold">:</div>
+                    <div className="col-span-6 whitespace-pre-line leading-relaxed">
+                      {val}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
 
         {/* TANGGAL PENETAPAN & TANDA TANGAN */}
