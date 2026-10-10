@@ -103,6 +103,26 @@
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+
+  table.print-table-container {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  table.print-table-container > thead {
+    display: table-header-group !important;
+  }
+
+  table.print-table-container > tbody {
+    display: table-row-group !important;
+  }
+
+  table.print-table-container > thead > tr > td {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
 }
 
 /* Custom Scrollbars */
