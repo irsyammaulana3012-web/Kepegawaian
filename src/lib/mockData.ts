@@ -34,15 +34,86 @@ export const initialDocumentTypes: DocumentTypeDefinition[] = [
 ];
 
 export const initialUnits: Unit[] = [
-  { id: 'u-1', code: 'YAS', name: 'Yayasan', description: 'Pengurus Yayasan Pendidikan Islam Pondok Pesantren Al-Qur\'aniyyah', is_active: true, sort_order: 1 },
-  { id: 'u-2', code: 'TKIT', name: 'TK IT Al-Qur\'aniyyah', description: 'Taman Kanak-kanak Islam Terpadu', is_active: true, sort_order: 2 },
-  { id: 'u-3', code: 'SDIT', name: 'SD IT Al-Qur\'aniyyah', description: 'Sekolah Dasar Islam Terpadu', is_active: true, sort_order: 3 },
-  { id: 'u-4', code: 'SMPIT', name: 'SMP IT Al-Qur\'aniyyah', description: 'Sekolah Menengah Pertama Islam Terpadu', is_active: true, sort_order: 4 },
-  { id: 'u-5', code: 'SMAIT', name: 'SMA IT Al-Qur\'aniyyah', description: 'Sekolah Menengah Atas Islam Terpadu', is_active: true, sort_order: 5 },
-  { id: 'u-6', code: 'TPA', name: 'TPA/TPQ Al-Qur\'aniyyah', description: 'Taman Pendidikan Al-Qur\'an', is_active: true, sort_order: 6 },
-  { id: 'u-7', code: 'LPBQ', name: 'LPBQ', description: 'Lembaga Pengembangan Baca Al-Qur\'an', is_active: true, sort_order: 7 },
-  { id: 'u-8', code: 'HALQ', name: 'HALQ', description: 'Halaqah Al-Qur\'an Pesantren', is_active: true, sort_order: 8 },
-  { id: 'u-9', code: 'SARPRAS', name: 'Unit Sarana & Logistik', description: 'Pengelolaan aset fisik dan fasilitas', is_active: true, sort_order: 9 }
+  {
+    "id": "u-1",
+    "code": "YAS",
+    "name": "Yayasan",
+    "description": "Pengurus Yayasan Pendidikan Islam Pondok Pesantren Al-Qur'aniyyah",
+    "is_active": true,
+    "sort_order": 1
+  },
+  {
+    "id": "u-2",
+    "code": "TKIT",
+    "name": "TK IT",
+    "description": "Taman Kanak-kanak Islam Terpadu",
+    "is_active": true,
+    "sort_order": 2
+  },
+  {
+    "id": "u-3",
+    "code": "SDIT",
+    "name": "SD IT",
+    "description": "Sekolah Dasar Islam Terpadu",
+    "is_active": true,
+    "sort_order": 3
+  },
+  {
+    "id": "u-4",
+    "code": "SMPIT",
+    "name": "SMP IT",
+    "description": "Sekolah Menengah Pertama Islam Terpadu",
+    "is_active": true,
+    "sort_order": 4
+  },
+  {
+    "id": "u-5",
+    "code": "SMAIT",
+    "name": "SMA IT",
+    "description": "Sekolah Menengah Atas Islam Terpadu",
+    "is_active": true,
+    "sort_order": 5
+  },
+  {
+    "id": "u-6",
+    "code": "TPA",
+    "name": "TPA",
+    "description": "Taman Pendidikan Al-Qur'an",
+    "is_active": true,
+    "sort_order": 6
+  },
+  {
+    "id": "u-7",
+    "code": "LPBQ",
+    "name": "LPBQ",
+    "description": "Lembaga Pengembangan Baca Al-Qur'an",
+    "is_active": true,
+    "sort_order": 7
+  },
+  {
+    "id": "u-8",
+    "code": "PONPES",
+    "name": "Pondok Pesantren",
+    "description": "Pondok Pesantren Al-Qur'aniyyah",
+    "is_active": true,
+    "sort_order": 8
+  },
+  {
+    "id": "u-9",
+    "code": "TAHFIDZ",
+    "name": "Lembaga Tahfidz",
+    "description": "Lembaga Tahfidz Al-Qur'aniyyah",
+    "is_active": true,
+    "sort_order": 9
+  },
+  {
+    "id": "u-10",
+    "code": "SARPRAS",
+    "name": "Unit Sarana & Logistik",
+    "description": "Pengelolaan aset fisik dan fasilitas",
+    "is_active": true,
+    "sort_order": 10
+  }
 ];
 
 export const initialDepartments: Department[] = [
@@ -2712,7 +2783,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-14",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.451Z"
+    "created_at": "2026-10-16T09:10:57.881Z"
   },
   {
     "id": "asg-1",
@@ -2726,7 +2797,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2010-07-16",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-2",
@@ -2740,7 +2811,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-14",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-3",
@@ -2754,7 +2825,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-14",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-4",
@@ -2768,7 +2839,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-14",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-5",
@@ -2782,7 +2853,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2011-03-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-6",
@@ -2796,7 +2867,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2011-03-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-7",
@@ -2810,7 +2881,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-10",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-8",
@@ -2824,7 +2895,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-10",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.452Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-9",
@@ -2838,7 +2909,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2005-07-08",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-10",
@@ -2852,7 +2923,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2005-07-08",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-11",
@@ -2865,7 +2936,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2014-06-25",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.882Z"
   },
   {
     "id": "asg-12",
@@ -2879,7 +2950,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2016-07-15",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-13",
@@ -2893,7 +2964,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-14",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-14",
@@ -2907,7 +2978,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-14",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-15",
@@ -2921,7 +2992,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-16",
@@ -2935,7 +3006,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-17",
@@ -2949,7 +3020,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-17",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-18",
@@ -2963,7 +3034,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-17",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-19",
@@ -2976,7 +3047,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2014-06-25",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-20",
@@ -2989,7 +3060,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2014-06-25",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-21",
@@ -3003,7 +3074,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2016-06-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.453Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-22",
@@ -3017,7 +3088,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2024-07-12",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-23",
@@ -3031,7 +3102,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2018-07-15",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-24",
@@ -3045,7 +3116,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-25",
@@ -3059,7 +3130,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2005-07-12",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-26",
@@ -3073,7 +3144,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2009-02-06",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-27",
@@ -3087,7 +3158,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2009-02-06",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-28",
@@ -3101,7 +3172,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2017-07-17",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-29",
@@ -3115,7 +3186,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2024-07-08",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-30",
@@ -3129,7 +3200,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2024-07-08",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-31",
@@ -3142,7 +3213,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2012-02-06",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-32",
@@ -3156,7 +3227,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2009-06-29",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-33",
@@ -3170,7 +3241,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-22",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-34",
@@ -3184,7 +3255,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-35",
@@ -3198,7 +3269,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.902Z"
   },
   {
     "id": "asg-36",
@@ -3212,7 +3283,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-37",
@@ -3226,7 +3297,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-38",
@@ -3240,7 +3311,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2024-07-12",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-39",
@@ -3254,7 +3325,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2015-06-29",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-40",
@@ -3268,7 +3339,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2000-03-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-41",
@@ -3282,7 +3353,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2000-03-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-42",
@@ -3296,7 +3367,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2018-06-29",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-43",
@@ -3310,7 +3381,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2022-07-11",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-44",
@@ -3324,7 +3395,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2018-07-16",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-45",
@@ -3338,7 +3409,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2018-07-16",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-46",
@@ -3352,7 +3423,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2018-06-29",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.454Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-47",
@@ -3366,7 +3437,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2006-07-10",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-48",
@@ -3380,7 +3451,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-22",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-49",
@@ -3394,7 +3465,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2016-07-12",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-50",
@@ -3408,7 +3479,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2016-07-12",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-51",
@@ -3422,7 +3493,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2016-07-12",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-52",
@@ -3436,7 +3507,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2021-07-09",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-53",
@@ -3449,7 +3520,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-54",
@@ -3462,7 +3533,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-55",
@@ -3475,7 +3546,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-56",
@@ -3488,7 +3559,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-57",
@@ -3501,7 +3572,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-58",
@@ -3514,7 +3585,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-59",
@@ -3527,7 +3598,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-60",
@@ -3540,7 +3611,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-61",
@@ -3553,7 +3624,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-62",
@@ -3566,7 +3637,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-63",
@@ -3579,7 +3650,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-64",
@@ -3592,7 +3663,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-65",
@@ -3605,7 +3676,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-66",
@@ -3618,7 +3689,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-67",
@@ -3631,7 +3702,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-68",
@@ -3644,7 +3715,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-69",
@@ -3657,7 +3728,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-70",
@@ -3670,7 +3741,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-71",
@@ -3683,7 +3754,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-72",
@@ -3696,7 +3767,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-73",
@@ -3709,7 +3780,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.455Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-74",
@@ -3722,7 +3793,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-75",
@@ -3735,7 +3806,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-76",
@@ -3748,7 +3819,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-77",
@@ -3761,7 +3832,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-78",
@@ -3774,7 +3845,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-79",
@@ -3787,7 +3858,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-80",
@@ -3800,7 +3871,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-81",
@@ -3814,7 +3885,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2018-07-16",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-82",
@@ -3828,7 +3899,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-10",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-83",
@@ -3842,7 +3913,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-10",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-84",
@@ -3856,7 +3927,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2022-07-11",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-85",
@@ -3870,7 +3941,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2022-07-11",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-86",
@@ -3884,7 +3955,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-87",
@@ -3898,7 +3969,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-88",
@@ -3912,7 +3983,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2022-07-04",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-89",
@@ -3926,7 +3997,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-90",
@@ -3940,7 +4011,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-91",
@@ -3954,21 +4025,21 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2014-05-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-92",
     "employee_id": "emp-065",
-    "unit_id": "u-3",
+    "unit_id": "u-1",
     "position_id": "p-5",
     "custom_task_name": "Wali Kelas 1 Madinah",
-    "task_description": "Wali Kelas 1 Madinah di SD IT",
+    "task_description": "Wali Kelas 1 Madinah di Yayasan",
     "sk_number": "010/YPK/DP/2014",
     "sk_date": "2014-05-20",
     "start_date": "2014-05-20",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-93",
@@ -3982,7 +4053,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2022-07-07",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-94",
@@ -3996,7 +4067,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-95",
@@ -4009,20 +4080,20 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-96",
     "employee_id": "emp-068",
-    "unit_id": "u-8",
+    "unit_id": "u-1",
     "position_id": "p-5",
     "custom_task_name": "Wali Kelas 3 Madinah",
-    "task_description": "Wali Kelas 3 Madinah di Pondok Pesantren",
+    "task_description": "Wali Kelas 3 Madinah di Yayasan",
     "sk_date": "2023-07-01",
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-97",
@@ -4035,7 +4106,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-98",
@@ -4049,7 +4120,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.903Z"
   },
   {
     "id": "asg-99",
@@ -4063,7 +4134,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2020-07-20",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-100",
@@ -4076,7 +4147,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.456Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-101",
@@ -4089,7 +4160,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": false,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-102",
@@ -4102,7 +4173,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-103",
@@ -4115,7 +4186,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-104",
@@ -4128,7 +4199,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-105",
@@ -4141,7 +4212,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-106",
@@ -4154,7 +4225,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-107",
@@ -4167,7 +4238,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-108",
@@ -4180,7 +4251,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-109",
@@ -4193,7 +4264,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-110",
@@ -4206,7 +4277,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-111",
@@ -4219,7 +4290,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-112",
@@ -4232,7 +4303,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-113",
@@ -4245,7 +4316,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-114",
@@ -4258,7 +4329,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-115",
@@ -4271,7 +4342,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-116",
@@ -4284,7 +4355,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.457Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-117",
@@ -4297,12 +4368,12 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-118",
     "employee_id": "emp-089",
-    "unit_id": "u-8",
+    "unit_id": "u-9",
     "position_id": "p-4",
     "custom_task_name": "Guru",
     "task_description": "Guru di Lembaga Tahfidz",
@@ -4310,7 +4381,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-119",
@@ -4323,7 +4394,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-120",
@@ -4336,7 +4407,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-121",
@@ -4349,7 +4420,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-122",
@@ -4362,7 +4433,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-123",
@@ -4375,7 +4446,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-124",
@@ -4388,7 +4459,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-125",
@@ -4401,7 +4472,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-126",
@@ -4414,7 +4485,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-127",
@@ -4427,7 +4498,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-128",
@@ -4440,12 +4511,12 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-129",
     "employee_id": "emp-100",
-    "unit_id": "u-8",
+    "unit_id": "u-9",
     "position_id": "p-4",
     "custom_task_name": "Guru",
     "task_description": "Guru di Lembaga Tahfidz",
@@ -4453,7 +4524,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-130",
@@ -4466,7 +4537,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-131",
@@ -4479,7 +4550,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-132",
@@ -4492,7 +4563,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-133",
@@ -4505,12 +4576,12 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.904Z"
   },
   {
     "id": "asg-134",
     "employee_id": "emp-105",
-    "unit_id": "u-8",
+    "unit_id": "u-9",
     "position_id": "p-4",
     "custom_task_name": "Guru",
     "task_description": "Guru di Lembaga Tahfidz",
@@ -4518,7 +4589,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.458Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-135",
@@ -4531,7 +4602,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-136",
@@ -4544,7 +4615,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-137",
@@ -4557,12 +4628,12 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-138",
     "employee_id": "emp-109",
-    "unit_id": "u-8",
+    "unit_id": "u-9",
     "position_id": "p-4",
     "custom_task_name": "Guru",
     "task_description": "Guru di Lembaga Tahfidz",
@@ -4570,7 +4641,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-139",
@@ -4583,7 +4654,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-140",
@@ -4596,7 +4667,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-141",
@@ -4609,7 +4680,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-142",
@@ -4622,7 +4693,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-143",
@@ -4635,7 +4706,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-144",
@@ -4648,7 +4719,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   },
   {
     "id": "asg-145",
@@ -4661,7 +4732,7 @@ export const initialAssignments: EmployeeAssignment[] = [
     "start_date": "2023-07-01",
     "is_primary": true,
     "status": "Aktif",
-    "created_at": "2026-10-16T07:46:08.459Z"
+    "created_at": "2026-10-16T09:10:57.905Z"
   }
 ];
 
