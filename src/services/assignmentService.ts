@@ -1,6 +1,74 @@
-import { EmployeeAssignment } from '../types';
+import { EmployeeAssignment, Unit, Position } from '../types';
 import { store } from './storageStore';
 import { auditService } from './auditService';
+import { initialUnits, initialPositions } from '../lib/mockData';
+
+export function resolveUnitName(a: Partial<EmployeeAssignment>, units: Unit[]): string {
+  if (a.unit_name && a.unit_name !== '-') return a.unit_name;
+  
+  // 1. Match by id in current units and initialUnits
+  const unitById = units.find(u => u.id === a.unit_id) || initialUnits.find(u => u.id === a.unit_id);
+  if (unitById?.name) return unitById.name;
+
+  // 2. Match by code
+  if (a.unit_id) {
+    const unitByCode = units.find(u => u.code?.toLowerCase() === a.unit_id?.toLowerCase()) ||
+                       initialUnits.find(u => u.code?.toLowerCase() === a.unit_id?.toLowerCase());
+    if (unitByCode?.name) return unitByCode.name;
+  }
+
+  // 3. Match from task_description
+  if (a.task_description) {
+    const desc = a.task_description.toLowerCase();
+    const matched = initialUnits.find(u => desc.includes(u.name.toLowerCase()));
+    if (matched?.name) return matched.name;
+    if (desc.includes('smp')) return 'SMP IT';
+    if (desc.includes('sma')) return 'SMA IT';
+    if (desc.includes('sd')) return 'SD IT';
+    if (desc.includes('tk')) return 'TK IT';
+    if (desc.includes('pesantren') || desc.includes('ponpes')) return 'Pondok Pesantren';
+    if (desc.includes('yayasan')) return 'Yayasan';
+    if (desc.includes('tahfidz')) return 'Lembaga Tahfidz';
+    if (desc.includes('lpbq')) return 'LPBQ';
+    if (desc.includes('tpa')) return 'TPA';
+  }
+
+  return '-';
+}
+
+export function resolvePositionName(a: Partial<EmployeeAssignment>, positions: Position[]): string {
+  if (a.position_name && a.position_name !== '-') return a.position_name;
+
+  // 1. Match by id
+  const posById = positions.find(p => p.id === a.position_id) || initialPositions.find(p => p.id === a.position_id);
+  if (posById?.name) return posById.name;
+
+  // 2. Match by code
+  if (a.position_id) {
+    const posByCode = positions.find(p => p.code?.toLowerCase() === a.position_id?.toLowerCase()) ||
+                       initialPositions.find(p => p.code?.toLowerCase() === a.position_id?.toLowerCase());
+    if (posByCode?.name) return posByCode.name;
+  }
+
+  // 3. Match from custom_task_name
+  if (a.custom_task_name) {
+    const task = a.custom_task_name.toLowerCase();
+    const matched = initialPositions.find(p => task.includes(p.name.toLowerCase()));
+    if (matched?.name) return matched.name;
+
+    if (task.includes('wali')) return 'Wali Kelas';
+    if (task.includes('guru') || task.includes('pengajar')) return 'Guru';
+    if (task.includes('pengasuh') || task.includes('pengasuhan')) return 'Pengasuh';
+    if (task.includes('operator')) return 'Operator';
+    if (task.includes('bendahara') || task.includes('keuangan')) return 'Bendahara';
+    if (task.includes('tata usaha') || task.includes('tu')) return 'Tata Usaha';
+    if (task.includes('kepala sekolah')) return 'Kepala Sekolah';
+    if (task.includes('pimpinan') || task.includes('dewan')) return 'Pimpinan';
+    if (task.includes('staff')) return 'Staff';
+  }
+
+  return '-';
+}
 
 export const assignmentService = {
   async getAssignments(): Promise<EmployeeAssignment[]> {
@@ -13,17 +81,17 @@ export const assignmentService = {
 
     return assignments.map(a => {
       const emp = employees.find(e => e.id === a.employee_id);
-      const unit = units.find(u => u.id === a.unit_id);
-      const pos = positions.find(p => p.id === a.position_id);
+      const unitName = resolveUnitName(a, units);
+      const positionName = resolvePositionName(a, positions);
       const tsk = tasks.find(t => t.id === a.task_id);
       const dept = departments.find(d => d.id === a.department_id);
 
       return {
         ...a,
-        employee_name: emp?.full_name || 'Tidak Diketahui',
-        employee_number: emp?.employee_number || '-',
-        unit_name: unit?.name || '-',
-        position_name: pos?.name || '-',
+        employee_name: a.employee_name || emp?.full_name || 'Tidak Diketahui',
+        employee_number: a.employee_number || emp?.employee_number || '-',
+        unit_name: unitName,
+        position_name: positionName,
         task_name: a.custom_task_name || tsk?.name || '-',
         department_name: dept?.name || '-'
       };
@@ -140,6 +208,16 @@ export const assignmentService = {
         status: saved.status
       });
     }
+
+    const units = store.getUnits();
+    const positions = store.getPositions();
+    const resolvedUnit = resolveUnitName(saved, units);
+    const resolvedPos = resolvePositionName(saved, positions);
+
+    saved.unit_name = resolvedUnit !== '-' ? resolvedUnit : (saved.unit_name || '-');
+    saved.position_name = resolvedPos !== '-' ? resolvedPos : (saved.position_name || '-');
+    saved.employee_name = emp?.full_name || saved.employee_name || 'Tidak Diketahui';
+    saved.employee_number = emp?.employee_number || saved.employee_number || '-';
 
     store.setAssignments(assignments);
     return saved;

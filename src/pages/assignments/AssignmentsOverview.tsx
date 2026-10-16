@@ -116,8 +116,13 @@ export const AssignmentsOverview: React.FC = () => {
   const handleOpenEdit = (asg: EmployeeAssignment) => {
     setEditingAssignment(asg);
     setSelectedEmpId(asg.employee_id);
-    setUnitId(asg.unit_id);
-    setPositionId(asg.position_id);
+
+    const matchedU = units.find(u => u.id === asg.unit_id) || units.find(u => u.name === asg.unit_name);
+    setUnitId(matchedU ? matchedU.id : (asg.unit_id || units[0]?.id || ''));
+
+    const matchedP = positions.find(p => p.id === asg.position_id) || positions.find(p => p.name === asg.position_name);
+    setPositionId(matchedP ? matchedP.id : (asg.position_id || positions[0]?.id || ''));
+
     setTaskId(asg.task_id || '');
     setCustomTaskName(asg.custom_task_name || '');
     setSkNumber(asg.sk_number || '');

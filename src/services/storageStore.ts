@@ -46,17 +46,17 @@ import {
 } from '../types';
 import { supabase, isConfigured } from '../lib/supabase';
 
-// Keys for localStorage (v3 with exact unit names and assignments)
+// Keys for localStorage (v4 with enriched unit_name, position_name and fail-safe resolvers)
 const STORAGE_KEYS = {
-  UNITS: 'simka_units_v3',
+  UNITS: 'simka_units_v4',
   DEPARTMENTS: 'simka_departments',
-  POSITIONS: 'simka_positions_v3',
+  POSITIONS: 'simka_positions_v4',
   TASKS: 'simka_tasks',
-  EMPLOYEES: 'simka_employees_v3',
-  ASSIGNMENTS: 'simka_assignments_v3',
-  EDUCATION: 'simka_education_v3',
-  HISTORY: 'simka_history_v3',
-  DOCUMENTS: 'simka_documents_v3',
+  EMPLOYEES: 'simka_employees_v4',
+  ASSIGNMENTS: 'simka_assignments_v4',
+  EDUCATION: 'simka_education_v4',
+  HISTORY: 'simka_history_v4',
+  DOCUMENTS: 'simka_documents_v4',
   DOC_TYPES: 'simka_doc_types',
   TRAINING: 'simka_training_v2',
   ATTENDANCE: 'simka_attendance_v2',
@@ -117,7 +117,9 @@ function cleanForDb(obj: any): any {
     'position_name',
     'task_name',
     'employee_name',
-    'employee_number'
+    'employee_number',
+    'formal_education',
+    'nonformal_education'
   ]);
 
   for (const [key, val] of Object.entries(obj)) {
@@ -142,6 +144,11 @@ class StorageStore {
     if (!isConfigured) return;
 
     try {
+      // Local-first check: if we already have local employees and assignments populated,
+      // do not let stale/incompatible Supabase schema wipe or corrupt the local state.
+      const localEmployees = this.getEmployees();
+      const localAssignments = this.getAssignments();
+
       const [
         { data: units },
         { data: departments },
@@ -176,13 +183,23 @@ class StorageStore {
 
       localStorage.setItem('simka_synced_with_supabase', 'true');
 
-      // Only override local cache if Supabase returned actual rows (prevents wiping local data when Supabase is empty)
-      if (units && units.length > 0) this.setUnitsLocal(units);
+      // Only import units/positions if they are valid SIMKA format
+      if (units && units.length > 0 && units.some(u => u.id && u.id.startsWith('u-'))) {
+        this.setUnitsLocal(units);
+      }
       if (departments && departments.length > 0) this.setDepartmentsLocal(departments);
-      if (positions && positions.length > 0) this.setPositionsLocal(positions);
+      if (positions && positions.length > 0 && positions.some(p => p.id && p.id.startsWith('p-'))) {
+        this.setPositionsLocal(positions);
+      }
       if (tasks && tasks.length > 0) this.setTasksLocal(tasks);
-      if (employees && employees.length > 0) this.setEmployeesLocal(employees);
-      if (assignments && assignments.length > 0) this.setAssignmentsLocal(assignments);
+
+      // Only import employees & assignments if local is completely unpopulated
+      if (localEmployees.length === 0 && employees && employees.length > 0) {
+        this.setEmployeesLocal(employees);
+      }
+      if (localAssignments.length === 0 && assignments && assignments.length > 0) {
+        this.setAssignmentsLocal(assignments);
+      }
       if (education && education.length > 0) this.setEducationLocal(education);
       if (history && history.length > 0) this.setHistoryLocal(history);
       if (documents && documents.length > 0) this.setDocumentsLocal(documents);
@@ -214,15 +231,32 @@ class StorageStore {
   private setNotesLocal(notes: EmployeeNote[]): void { setItem(STORAGE_KEYS.NOTES, notes); }
   private setAuditLogsLocal(logs: AuditLog[]): void { setItem(STORAGE_KEYS.AUDIT, logs); }
 
-  // Master Data Getters & Setters
-  getUnits(): Unit[] { return getItem<Unit[]>(STORAGE_KEYS.UNITS, initialUnits); }
+  // Master Data Getters & Setters - Guaranteed canonical items with user-level overlays
+  getUnits(): Unit[] {
+    const raw = getItem<Unit[]>(STORAGE_KEYS.UNITS, initialUnits);
+    const map = new Map<string, Unit>();
+    initialUnits.forEach(u => map.set(u.id, { ...u }));
+    if (Array.isArray(raw)) {
+      raw.forEach(u => {
+        if (u && u.id && u.name) {
+          if (map.has(u.id)) {
+            map.set(u.id, { ...map.get(u.id)!, ...u });
+          } else {
+            map.set(u.id, u);
+          }
+        }
+      });
+    }
+    return Array.from(map.values()).sort((a, b) => a.sort_order - b.sort_order);
+  }
+
   setUnits(units: Unit[]): void {
     this.setUnitsLocal(units);
     if (isConfigured) {
       if (units.length === 0) {
-        supabase.from('units').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('units').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('units').upsert(cleanForDb(units)).then();
+        supabase.from('units').upsert(cleanForDb(units)).then(undefined, () => {});
       }
     }
   }
@@ -232,21 +266,38 @@ class StorageStore {
     this.setDepartmentsLocal(deps);
     if (isConfigured) {
       if (deps.length === 0) {
-        supabase.from('departments').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('departments').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('departments').upsert(cleanForDb(deps)).then();
+        supabase.from('departments').upsert(cleanForDb(deps)).then(undefined, () => {});
       }
     }
   }
 
-  getPositions(): Position[] { return getItem<Position[]>(STORAGE_KEYS.POSITIONS, initialPositions); }
+  getPositions(): Position[] {
+    const raw = getItem<Position[]>(STORAGE_KEYS.POSITIONS, initialPositions);
+    const map = new Map<string, Position>();
+    initialPositions.forEach(p => map.set(p.id, { ...p }));
+    if (Array.isArray(raw)) {
+      raw.forEach(p => {
+        if (p && p.id && p.name) {
+          if (map.has(p.id)) {
+            map.set(p.id, { ...map.get(p.id)!, ...p });
+          } else {
+            map.set(p.id, p);
+          }
+        }
+      });
+    }
+    return Array.from(map.values()).sort((a, b) => a.sort_order - b.sort_order);
+  }
+
   setPositions(positions: Position[]): void {
     this.setPositionsLocal(positions);
     if (isConfigured) {
       if (positions.length === 0) {
-        supabase.from('positions').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('positions').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('positions').upsert(cleanForDb(positions)).then();
+        supabase.from('positions').upsert(cleanForDb(positions)).then(undefined, () => {});
       }
     }
   }
@@ -256,9 +307,9 @@ class StorageStore {
     this.setTasksLocal(tasks);
     if (isConfigured) {
       if (tasks.length === 0) {
-        supabase.from('tasks').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('tasks').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('tasks').upsert(cleanForDb(tasks)).then();
+        supabase.from('tasks').upsert(cleanForDb(tasks)).then(undefined, () => {});
       }
     }
   }
@@ -269,9 +320,9 @@ class StorageStore {
     this.setEmployeesLocal(employees);
     if (isConfigured) {
       if (employees.length === 0) {
-        supabase.from('employees').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employees').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employees').upsert(cleanForDb(employees)).then();
+        supabase.from('employees').upsert(cleanForDb(employees)).then(undefined, () => {});
       }
     }
   }
@@ -282,9 +333,9 @@ class StorageStore {
     this.setAssignmentsLocal(assignments);
     if (isConfigured) {
       if (assignments.length === 0) {
-        supabase.from('employee_assignments').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employee_assignments').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_assignments').upsert(cleanForDb(assignments)).then();
+        supabase.from('employee_assignments').upsert(cleanForDb(assignments)).then(undefined, () => {});
       }
     }
   }
@@ -295,9 +346,9 @@ class StorageStore {
     this.setEducationLocal(edu);
     if (isConfigured) {
       if (edu.length === 0) {
-        supabase.from('employee_education').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employee_education').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_education').upsert(cleanForDb(edu)).then();
+        supabase.from('employee_education').upsert(cleanForDb(edu)).then(undefined, () => {});
       }
     }
   }
@@ -308,9 +359,9 @@ class StorageStore {
     this.setHistoryLocal(his);
     if (isConfigured) {
       if (his.length === 0) {
-        supabase.from('employee_position_history').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employee_position_history').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_position_history').upsert(cleanForDb(his)).then();
+        supabase.from('employee_position_history').upsert(cleanForDb(his)).then(undefined, () => {});
       }
     }
   }
@@ -321,9 +372,9 @@ class StorageStore {
     this.setDocumentsLocal(docs);
     if (isConfigured) {
       if (docs.length === 0) {
-        supabase.from('employee_documents').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employee_documents').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_documents').upsert(cleanForDb(docs)).then();
+        supabase.from('employee_documents').upsert(cleanForDb(docs)).then(undefined, () => {});
       }
     }
   }
@@ -340,9 +391,9 @@ class StorageStore {
     this.setTrainingLocal(training);
     if (isConfigured) {
       if (training.length === 0) {
-        supabase.from('employee_training').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employee_training').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_training').upsert(cleanForDb(training)).then();
+        supabase.from('employee_training').upsert(cleanForDb(training)).then(undefined, () => {});
       }
     }
   }
@@ -353,9 +404,9 @@ class StorageStore {
     this.setAttendanceLocal(att);
     if (isConfigured) {
       if (att.length === 0) {
-        supabase.from('employee_attendance').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employee_attendance').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_attendance').upsert(cleanForDb(att)).then();
+        supabase.from('employee_attendance').upsert(cleanForDb(att)).then(undefined, () => {});
       }
     }
   }
@@ -366,9 +417,9 @@ class StorageStore {
     this.setLeaveLocal(leave);
     if (isConfigured) {
       if (leave.length === 0) {
-        supabase.from('employee_leave').delete().neq('id', '00000000-0000-0000-0000-000000000000').then();
+        supabase.from('employee_leave').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_leave').upsert(cleanForDb(leave)).then();
+        supabase.from('employee_leave').upsert(cleanForDb(leave)).then(undefined, () => {});
       }
     }
   }

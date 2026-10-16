@@ -138,7 +138,7 @@ export const employeeService = {
       const unitsList = Array.from(
         new Set(
           activeAssignments
-            .map(a => units.find(u => u.id === a.unit_id)?.name)
+            .map(a => a.unit_name || units.find(u => u.id === a.unit_id)?.name)
             .filter(Boolean)
         )
       ) as string[];
@@ -146,7 +146,7 @@ export const employeeService = {
       const positionsList = Array.from(
         new Set(
           activeAssignments
-            .map(a => positions.find(p => p.id === a.position_id)?.name)
+            .map(a => a.position_name || positions.find(p => p.id === a.position_id)?.name)
             .filter(Boolean)
         )
       ) as string[];

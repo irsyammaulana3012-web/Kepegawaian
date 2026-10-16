@@ -84,6 +84,8 @@ export const EmployeeForm: React.FC = () => {
   const [contractEndDate, setContractEndDate] = useState('');
   const [bankName, setBankName] = useState('Bank Syariah Indonesia (BSI)');
   const [bankAccountNumber, setBankAccountNumber] = useState('');
+  const [isActive, setIsActive] = useState(true);
+  const [inactiveReason, setInactiveReason] = useState('');
 
   // 4. Riwayat Pendidikan Formal (SD, SMP, SMA/SMK, S1, S2, S3)
   const [sdYear, setSdYear] = useState('');
@@ -172,6 +174,8 @@ export const EmployeeForm: React.FC = () => {
 
           setBankName(emp.bank_name || 'Bank Syariah Indonesia (BSI)');
           setBankAccountNumber(emp.bank_account_number || '');
+          setIsActive(emp.is_active !== undefined ? emp.is_active : true);
+          setInactiveReason(emp.inactive_reason || '');
 
           // Map Formal Education if stored
           if (emp.formal_education && Array.isArray(emp.formal_education)) {
@@ -339,7 +343,9 @@ export const EmployeeForm: React.FC = () => {
 
         formal_education: formalEdu,
         nonformal_education: validNonformal,
-        is_active: true
+        is_active: isActive,
+        inactive_reason: !isActive ? (inactiveReason.trim() || 'Dinonaktifkan oleh administrator') : undefined,
+        inactive_date: !isActive ? (new Date().toISOString().split('T')[0]) : undefined
       };
 
       const initialAssignmentPayload = !isEdit ? {
@@ -714,6 +720,25 @@ export const EmployeeForm: React.FC = () => {
               onChange={(e) => setAppointmentSkNumber(e.target.value)}
               placeholder="SK-YPA/2020/001"
             />
+
+            <Select
+              label="Status Keaktifan Pegawai"
+              value={isActive ? 'Aktif' : 'Nonaktif'}
+              onChange={(e) => setIsActive(e.target.value === 'Aktif')}
+              options={[
+                { value: 'Aktif', label: 'Aktif Mengabdi' },
+                { value: 'Nonaktif', label: 'Nonaktif / Selesai Mengabdi' }
+              ]}
+            />
+
+            {!isActive && (
+              <Input
+                label="Alasan Nonaktif"
+                value={inactiveReason}
+                onChange={(e) => setInactiveReason(e.target.value)}
+                placeholder="Pensiun / Mengundurkan Diri / Mutasi"
+              />
+            )}
           </div>
 
           {/* Bank & Rekening */}
