@@ -46,23 +46,23 @@ import {
 } from '../types';
 import { supabase, isConfigured } from '../lib/supabase';
 
-// Keys for localStorage
+// Keys for localStorage (v2 migrated to 116 real employees data)
 const STORAGE_KEYS = {
   UNITS: 'simka_units',
   DEPARTMENTS: 'simka_departments',
   POSITIONS: 'simka_positions',
   TASKS: 'simka_tasks',
-  EMPLOYEES: 'simka_employees',
-  ASSIGNMENTS: 'simka_assignments',
-  EDUCATION: 'simka_education',
-  HISTORY: 'simka_history',
-  DOCUMENTS: 'simka_documents',
+  EMPLOYEES: 'simka_employees_v2',
+  ASSIGNMENTS: 'simka_assignments_v2',
+  EDUCATION: 'simka_education_v2',
+  HISTORY: 'simka_history_v2',
+  DOCUMENTS: 'simka_documents_v2',
   DOC_TYPES: 'simka_doc_types',
-  TRAINING: 'simka_training',
-  ATTENDANCE: 'simka_attendance',
-  LEAVE: 'simka_leave',
-  NOTES: 'simka_notes',
-  AUDIT: 'simka_audit',
+  TRAINING: 'simka_training_v2',
+  ATTENDANCE: 'simka_attendance_v2',
+  LEAVE: 'simka_leave_v2',
+  NOTES: 'simka_notes_v2',
+  AUDIT: 'simka_audit_v2',
   USERS: 'simka_users',
   CURRENT_USER: 'simka_current_user',
   OFFICIAL_LETTERS: 'simka_official_letters',
