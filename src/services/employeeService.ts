@@ -16,52 +16,66 @@ export interface EmployeeFilterOptions {
   limit?: number;
 }
 
-// Helper to extract maximum sequence number and format pattern for auto-incrementing IDs
-function getNextSequenceValue(values: (string | undefined)[], defaultPrefix: string): string {
-  let maxNum = 0;
-  let prefix = defaultPrefix;
-  let padLength = 3;
+// Helper to extract maximum sequence number from NIRG/NIRK/NIRA (e.g. E-0168-2425 -> 168, K-0031-1314 -> 31, A-0008 -> 8)
+function getNextCustomSequence(values: (string | undefined)[], prefixType: 'E' | 'K' | 'A'): string {
+  let maxSeq = prefixType === 'E' ? 168 : (prefixType === 'K' ? 169 : 8);
 
   values.forEach(v => {
     if (!v || typeof v !== 'string') return;
-    const trimmed = v.trim();
-    if (!trimmed) return;
-
-    // Pattern: Matches any string ending with a sequence of numbers (e.g. G-SMP-2019-001, K-YAS-2021-008, NIRG-005, YPA-0001)
-    const match = trimmed.match(/^(.*?)(\d+)$/);
-    if (match) {
-      const p = match[1];
-      const digits = match[2];
-      const num = parseInt(digits, 10);
-      if (!isNaN(num) && num > maxNum) {
-        maxNum = num;
-        prefix = p || defaultPrefix;
-        padLength = Math.max(digits.length, 3);
+    const parts = v.split('/').map(x => x.trim());
+    parts.forEach(p => {
+      let m;
+      if (prefixType === 'E' && (m = p.match(/^E-(\d+)/i))) {
+        const num = parseInt(m[1], 10);
+        if (!isNaN(num) && num > maxSeq) maxSeq = num;
+      } else if (prefixType === 'K' && (m = p.match(/^K-(\d+)/i))) {
+        const num = parseInt(m[1], 10);
+        if (!isNaN(num) && num > maxSeq) maxSeq = num;
+      } else if (prefixType === 'A' && (m = p.match(/^A-(\d+)/i))) {
+        const num = parseInt(m[1], 10);
+        if (!isNaN(num) && num > maxSeq) maxSeq = num;
       }
-    }
+    });
   });
 
-  const nextNum = maxNum + 1;
-  return `${prefix}${String(nextNum).padStart(padLength, '0')}`;
+  const nextSeq = maxSeq + 1;
+  const d = new Date();
+  const curYY = d.getFullYear() % 100;
+  const nextYY = (curYY + 1) % 100;
+  const yearSuffix = `${String(curYY).padStart(2, '0')}${String(nextYY).padStart(2, '0')}`;
+
+  if (prefixType === 'A') {
+    return `A-${String(nextSeq).padStart(4, '0')}`;
+  }
+  return `${prefixType}-${String(nextSeq).padStart(4, '0')}-${yearSuffix}`;
 }
 
 export const employeeService = {
   // Generate next automatic ID: YPA-0001, YPA-0002, etc.
   async getNextEmployeeNumber(): Promise<string> {
     const employees = store.getEmployees();
-    return getNextSequenceValue(employees.map(e => e.employee_number), 'YPA-');
+    return getNextCustomSequence(employees.map(e => e.employee_number || e.nirg), 'E');
   },
 
-  // Generate next automatic NIRG (Nomor Induk Registrasi Guru)
+  // Generate next automatic NIRG (Guru): e.g. E-0169-2627
   async getNextNirg(): Promise<string> {
     const employees = store.getEmployees();
-    return getNextSequenceValue(employees.map(e => e.nirg), 'NIRG-');
+    const allVals = employees.flatMap(e => [e.nirg, e.employee_number]);
+    return getNextCustomSequence(allVals, 'E');
   },
 
-  // Generate next automatic NIRK (Nomor Induk Registrasi Karyawan)
+  // Generate next automatic NIRK (Karyawan): e.g. K-0170-2627
   async getNextNirk(): Promise<string> {
     const employees = store.getEmployees();
-    return getNextSequenceValue(employees.map(e => e.nirk), 'NIRK-');
+    const allVals = employees.flatMap(e => [e.nirk, e.employee_number]);
+    return getNextCustomSequence(allVals, 'K');
+  },
+
+  // Generate next automatic NIRA (Yayasan): e.g. A-0009
+  async getNextNira(): Promise<string> {
+    const employees = store.getEmployees();
+    const allVals = employees.flatMap(e => [e.employee_number, e.nirk, e.nirg]);
+    return getNextCustomSequence(allVals, 'A');
   },
 
   // Calculate completeness percentage (0 - 100%)

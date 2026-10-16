@@ -65,7 +65,7 @@ const STORAGE_KEYS = {
   AUDIT: 'simka_audit_v2',
   USERS: 'simka_users',
   CURRENT_USER: 'simka_current_user',
-  OFFICIAL_LETTERS: 'simka_official_letters',
+  OFFICIAL_LETTERS: 'simka_official_letters_v2',
   LETTER_TEMPLATES: 'simka_letter_templates',
   KOP_SETTINGS: 'simka_kop_settings',
   KOP_TEMPLATES: 'simka_kop_templates',
@@ -75,15 +75,11 @@ const STORAGE_KEYS = {
 function getItem<T>(key: string, initialData: T): T {
   try {
     const data = localStorage.getItem(key);
-    if (!data) {
+    if (data === null) {
       localStorage.setItem(key, JSON.stringify(initialData));
       return initialData;
     }
     const parsed = JSON.parse(data);
-    if (Array.isArray(initialData) && Array.isArray(parsed) && parsed.length === 0 && (initialData as any[]).length > 0) {
-      localStorage.setItem(key, JSON.stringify(initialData));
-      return initialData;
-    }
     return parsed;
   } catch (err) {
     console.error(`Error reading ${key} from storage:`, err);

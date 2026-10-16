@@ -442,15 +442,15 @@ export const EmployeeForm: React.FC = () => {
               label="NIRG (Nomor Induk Registrasi Guru)"
               value={nirg}
               onChange={(e) => setNirg(e.target.value)}
-              placeholder="Contoh: G-SMP-2019-001"
-              helperText="Isi jika berstatus sebagai Guru di salah satu Unit"
+              placeholder="Contoh: E-0169-2627"
+              helperText="Format Guru: E-[Nomor]-[TahunAjar] (Otomatis nomor lanjutan dari data kepegawaian)"
             />
             <Input
-              label="NIRK (Nomor Induk Registrasi Karyawan)"
+              label="NIRK (Nomor Induk Registrasi Karyawan / Yayasan)"
               value={nirk}
               onChange={(e) => setNirk(e.target.value)}
-              placeholder="Contoh: K-YAS-2021-008"
-              helperText="Isi jika berstatus sebagai Tenaga Kependidikan / Staff Yayasan"
+              placeholder="Contoh: K-0170-2627 atau A-0009"
+              helperText="Format Karyawan: K-[Nomor]-[TahunAjar] | Yayasan: A-[Nomor]"
             />
           </div>
 
