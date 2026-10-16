@@ -80,6 +80,11 @@ function getItem<T>(key: string, initialData: T): T {
       return initialData;
     }
     const parsed = JSON.parse(data);
+    // If the cache was stored as empty array but initialData has items, use initialData to populate initial seed
+    if (Array.isArray(initialData) && Array.isArray(parsed) && parsed.length === 0 && initialData.length > 0) {
+      localStorage.setItem(key, JSON.stringify(initialData));
+      return initialData;
+    }
     return parsed;
   } catch (err) {
     console.error(`Error reading ${key} from storage:`, err);
@@ -171,20 +176,21 @@ class StorageStore {
 
       localStorage.setItem('simka_synced_with_supabase', 'true');
 
-      if (units !== null) this.setUnitsLocal(units);
-      if (departments !== null) this.setDepartmentsLocal(departments);
-      if (positions !== null) this.setPositionsLocal(positions);
-      if (tasks !== null) this.setTasksLocal(tasks);
-      if (employees !== null) this.setEmployeesLocal(employees);
-      if (assignments !== null) this.setAssignmentsLocal(assignments);
-      if (education !== null) this.setEducationLocal(education);
-      if (history !== null) this.setHistoryLocal(history);
-      if (documents !== null) this.setDocumentsLocal(documents);
-      if (training !== null) this.setTrainingLocal(training);
-      if (attendance !== null) this.setAttendanceLocal(attendance);
-      if (leave !== null) this.setLeaveLocal(leave);
-      if (notes !== null) this.setNotesLocal(notes);
-      if (auditLogs !== null) this.setAuditLogsLocal(auditLogs);
+      // Only override local cache if Supabase returned actual rows (prevents wiping local data when Supabase is empty)
+      if (units && units.length > 0) this.setUnitsLocal(units);
+      if (departments && departments.length > 0) this.setDepartmentsLocal(departments);
+      if (positions && positions.length > 0) this.setPositionsLocal(positions);
+      if (tasks && tasks.length > 0) this.setTasksLocal(tasks);
+      if (employees && employees.length > 0) this.setEmployeesLocal(employees);
+      if (assignments && assignments.length > 0) this.setAssignmentsLocal(assignments);
+      if (education && education.length > 0) this.setEducationLocal(education);
+      if (history && history.length > 0) this.setHistoryLocal(history);
+      if (documents && documents.length > 0) this.setDocumentsLocal(documents);
+      if (training && training.length > 0) this.setTrainingLocal(training);
+      if (attendance && attendance.length > 0) this.setAttendanceLocal(attendance);
+      if (leave && leave.length > 0) this.setLeaveLocal(leave);
+      if (notes && notes.length > 0) this.setNotesLocal(notes);
+      if (auditLogs && auditLogs.length > 0) this.setAuditLogsLocal(auditLogs);
     } catch (err) {
       console.error('Error syncing with Supabase:', err);
     }
