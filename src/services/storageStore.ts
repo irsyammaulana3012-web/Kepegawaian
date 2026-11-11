@@ -100,9 +100,9 @@ function setItem<T>(key: string, data: T): void {
   }
 }
 
-function cleanForDb(obj: any): any {
+function cleanForDb(obj: any, tableName?: string): any {
   if (!obj || typeof obj !== 'object') return obj;
-  if (Array.isArray(obj)) return obj.map(cleanForDb);
+  if (Array.isArray(obj)) return obj.map(item => cleanForDb(item, tableName));
   
   const cleaned: Record<string, any> = {};
   const ignoredKeys = new Set([
@@ -112,15 +112,24 @@ function cleanForDb(obj: any): any {
     'units_list',
     'positions_list',
     'data_completeness_pct',
-    'unit_name',
-    'department_name',
-    'position_name',
-    'task_name',
     'employee_name',
-    'employee_number',
     'formal_education',
     'nonformal_education'
   ]);
+
+  // 'employee_number' is only an enrichment key for documents, assignments, education, etc.
+  // It is a real core column on 'employees'.
+  if (tableName !== 'employees') {
+    ignoredKeys.add('employee_number');
+  }
+
+  // 'unit_name', 'position_name', 'task_name' are real columns in 'employee_position_history'
+  if (tableName !== 'employee_position_history') {
+    ignoredKeys.add('unit_name');
+    ignoredKeys.add('position_name');
+    ignoredKeys.add('task_name');
+    ignoredKeys.add('department_name');
+  }
 
   for (const [key, val] of Object.entries(obj)) {
     if (ignoredKeys.has(key)) continue;
@@ -193,13 +202,9 @@ class StorageStore {
       }
       if (tasks && tasks.length > 0) this.setTasksLocal(tasks);
 
-      // Only import employees & assignments if local is completely unpopulated
-      if (localEmployees.length === 0 && employees && employees.length > 0) {
-        this.setEmployeesLocal(employees);
-      }
-      if (localAssignments.length === 0 && assignments && assignments.length > 0) {
-        this.setAssignmentsLocal(assignments);
-      }
+      // Import all records from Supabase into local cache
+      if (employees && employees.length > 0) this.setEmployeesLocal(employees);
+      if (assignments && assignments.length > 0) this.setAssignmentsLocal(assignments);
       if (education && education.length > 0) this.setEducationLocal(education);
       if (history && history.length > 0) this.setHistoryLocal(history);
       if (documents && documents.length > 0) this.setDocumentsLocal(documents);
@@ -322,7 +327,7 @@ class StorageStore {
       if (employees.length === 0) {
         supabase.from('employees').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employees').upsert(cleanForDb(employees)).then(undefined, () => {});
+        supabase.from('employees').upsert(cleanForDb(employees, 'employees')).then(undefined, (err) => console.error('Employees upsert error:', err));
       }
     }
   }
@@ -335,7 +340,7 @@ class StorageStore {
       if (assignments.length === 0) {
         supabase.from('employee_assignments').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_assignments').upsert(cleanForDb(assignments)).then(undefined, () => {});
+        supabase.from('employee_assignments').upsert(cleanForDb(assignments, 'employee_assignments')).then(undefined, (err) => console.error('Assignments upsert error:', err));
       }
     }
   }
@@ -348,7 +353,7 @@ class StorageStore {
       if (edu.length === 0) {
         supabase.from('employee_education').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_education').upsert(cleanForDb(edu)).then(undefined, () => {});
+        supabase.from('employee_education').upsert(cleanForDb(edu, 'employee_education')).then(undefined, (err) => console.error('Education upsert error:', err));
       }
     }
   }
@@ -361,7 +366,7 @@ class StorageStore {
       if (his.length === 0) {
         supabase.from('employee_position_history').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_position_history').upsert(cleanForDb(his)).then(undefined, () => {});
+        supabase.from('employee_position_history').upsert(cleanForDb(his, 'employee_position_history')).then(undefined, (err) => console.error('History upsert error:', err));
       }
     }
   }
@@ -374,7 +379,7 @@ class StorageStore {
       if (docs.length === 0) {
         supabase.from('employee_documents').delete().neq('id', '00000000-0000-0000-0000-000000000000').then(undefined, () => {});
       } else {
-        supabase.from('employee_documents').upsert(cleanForDb(docs)).then(undefined, () => {});
+        supabase.from('employee_documents').upsert(cleanForDb(docs, 'employee_documents')).then(undefined, (err) => console.error('Documents upsert error:', err));
       }
     }
   }

@@ -122,6 +122,11 @@ export const employeeService = {
   },
 
   async getEmployees(filters: EmployeeFilterOptions = {}): Promise<{ data: Employee[]; total: number; page: number; limit: number }> {
+    if (store.syncPromise) {
+      try {
+        await store.syncPromise;
+      } catch (e) {}
+    }
     const rawEmployees = store.getEmployees();
     const allAssignments = await assignmentService.getAssignments();
     const allDocs = store.getDocuments();

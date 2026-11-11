@@ -5,6 +5,25 @@ import { supabase, isConfigured } from '../lib/supabase';
 
 export const documentService = {
   async getAllDocuments(filters: { search?: string; document_type?: string; unit_id?: string } = {}): Promise<EmployeeDocument[]> {
+    if (store.syncPromise) {
+      try {
+        await store.syncPromise;
+      } catch (e) {
+        // sync error handled in store
+      }
+    }
+
+    if (isConfigured) {
+      try {
+        const { data, error } = await supabase.from('employee_documents').select('*');
+        if (!error && data) {
+          store.setDocuments(data);
+        }
+      } catch (e) {
+        console.warn('Failed to fetch remote documents, fallback to local:', e);
+      }
+    }
+
     const all = store.getDocuments();
     const employees = store.getEmployees();
     const assignments = store.getAssignments();
@@ -108,6 +127,27 @@ export const documentService = {
     list.push(newDoc);
     store.setDocuments(list);
 
+    if (isConfigured) {
+      try {
+        const { error: insErr } = await supabase.from('employee_documents').upsert({
+          id: newDoc.id,
+          employee_id: newDoc.employee_id,
+          document_type: newDoc.document_type,
+          title: newDoc.title,
+          file_url: newDoc.file_url,
+          file_name: newDoc.file_name,
+          file_size: newDoc.file_size,
+          mime_type: newDoc.mime_type,
+          created_at: newDoc.created_at
+        });
+        if (insErr) {
+          console.error('Supabase employee_documents upsert error:', insErr);
+        }
+      } catch (err) {
+        console.error('Failed to sync uploaded doc to database:', err);
+      }
+    }
+
     await auditService.log('UPLOAD_DOCUMENT', 'documents', newDoc.id, {
       employee_id: employeeId,
       document_type: documentType,
@@ -124,6 +164,14 @@ export const documentService = {
 
     const filtered = list.filter(d => d.id !== id);
     store.setDocuments(filtered);
+
+    if (isConfigured) {
+      try {
+        await supabase.from('employee_documents').delete().eq('id', id);
+      } catch (err) {
+        console.error('Failed to delete doc from Supabase:', err);
+      }
+    }
 
     await auditService.log('DELETE_DOCUMENT', 'documents', id, {
       employee_id: doc.employee_id,

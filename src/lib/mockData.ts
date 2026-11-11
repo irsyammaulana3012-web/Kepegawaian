@@ -6277,7 +6277,7 @@ export const initialEducation: EmployeeEducation[] = [
 export const initialPositionHistory: EmployeePositionHistory[] = [
   {
     id: 'his-1',
-    employee_id: 'emp-2',
+    employee_id: 'emp-002',
     period_label: '2022–2024',
     unit_name: 'SMP IT Al-Qur\'aniyyah',
     position_name: 'Guru',
@@ -6288,7 +6288,7 @@ export const initialPositionHistory: EmployeePositionHistory[] = [
   },
   {
     id: 'his-2',
-    employee_id: 'emp-2',
+    employee_id: 'emp-002',
     period_label: '2024–2025',
     unit_name: 'SMP IT Al-Qur\'aniyyah',
     position_name: 'Wali Kelas',
@@ -6299,7 +6299,7 @@ export const initialPositionHistory: EmployeePositionHistory[] = [
   },
   {
     id: 'his-3',
-    employee_id: 'emp-2',
+    employee_id: 'emp-002',
     period_label: '2025–Sekarang',
     unit_name: 'SMP IT + SMA IT Al-Qur\'aniyyah',
     position_name: 'Guru + Wali Kelas',
@@ -6309,7 +6309,7 @@ export const initialPositionHistory: EmployeePositionHistory[] = [
   },
   {
     id: 'his-4',
-    employee_id: 'emp-2',
+    employee_id: 'emp-002',
     period_label: '2026–Sekarang',
     unit_name: 'Yayasan Al-Qur\'aniyyah',
     position_name: 'Koordinator',
@@ -6322,7 +6322,7 @@ export const initialPositionHistory: EmployeePositionHistory[] = [
 export const initialDocuments: EmployeeDocument[] = [
   {
     id: 'doc-1',
-    employee_id: 'emp-2',
+    employee_id: 'emp-002',
     document_type: 'KTP',
     title: 'KTP Ahmad Fauzi',
     file_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&auto=format&fit=crop&q=60',
@@ -6333,7 +6333,7 @@ export const initialDocuments: EmployeeDocument[] = [
   },
   {
     id: 'doc-2',
-    employee_id: 'emp-2',
+    employee_id: 'emp-002',
     document_type: 'Ijazah',
     title: 'Ijazah S1 Pendidikan IPS UNJ',
     file_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&auto=format&fit=crop&q=60',
@@ -6344,7 +6344,7 @@ export const initialDocuments: EmployeeDocument[] = [
   },
   {
     id: 'doc-3',
-    employee_id: 'emp-2',
+    employee_id: 'emp-002',
     document_type: 'SK Pengangkatan',
     title: 'SK Pengangkatan Pegawai Tetap YPA',
     file_url: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&auto=format&fit=crop&q=60',
