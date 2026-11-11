@@ -385,7 +385,17 @@ class StorageStore {
   }
 
   // Document Types Definition
-  getDocumentTypes(): DocumentTypeDefinition[] { return getItem<DocumentTypeDefinition[]>(STORAGE_KEYS.DOC_TYPES, initialDocumentTypes); }
+  getDocumentTypes(): DocumentTypeDefinition[] {
+    const list = getItem<DocumentTypeDefinition[]>(STORAGE_KEYS.DOC_TYPES, initialDocumentTypes);
+    // Ensure all 8 default document types are displayed in the matrix
+    const hasOlderFiveOnly = Array.isArray(list) && list.filter(t => t.is_mandatory).length === 5 && list.length === 8;
+    if (hasOlderFiveOnly) {
+      const updated = list.map(t => ({ ...t, is_mandatory: true }));
+      this.setDocumentTypes(updated);
+      return updated;
+    }
+    return list;
+  }
   setDocumentTypes(types: DocumentTypeDefinition[]): void {
     setItem(STORAGE_KEYS.DOC_TYPES, types);
   }

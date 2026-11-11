@@ -287,6 +287,24 @@ export const DocumentList: React.FC = () => {
     }
   };
 
+  const handleToggleMandatory = async (dt: DocumentTypeDefinition) => {
+    try {
+      await documentService.saveDocumentType({
+        id: dt.id,
+        is_mandatory: !dt.is_mandatory
+      });
+      success(
+        'Pengaturan Diperbarui',
+        !dt.is_mandatory
+          ? `Kolom "${dt.name}" sekarang ditampilkan di Matriks Utama.`
+          : `Kolom "${dt.name}" dijadikan opsional/disembunyikan dari Matriks.`
+      );
+      loadData();
+    } catch (err: any) {
+      error('Gagal Mengubah Pengaturan', err.message);
+    }
+  };
+
   const handleDeleteDocumentType = async () => {
     if (!typeToDelete) return;
     try {
@@ -679,15 +697,32 @@ export const DocumentList: React.FC = () => {
                     </div>
                   </div>
 
-                  {canEdit && (
-                    <button
-                      onClick={() => setTypeToDelete(dt)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                      title="Hapus Jenis Dokumen"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {canEdit && (
+                      <button
+                        type="button"
+                        onClick={() => handleToggleMandatory(dt)}
+                        className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border transition ${
+                          dt.is_mandatory
+                            ? 'bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        }`}
+                        title="Klik untuk mengubah tampil di matriks utama"
+                      >
+                        {dt.is_mandatory ? '✓ Tampil di Matriks' : '+ Jadikan Kolom Matriks'}
+                      </button>
+                    )}
+
+                    {canEdit && (
+                      <button
+                        onClick={() => setTypeToDelete(dt)}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
+                        title="Hapus Jenis Dokumen"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
